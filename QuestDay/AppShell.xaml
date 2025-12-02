@@ -8,13 +8,21 @@
 
     <TabBar>
         <ShellContent
-                   Icon="home.png"
-                   Route="MainPage"
-                   ContentTemplate="{DataTemplate local:MainPage}" />
+              Icon="home.png"
+              Route="MainPage"
+              ContentTemplate="{DataTemplate local:MainPage}" />
         <ShellContent
               Icon="plus.png"
               Route="AddPage"
               ContentTemplate="{DataTemplate local:AddPage}" />
+        <ShellContent
+              Icon="file.png"
+              Route="ListPage"
+              ContentTemplate="{DataTemplate local:ListPage}" />
+        <ShellContent
+              Icon="screw.png"
+              Route="SettingPage"
+              ContentTemplate="{DataTemplate local:SettingPage}" />
     </TabBar>
     
 </Shell>
