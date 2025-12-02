@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace QuestDay
 {
@@ -13,13 +14,17 @@ namespace QuestDay
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("Montserrat-Black.ttf", "Montserrat-Black");
+                    fonts.AddFont("Montserrat-Bold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("Montserrat-SemiBold.ttf", "Montserrat-SemiBold");
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            return builder.Build(); 
         }
     }
 }
+
