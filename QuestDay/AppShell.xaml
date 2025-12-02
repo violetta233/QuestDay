@@ -6,9 +6,15 @@
     xmlns:local="clr-namespace:QuestDay"
     Title="QuestDay">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-
+    <TabBar>
+        <ShellContent
+                   Icon="home.png"
+                   Route="MainPage"
+                   ContentTemplate="{DataTemplate local:MainPage}" />
+        <ShellContent
+              Icon="plus.png"
+              Route="AddPage"
+              ContentTemplate="{DataTemplate local:AddPage}" />
+    </TabBar>
+    
 </Shell>
