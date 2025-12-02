@@ -23,6 +23,10 @@
               Icon="screw.png"
               Route="SettingPage"
               ContentTemplate="{DataTemplate local:SettingPage}" />
+        <ShellContent
+              Icon="user.png"
+              Route="userPage"
+              ContentTemplate="{DataTemplate local:userPage}" />
     </TabBar>
     
 </Shell>

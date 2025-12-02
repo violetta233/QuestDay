@@ -77,4 +77,11 @@
 	  </MauiXaml>
 	</ItemGroup>
 
+
+	<ItemGroup>
+	  <None Update="userPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </None>
+	</ItemGroup>
+
 </Project>
