@@ -5,28 +5,30 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:QuestDay"
     Title="QuestDay">
-
     <TabBar>
         <ShellContent
-              Icon="home.png"
-              Route="MainPage"
-              ContentTemplate="{DataTemplate local:MainPage}" />
+            Icon="home.png"
+            Route="MainPage"
+            ContentTemplate="{DataTemplate local:MainPage}" />
+
         <ShellContent
-              Icon="plus.png"
-              Route="AddPage"
-              ContentTemplate="{DataTemplate local:AddPage}" />
+            Icon="file.png"
+            Route="ListPage"
+            ContentTemplate="{DataTemplate local:ListPage}" />
+
         <ShellContent
-              Icon="file.png"
-              Route="ListPage"
-              ContentTemplate="{DataTemplate local:ListPage}" />
+            Icon="plus.png"
+            Route="AddPage"
+            ContentTemplate="{DataTemplate local:AddPage}"/>
+
         <ShellContent
-              Icon="screw.png"
-              Route="SettingPage"
-              ContentTemplate="{DataTemplate local:SettingPage}" />
+            Icon="screw.png"
+            Route="SettingPage"
+            ContentTemplate="{DataTemplate local:SettingPage}" />
+
         <ShellContent
-              Icon="user.png"
-              Route="userPage"
-              ContentTemplate="{DataTemplate local:userPage}" />
+            Icon="user.png"
+            Route="userPage"
+            ContentTemplate="{DataTemplate local:userPage}" />
     </TabBar>
-    
 </Shell>

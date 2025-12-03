@@ -47,6 +47,11 @@
 		<!-- Splash Screen -->
 
 		<!-- Images -->
+		<MauiImage Update="Resources\Images\home.png" BaseSize="40,40" />
+		<MauiImage Update="Resources\Images\file.png" BaseSize="40,40" />
+		<MauiImage Update="Resources\Images\plus.png" BaseSize="40,40" />
+		<MauiImage Update="Resources\Images\screw.png" BaseSize="40,40" />
+		<MauiImage Update="Resources\Images\user.png" BaseSize="40,40" />
 		<MauiImage Include="Resources\Images\*" />
 
 		<!-- Custom Fonts -->
@@ -60,6 +65,7 @@
 
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
 	</ItemGroup>
@@ -70,6 +76,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="ListPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Resources\AppResources.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="SettingPage.xaml">

@@ -1,15 +1,14 @@
-﻿namespace QuestDay
+﻿using Microsoft.Maui.Controls;
+using QuestDay.Resources;
+namespace QuestDay
 {
     public partial class App : Application
     {
         public App()
         {
             InitializeComponent();
-        }
-
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new AppShell());
+            AppResources.Initialize();
+            MainPage = new AppShell(); 
         }
     }
 }
