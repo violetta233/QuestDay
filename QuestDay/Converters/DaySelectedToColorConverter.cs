@@ -14,9 +14,9 @@ namespace QuestDay.Converters
         {
             if (value is bool isSelected)
             {
-                return isSelected ? Color.FromArgb("#4CAF50") : Color.FromArgb("#E0E0E0");
+                return isSelected ? Color.FromArgb("#F68063") : Color.FromArgb("#FDB3A1");
             }
-            return Color.FromArgb("#E0E0E0");
+            return Color.FromArgb("#FDB3A1");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
