@@ -1,0 +1,104 @@
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="QuestDay.Views.ListPage"
+    xmlns:viewmodels="clr-namespace:QuestDay.ViewModels"
+    xmlns:models="clr-namespace:QuestDay.Models"       
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:converters="clr-namespace:QuestDay.Converters"
+    BackgroundColor="#FFFBF6"
+    Title="Список привычек">
+    <ContentPage.Resources>
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <toolkit:ListToStringConverter x:Key="ListToStringConverter" />
+        <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
+        <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
+        
+        <Style x:Key="ActiveHabitTextStyle" TargetType="Label">
+            <Setter Property="TextColor" Value="Black" />
+            <Setter Property="TextDecorations" Value="None" />
+        </Style>
+        <Style x:Key="InactiveHabitTextStyle" TargetType="Label">
+            <Setter Property="TextColor" Value="Gray" />
+            <Setter Property="TextDecorations" Value="Strikethrough" />
+        </Style>
+    </ContentPage.Resources>
+    <Grid RowDefinitions="Auto, *, Auto">
+        <HorizontalStackLayout Grid.Row="0" Margin="30, 20, 0, 0" Spacing="10">
+            <Label Text="Список привычек"
+                   HorizontalOptions="Start"
+                   FontFamily="Montserrat-SemiBold"
+                   FontSize="22" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                               IsVisible="{Binding IsBusy}" 
+                               Color="#4CAF50"
+                               VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="10">
+                <CollectionView ItemsSource="{Binding Habits}"
+                                SelectionMode="None"
+                                                                    Margin="10">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Habit">
+                            <SwipeView>
+                                <SwipeView.RightItems>
+                                    <SwipeItems Mode="Reveal">
+                                        <SwipeItem Text="Удалить"
+                                                   BackgroundColor="#FF5252"
+                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=DeleteHabitCommand}"
+                                                   CommandParameter="{Binding .}" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <Frame Margin="5" Padding="15" CornerRadius="10" HasShadow="True"
+                                       BackgroundColor="{Binding IsActive, Converter={StaticResource HabitIsActiveToBackgroundColorConverter}}">
+                                    <VerticalStackLayout Spacing="5">
+                                        <Grid ColumnDefinitions="*, Auto">
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Name}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center"
+                                                   Style="{Binding IsActive, Converter={StaticResource HabitIsActiveToTextStyleConverter}}" />
+
+                                            <CheckBox Grid.Column="1"
+                                                      IsChecked="{Binding IsCompletedForToday}"
+                                                      VerticalOptions="Center"
+                                                      HorizontalOptions="End"
+                                                      Color="#4CAF50">
+                                                <CheckBox.GestureRecognizers>
+                                                    <TapGestureRecognizer 
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=ToggleHabitCompletionCommand}" />
+                                                </CheckBox.GestureRecognizers>
+                                            </CheckBox>
+                                        </Grid>
+                                        <Label Text="{Binding Description}"
+                                               FontSize="14"
+                                               TextColor="#666666"
+                                               IsVisible="{Binding Description, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
+                                        <Label Text="{Binding SelectedDays, Converter={toolkit:ListToStringConverter}, ConverterParameter=', '}"
+                                               FontSize="12"
+                                               TextColor="#888888"
+                                               IsVisible="{Binding SelectedDays, Converter={toolkit:IsListNotNullOrEmptyConverter}}" />
+                                        <Label Text="{Binding StartDate, StringFormat='Начало: {0:dd.MM.yyyy}'}"
+                                               FontSize="12"
+                                               TextColor="#888888" />
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button Grid.Row="2"
+                Text="Добавить новую привычку" 
+                Margin="20"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                CornerRadius="10"
+                Command="{Binding NavigateToAddHabitCommand}" />
+    </Grid>
+</ContentPage>
