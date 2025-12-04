@@ -1,46 +1,104 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using QuestDay.Models; // Важно добавить это using
-using QuestDay.Services;
+using QuestDay.Models;
+using SQLite;
+
 namespace QuestDay.Services
 {
     public class HabitService : IHabitService
     {
-        private List<Habit> _habits = new List<Habit>();
+        private SQLiteAsyncConnection _database;
 
-        public async Task AddHabit(Habit habit)
+        public HabitService()
         {
-            if (habit == null)
-                throw new ArgumentNullException(nameof(habit));
-
-            await Task.Delay(100);
-            _habits.Add(habit);
         }
 
-        public async Task UpdateHabit(Habit habit)
+        public async Task InitializeAsync()
         {
-            if (habit == null)
-                throw new ArgumentNullException(nameof(habit));
+            
+                if (_database is not null)
+                    return;
 
-            var existingHabit = _habits.FirstOrDefault(h => h.Id == habit.Id);
-            if (existingHabit != null)
+                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "QuestDayHabits.db3");
+                _database = new SQLiteAsyncConnection(dbPath);
+                await _database.CreateTableAsync<HabitCompletion>();
+                await _database.CreateTableAsync<Habit>();
+        }
+        public Task<List<HabitCompletion>> GetHabitCompletionsAsync()
+        {
+            return _database.Table<HabitCompletion>().ToListAsync();
+        }
+
+        public Task<int> SaveHabitCompletionAsync(HabitCompletion completion)
+        {
+            if (completion.Id != 0)
             {
-                existingHabit.Name = habit.Name;
-                existingHabit.Description = habit.Description;
+                return _database.UpdateAsync(completion);
+            }
+            else
+            {
+                return _database.InsertAsync(completion);
+            }
+        }
+        public async Task AddHabitAsync(Habit habit)
+        {
+            await _database.InsertAsync(habit);
+        }
+
+        public async Task<List<Habit>> GetHabitsAsync()
+        {
+            return await _database.Table<Habit>().ToListAsync();
+        }
+
+        public async Task UpdateHabitAsync(Habit habit)
+        {
+            await _database.UpdateAsync(habit);
+        }
+
+        public async Task DeleteHabitAsync(Habit habit)
+        {
+            await _database.DeleteAsync(habit);
+        }
+
+        public async Task<Habit> GetHabitByIdAsync(int id)
+        {
+            return await _database.Table<Habit>().Where(i => i.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task SaveHabitCompletionAsync(int habitId, DateTime date, bool isCompleted)
+        {
+            DateTime completionDate = date.Date;
+
+            var existingCompletion = await _database.Table<HabitCompletion>()
+                                                  .Where(c => c.HabitId == habitId && c.CompletionDate == completionDate)
+                                                  .FirstOrDefaultAsync();
+
+            if (existingCompletion == null)
+            {
+                await _database.InsertAsync(new HabitCompletion
+                {
+                    HabitId = habitId,
+                    CompletionDate = completionDate,
+                    IsCompleted = isCompleted
+                });
+            }
+            else
+            {
+                existingCompletion.IsCompleted = isCompleted;
+                await _database.UpdateAsync(existingCompletion);
             }
         }
 
-        public async Task DeleteHabit(Guid id)
+        public async Task<bool> GetHabitCompletionStatusAsync(int habitId, DateTime date)
         {
-            _habits.RemoveAll(h => h.Id == id);
-        }
-
-        public async Task<List<Habit>> GetAllHabits()
-        {
-            return await Task.FromResult(_habits);
+            DateTime completionDate = date.Date;
+            var existingCompletion = await _database.Table<HabitCompletion>()
+                                                  .Where(c => c.HabitId == habitId && c.CompletionDate == completionDate)
+                                                  .FirstOrDefaultAsync();
+            return existingCompletion?.IsCompleted ?? false;
         }
     }
 }
