@@ -19,3 +19,6 @@ HEAD
 
  1. С#
  2. Unity
+
+Ссылка на Figma:
+https://www.figma.com/design/69nL1kjhUwRXghvntafMEi/Untitled?node-id=0-1&t=I0y3Ww2jDfW1ADmM-1
