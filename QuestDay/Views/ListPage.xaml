@@ -6,14 +6,13 @@
     xmlns:models="clr-namespace:QuestDay.Models"       
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:converters="clr-namespace:QuestDay.Converters"
-    BackgroundColor="#FFFBF6"
-    Title="Список привычек">
+    BackgroundColor="#FFFBF6">
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
         <toolkit:ListToStringConverter x:Key="ListToStringConverter" />
         <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
         <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
-        
+
         <Style x:Key="ActiveHabitTextStyle" TargetType="Label">
             <Setter Property="TextColor" Value="Black" />
             <Setter Property="TextDecorations" Value="None" />
@@ -31,7 +30,7 @@
                    FontSize="22" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" 
                                IsVisible="{Binding IsBusy}" 
-                               Color="#4CAF50"
+                               Color="#A7DFAF"
                                VerticalOptions="Center" />
         </HorizontalStackLayout>
 
@@ -61,15 +60,15 @@
                                                    FontAttributes="Bold"
                                                    VerticalOptions="Center"
                                                    Style="{Binding IsActive, Converter={StaticResource HabitIsActiveToTextStyleConverter}}" />
-
                                             <CheckBox Grid.Column="1"
                                                       IsChecked="{Binding IsCompletedForToday}"
                                                       VerticalOptions="Center"
                                                       HorizontalOptions="End"
-                                                      Color="#4CAF50">
+                                                      Color="#A7DFAF">
                                                 <CheckBox.GestureRecognizers>
                                                     <TapGestureRecognizer 
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=ToggleHabitCompletionCommand}" />
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=ToggleHabitCompletionCommand}"
+            CommandParameter="{Binding .}" />
                                                 </CheckBox.GestureRecognizers>
                                             </CheckBox>
                                         </Grid>
@@ -96,7 +95,7 @@
         <Button Grid.Row="2"
                 Text="Добавить новую привычку" 
                 Margin="20"
-                BackgroundColor="#4CAF50"
+                BackgroundColor="#A7DFAF"
                 TextColor="White"
                 CornerRadius="10"
                 Command="{Binding NavigateToAddHabitCommand}" />

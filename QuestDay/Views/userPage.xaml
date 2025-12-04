@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="QuestDay.Views.userPage"
-             BackgroundColor="#FFFBF6">
+             x:Class="QuestDay.Views.userPage">
 
     <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, *, Auto">
-        <!-- Заголовок -->
-        <Label Text="Гардероб"
-               FontFamily="Montserrat-SemiBold"
-               FontSize="22"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
-               Margin="0,20,0,0"
-               Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" />
+        <Image Source="habit_home_base.png"
+               Aspect="AspectFill"
+               Grid.Row="0" Grid.Column="0" 
+               Grid.RowSpan="2"                
+               Grid.ColumnSpan="3" />
 
         <!-- Левая колонка: кнопки -->
         <VerticalStackLayout Grid.Row="1" Grid.Column="0"
                              VerticalOptions="Center"
                              HorizontalOptions="Center"
-                             Spacing="25"
+                             Spacing="20"
                              Margin="10,0,10,0">
 
             <!-- Кнопка шляп -->
-            <Frame WidthRequest="100" HeightRequest="100"
+            <Frame WidthRequest="130" HeightRequest="130"
                    CornerRadius="10"
                    Padding="5"
                    HasShadow="False"
@@ -39,7 +35,7 @@
             </Frame>
 
             <!-- Кнопка одежды -->
-            <Frame WidthRequest="100" HeightRequest="100"
+            <Frame WidthRequest="150" HeightRequest="150"
                    CornerRadius="10"
                    Padding="5"
                    HasShadow="False"
@@ -56,7 +52,7 @@
             </Frame>
 
             <!-- Кнопка палитры -->
-            <Frame WidthRequest="100" HeightRequest="100"
+            <Frame WidthRequest="130" HeightRequest="130"
                    CornerRadius="10"
                    Padding="5"
                    HasShadow="False"
@@ -74,13 +70,14 @@
         </VerticalStackLayout>
 
         <!-- Кролик -->
+
         <Image Source="rabbit_warm.png"
                Grid.Row="1" Grid.Column="1"
                VerticalOptions="Center"
-               HorizontalOptions="Start"
+               HorizontalOptions="Center"
                Aspect="AspectFit"
-               WidthRequest="300"
-               HeightRequest="300"
+               WidthRequest="400"
+               HeightRequest="400"
                Margin="20,0,0,0" />
 
     </Grid>
