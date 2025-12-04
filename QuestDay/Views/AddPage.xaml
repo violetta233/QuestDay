@@ -4,97 +4,61 @@
              x:Class="QuestDay.Views.AddPage"
              xmlns:viewmodels="clr-namespace:QuestDay.ViewModels"
              xmlns:converters="clr-namespace:QuestDay.Converters"
-             BackgroundColor="#FFFBF6">
+             BackgroundColor="#FFFBF6"
+             Title="Новая привычка">
 
     <ContentPage.Resources>
-        <!-- Убедитесь, что эти конвертеры правильно определены в QuestDay.Converters -->
         <converters:DaySelectedToColorConverter x:Key="DaySelectedToColorConverter" />
         <converters:DaySelectedToTextColorConverter x:Key="DaySelectedToTextColorConverter" />
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
-
-        <!-- Если ваши конвертеры DaySelectedToColorConverter и DaySelectedToTextColorConverter
-             нуждаются в определении цветов в ресурсах, то добавьте их здесь,
-             либо настройте их в конструкторе конвертеров, чтобы они брали цвета из глобальных ресурсов
-             или использовали цвета по умолчанию. Пример:
-        <Color x:Key="SelectedDayBackgroundColor">#ADD8E6</Color>
-        <Color x:Key="UnselectedDayBackgroundColor">#E0E0E0</Color>
-        <Color x:Key="SelectedDayTextColor">White</Color>
-        <Color x:Key="UnselectedDayTextColor">Black</Color>
-        -->
     </ContentPage.Resources>
 
-    <!-- ScrollView является единственным прямым дочерним элементом ContentPage -->
     <ScrollView>
-        <!-- VerticalStackLayout содержит все элементы, которые будут прокручиваться -->
         <VerticalStackLayout Spacing="20" Padding="20">
-
-            <Label Text="Название привычки"
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   FontFamily="Montserrat-SemiBold" />
-            <Entry Placeholder="Введите название привычки"
-                   FontFamily="Montserrat-SemiBold"
+            <Label Text="Название привычки" FontSize="18" FontAttributes="Bold" />
+            <Entry Placeholder="Введите название привычки" 
                    Text="{Binding Name}"
                    ClearButtonVisibility="WhileEditing" />
 
-            <Label Text="Описание"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   FontFamily="Montserrat-SemiBold" />
-            <Editor Placeholder="Добавьте краткое описание (необязательно)"
-                    FontFamily="Montserrat-SemiBold"
+            <Label Text="Описание" FontSize="18" FontAttributes="Bold" />
+            <Editor Placeholder="Добавьте краткое описание (необязательно)" 
                     Text="{Binding Description}"
                     AutoSize="TextChanges"
                     MinimumHeightRequest="80" />
-            <!-- Label "Дни недели" -->
-            <Label Text="Дни недели"
-                   FontFamily="Montserrat-SemiBold"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   Margin="0,10,0,0"
-                   HorizontalOptions="Start" />
 
-            <!-- CollectionView для дней недели - теперь он находится внутри ScrollView
-                 и VerticalStackLayout, поэтому будет прокручиваться вместе с остальным. -->
-            <CollectionView ItemsSource="{Binding DaysOfWeekSelection.DayOptions}"
-                            HorizontalOptions="FillAndExpand">
-                <!-- Это важно для горизонтального растягивания -->
+            <Label Text="Дни недели" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0" />
+            <CollectionView ItemsSource="{Binding DaysOfWeekSelection.DayOptions}">
                 <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Horizontal"  HorizontalItemSpacing="9" VerticalItemSpacing="5" />
+                    <GridItemsLayout Orientation="Horizontal" Span="7" HorizontalItemSpacing="5" VerticalItemSpacing="5" />
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:DayOption">
-                        <Frame HasShadow="True" CornerRadius="25" Padding="14"
+                        <Frame HasShadow="True" CornerRadius="8" Padding="10"
                                BackgroundColor="{Binding IsSelected, Converter={StaticResource DaySelectedToColorConverter}}">
                             <Frame.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ToggleSelectedCommand}" />
                             </Frame.GestureRecognizers>
-                            <Label Text="{Binding Name}"
-                                   HorizontalOptions="Center"
+                            <Label Text="{Binding Name}" 
+                                   HorizontalOptions="Center" 
                                    VerticalOptions="Center"
                                    TextColor="{Binding IsSelected, Converter={StaticResource DaySelectedToTextColorConverter}}" />
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-            <!-- Индикатор активности -->
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}"
-                               Color="#A7DFAF"
+            
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                               IsVisible="{Binding IsBusy}" 
+                               Color="#4CAF50"
                                HorizontalOptions="Center" />
 
-            <!-- Кнопка "Сохранить привычку" -->
-            <Button Text="Сохранить привычку"
-                    FontFamily="Montserrat-SemiBold"
+            <Button Text="Сохранить привычку" 
                     Command="{Binding SaveHabitCommand}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
                     Margin="0,20,0,0"
-                    BackgroundColor="#A7DFAF"
-                    TextColor="#FFFBF6"
+                    BackgroundColor="#4CAF50"
+                    TextColor="White"
                     CornerRadius="10" />
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
-
