@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using SQLite;
 using Newtonsoft.Json;
-
+using SQLite;
+using CommunityToolkit.Mvvm.ComponentModel;
 namespace QuestDay.Models
 {
-    public class Habit
+    public partial class Habit : ObservableObject
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -25,9 +25,13 @@ namespace QuestDay.Models
                 : JsonConvert.DeserializeObject<List<DayOfWeek>>(SelectedDaysJson);
             set => SelectedDaysJson = JsonConvert.SerializeObject(value);
         }
-
+        private bool _isCompletedForToday = false;
         [Ignore]
-        public bool IsCompletedForToday { get; set; } = false;
+        public bool IsCompletedForToday
+        {
+            get => _isCompletedForToday;
+            set => SetProperty(ref _isCompletedForToday, value);
+        }
     }
 }
 

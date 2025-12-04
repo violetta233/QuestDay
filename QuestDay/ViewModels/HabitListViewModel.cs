@@ -1,12 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-//using IntelliJ.Lang.Annotations;
 using Microsoft.Maui.ApplicationModel;
 using QuestDay.Messages;
 using QuestDay.Models;
 using QuestDay.Services;
 using QuestDay.Views;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,6 +44,7 @@ namespace QuestDay.ViewModels
                 {
                     Habits.Add(message.Value);
                 }
+                message.Value.IsCompletedForToday = await _habitService.GetHabitCompletionStatusAsync(message.Value.Id, DateTime.Today);
             });
         }
 
@@ -112,6 +113,26 @@ namespace QuestDay.ViewModels
         private async Task NavigateToAddHabit()
         {
             await Shell.Current.GoToAsync(nameof(AddPage));
+        }
+        [RelayCommand]
+        private async Task ToggleHabitCompletion(Habit habitToToggleCompletion)
+        {
+            if (habitToToggleCompletion == null) return;
+            habitToToggleCompletion.IsCompletedForToday = !habitToToggleCompletion.IsCompletedForToday;
+
+            try
+            {
+                await _habitService.SaveHabitCompletionAsync(
+                    habitToToggleCompletion.Id,
+                    DateTime.Today,
+                    habitToToggleCompletion.IsCompletedForToday
+                );
+            }
+            catch (Exception ex)
+            {
+                habitToToggleCompletion.IsCompletedForToday = !habitToToggleCompletion.IsCompletedForToday;
+                await Shell.Current.DisplayAlert("Ошибка", $"Не удалось обновить статус выполнения привычки: {ex.Message}", "ОК");
+            }
         }
 
     }
