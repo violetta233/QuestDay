@@ -3,13 +3,57 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="QuestDay.Views.userPage"
              BackgroundColor="#FFFBF6">
-    <VerticalStackLayout>
-        <Label 
-            Text="Гардероб"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            Margin="30, 20, 0, 0"
-            FontFamily="Montserrat-SemiBold"
-            FontSize="22"/>
-    </VerticalStackLayout>
+
+    <Grid VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+        <!-- Верхний заголовок -->
+        <Label Text="Гардероб"
+               VerticalOptions="Start"
+               HorizontalOptions="Center"
+               Margin="0,20,0,0"
+               FontFamily="Montserrat-SemiBold"
+               FontSize="22"
+               Grid.Row="0" />
+
+        <!-- Основной контент: кнопки слева + кролик по центру -->
+        <Grid VerticalOptions="Center"
+              HorizontalOptions="FillAndExpand"
+              Margin="0,50,0,0">
+
+            <!-- Левая панель с кнопками -->
+            <StackLayout Orientation="Vertical"
+                         VerticalOptions="Center"
+                         HorizontalOptions="Start"
+                         Margin="20,0,0,0"
+                         Spacing="20">
+                <ImageButton Source="btn_hats.png"
+                             Aspect="AspectFit"
+                             WidthRequest="60"
+                             HeightRequest="60"
+                             BackgroundColor="Transparent"
+                             Clicked="OnHatButtonClicked" />
+                <ImageButton Source="btn_tops.png"
+                             Aspect="AspectFit"
+                             WidthRequest="60"
+                             HeightRequest="60"
+                             BackgroundColor="Transparent"
+                             Clicked="OnTopButtonClicked" />
+                <ImageButton Source="btn_bottoms.png"
+                             Aspect="AspectFit"
+                             WidthRequest="60"
+                             HeightRequest="60"
+                             BackgroundColor="Transparent"
+                             Clicked="OnBottomButtonClicked" />
+            </StackLayout>
+
+            <!-- Кролик по центру -->
+            <Image Source="rabbit_warm.png"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit"
+                   WidthRequest="300"
+                   HeightRequest="300" />
+
+        </Grid>
+    </Grid>
+
 </ContentPage>
