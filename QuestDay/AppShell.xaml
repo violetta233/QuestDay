@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="QuestDay.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:QuestDay.Views"
+    Shell.FlyoutBehavior="Disabled"
+    Title="QuestDay">
+    <TabBar>
+        <ShellContent
+            Icon="home.png"
+            Route="MainPage"
+            ContentTemplate="{DataTemplate local:MainPage}" />
+
+        <ShellContent
+            Icon="file.png"
+            Route="ListPage"
+            ContentTemplate="{DataTemplate local:ListPage}" />
+
+        <ShellContent
+            Icon="plus.png"
+            Route="AddPage"
+            ContentTemplate="{DataTemplate local:AddPage}"/>
+
+        <ShellContent
+            Icon="screw.png"
+            Route="SettingPage"
+            ContentTemplate="{DataTemplate local:SettingPage}" />
+
+        <ShellContent
+            Icon="user.png"
+            Route="userPage"
+            ContentTemplate="{DataTemplate local:userPage}" />
+    </TabBar>
+</Shell>

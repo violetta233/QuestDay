@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="QuestDay.Views.AddPage"
+             xmlns:viewmodels="clr-namespace:QuestDay.ViewModels"
+             xmlns:converters="clr-namespace:QuestDay.Converters"
+             BackgroundColor="#FFFBF6">
+
+    <ContentPage.Resources>
+        <converters:DaySelectedToColorConverter x:Key="DaySelectedToColorConverter" />
+        <converters:DaySelectedToTextColorConverter x:Key="DaySelectedToTextColorConverter" />
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+    </ContentPage.Resources>
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+
+            <Label Text="Название привычки"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   FontFamily="Montserrat-SemiBold" />
+            <Entry Placeholder="Введите название привычки"
+                   FontFamily="Montserrat-SemiBold"
+                   Text="{Binding Name}"
+                   ClearButtonVisibility="WhileEditing" />
+
+            <Label Text="Описание"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   FontFamily="Montserrat-SemiBold" />
+            <Editor Placeholder="Добавьте краткое описание (необязательно)"
+                    FontFamily="Montserrat-SemiBold"
+                    Text="{Binding Description}"
+                    AutoSize="TextChanges"
+                    MinimumHeightRequest="80" />
+            <Label Text="Дни недели"
+                   FontFamily="Montserrat-SemiBold"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0"
+                   HorizontalOptions="Start" />
+            <CollectionView ItemsSource="{Binding DaysOfWeekSelection.DayOptions}"
+                            HorizontalOptions="FillAndExpand">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Horizontal"  HorizontalItemSpacing="9" VerticalItemSpacing="5" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:DayOption">
+                        <Frame HasShadow="True" CornerRadius="25" Padding="14"
+                               BackgroundColor="{Binding IsSelected, Converter={StaticResource DaySelectedToColorConverter}}">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleSelectedCommand}" />
+                            </Frame.GestureRecognizers>
+                            <Label Text="{Binding Name}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   TextColor="{Binding IsSelected, Converter={StaticResource DaySelectedToTextColorConverter}}" />
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="#A7DFAF"
+                               HorizontalOptions="Center" />
+            <Button Text="Сохранить привычку"
+                    FontFamily="Montserrat-SemiBold"
+                    Command="{Binding SaveHabitCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                    Margin="0,20,0,0"
+                    BackgroundColor="#A7DFAF"
+                    TextColor="#FFFBF6"
+                    CornerRadius="10" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

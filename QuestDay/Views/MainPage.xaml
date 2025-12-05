@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              x:Class="QuestDay.Views.MainPage">
+
+    <Grid
+        VerticalOptions="FillAndExpand" 
+        HorizontalOptions="FillAndExpand">
+        <Image Source="habit_home.png"
+               Aspect="AspectFill" />
+        <Image Source="rabbit_warm.png"  
+               VerticalOptions="Center"
+               HorizontalOptions="Center"
+               Aspect="AspectFit"
+               WidthRequest="400"
+               HeightRequest="400" />
+    </Grid>
+
+</ContentPage>

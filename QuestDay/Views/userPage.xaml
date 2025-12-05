@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="QuestDay.Views.userPage">
+
+    <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, *, Auto">
+        <Image Source="habit_home_base.png"
+               Aspect="AspectFill"
+               Grid.Row="0" Grid.Column="0" 
+               Grid.RowSpan="2"                
+               Grid.ColumnSpan="3" />
+
+        <!-- Левая колонка: кнопки -->
+        <VerticalStackLayout Grid.Row="1" Grid.Column="0"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             Spacing="20"
+                             Margin="10,0,10,0">
+
+            <!-- Кнопка шляп -->
+            <Frame WidthRequest="130" HeightRequest="130"
+                   CornerRadius="10"
+                   Padding="5"
+                   HasShadow="False"
+                   BackgroundColor="Transparent"
+                   HorizontalOptions="Center">
+                <Grid>
+                    <ImageButton Source="headdress.png"
+                                 Aspect="AspectFill"
+                                 BackgroundColor="Transparent"
+                                 Clicked="OnHatButtonClicked"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center" />
+                </Grid>
+            </Frame>
+
+            <!-- Кнопка одежды -->
+            <Frame WidthRequest="150" HeightRequest="150"
+                   CornerRadius="10"
+                   Padding="5"
+                   HasShadow="False"
+                   BackgroundColor="Transparent"
+                   HorizontalOptions="Center">
+                <Grid>
+                    <ImageButton Source="shirt.png"
+                                 Aspect="AspectFill"
+                                 BackgroundColor="Transparent"
+                                 Clicked="OnTopButtonClicked"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center" />
+                </Grid>
+            </Frame>
+
+            <!-- Кнопка палитры -->
+            <Frame WidthRequest="130" HeightRequest="130"
+                   CornerRadius="10"
+                   Padding="5"
+                   HasShadow="False"
+                   BackgroundColor="Transparent"
+                   HorizontalOptions="Center">
+                <Grid>
+                    <ImageButton Source="palette.png"
+                                 Aspect="AspectFill"
+                                 BackgroundColor="Transparent"
+                                 Clicked="OnBottomButtonClicked"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center" />
+                </Grid>
+            </Frame>
+        </VerticalStackLayout>
+
+        <!-- Кролик -->
+
+        <Image Source="rabbit_warm.png"
+               Grid.Row="1" Grid.Column="1"
+               VerticalOptions="Center"
+               HorizontalOptions="Center"
+               Aspect="AspectFit"
+               WidthRequest="400"
+               HeightRequest="400"
+               Margin="20,0,0,0" />
+
+    </Grid>
+
+</ContentPage>
