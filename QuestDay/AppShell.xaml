@@ -6,6 +6,54 @@
     xmlns:local="clr-namespace:QuestDay.Views"
     Shell.FlyoutBehavior="Disabled"
     Title="QuestDay">
+
+    <Shell.Resources>
+        <ControlTemplate x:Key="FloatingTabBarTemplate">
+            <Grid>
+                <ContentPresenter />
+                <Grid IgnoreSafeArea="True" VerticalOptions="End">
+                    <Border 
+                        Margin="10,0,10,25"
+                        HeightRequest="65"
+                        HorizontalOptions="Fill"
+                        BackgroundColor="White"
+                        Stroke="#FFCD72" 
+                        StrokeThickness="2">
+
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="18" />
+                        </Border.StrokeShape>
+
+                        <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
+                            <ImageButton Source="home.png" 
+                                         Clicked="OnNavClicked" CommandParameter="MainPage"
+                                         HeightRequest="30" WidthRequest="30"/>
+
+                            <ImageButton Source="file.png" 
+                                         Clicked="OnNavClicked" CommandParameter="ListPage"
+                                         HeightRequest="30" WidthRequest="30"/>
+
+                            <ImageButton Source="plus.png" 
+                                         Clicked="OnNavClicked" CommandParameter="AddPage"
+                                         HeightRequest="30" WidthRequest="30"/>
+
+                            <ImageButton Source="setting.png" 
+                                         Clicked="OnNavClicked" CommandParameter="SettingPage"
+                                         HeightRequest="30" WidthRequest="30"/>
+
+                            <ImageButton Source="profile.png" 
+                                         Clicked="OnNavClicked" CommandParameter="userPage"
+                                         HeightRequest="30" WidthRequest="30"/>
+                        </FlexLayout>
+                    </Border>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+        <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+            <Setter Property="ControlTemplate" Value="{StaticResource FloatingTabBarTemplate}" />
+            <Setter Property="Shell.TabBarIsVisible" Value="False" />
+        </Style>
+    </Shell.Resources>
     <TabBar>
         <ShellContent
             Icon="home.png"
