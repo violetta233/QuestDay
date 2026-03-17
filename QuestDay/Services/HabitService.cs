@@ -43,9 +43,23 @@ namespace QuestDay.Services
                 return _database.InsertAsync(completion);
             }
         }
-        public async Task AddHabitAsync(Habit habit)
+        public async Task<Habit> AddHabitAsync(Habit habit)
         {
             await _database.InsertAsync(habit);
+            var allHabits = await _database.Table<Habit>()
+        .OrderByDescending(h => h.Id)
+        .ToListAsync();
+
+            var savedHabit = allHabits.FirstOrDefault(h =>
+                h.Name == habit.Name &&
+                h.StartDate == habit.StartDate);
+
+            if (savedHabit != null)
+            {
+                return savedHabit;
+            }
+
+            return habit;
         }
 
         public async Task<List<Habit>> GetHabitsAsync()
