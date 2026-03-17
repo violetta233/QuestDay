@@ -10,13 +10,14 @@
     <Shell.Resources>
         <ControlTemplate x:Key="FloatingTabBarTemplate">
             <Grid>
-                <ContentPresenter />
+                <ContentPresenter VerticalOptions="Fill" HorizontalOptions="Fill"/>
                 <Grid IgnoreSafeArea="True" VerticalOptions="End">
                     <Border 
                         Margin="10,0,10,25"
                         HeightRequest="65"
                         HorizontalOptions="Fill"
                         BackgroundColor="White"
+                        VerticalOptions="End"
                         Stroke="#FFCD72" 
                         StrokeThickness="2">
 
