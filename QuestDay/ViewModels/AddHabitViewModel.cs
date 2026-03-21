@@ -26,23 +26,64 @@ namespace QuestDay.ViewModels
         [NotifyCanExecuteChangedFor(nameof(SaveHabitCommand))]
         private bool isBusy;
 
+        [ObservableProperty]
+        private string nameError;
+
+        [ObservableProperty]
+        private string daysError;
+
         public DaysViewModel DaysOfWeekSelection { get; }
 
         partial void OnNameChanged(string value)
         {
+            ValidateName();
+            SaveHabitCommand.NotifyCanExecuteChanged();
+        }
+
+        private void ValidateName()
+        {
+            if (string.IsNullOrWhiteSpace(Name))
+            {
+                NameError = "Введите название привычки";
+            }
+            else if (Name.Length < 3)
+            {
+                NameError = "Название должно содержать минимум 3 символа";
+            }
+            else
+            {
+                NameError = null;
+            }
+        }
+
+        private void ValidateDays()
+        {
+            if (!DaysOfWeekSelection.SelectedDays.Any())
+            {
+                DaysError = "Выберите хотя бы один день";
+            }
+            else
+            {
+                DaysError = null;
+            }
         }
 
         public AddHabitViewModel(IHabitService habitService)
         {
             _habitService = habitService;
             DaysOfWeekSelection = new DaysViewModel();
+
             DaysOfWeekSelection.PropertyChanged += (sender, e) =>
             {
                 if (e.PropertyName == nameof(DaysViewModel.SelectedDays))
                 {
+                    ValidateDays();
                     SaveHabitCommand.NotifyCanExecuteChanged();
                 }
             };
+
+            ValidateName();
+            ValidateDays();
         }
 
         [RelayCommand(CanExecute = nameof(CanSaveHabit))]
@@ -82,6 +123,9 @@ namespace QuestDay.ViewModels
                 Description = string.Empty;
                 DaysOfWeekSelection.Reset();
 
+                ValidateName();
+                ValidateDays();
+
                 await Shell.Current.GoToAsync("//ListPage");
             }
             catch (Exception ex)
@@ -94,6 +138,37 @@ namespace QuestDay.ViewModels
             }
         }
 
-        private bool CanSaveHabit() => !string.IsNullOrWhiteSpace(Name) && DaysOfWeekSelection.SelectedDays.Any() && !IsBusy;
+        private bool CanSaveHabit() =>
+            !IsBusy &&
+            !string.IsNullOrWhiteSpace(Name) &&
+            Name.Length >= 3 &&
+            DaysOfWeekSelection.SelectedDays.Any();
+
+        [RelayCommand]
+        private async Task ShowValidationTooltip()
+        {
+            if (!CanSaveHabit())
+            {
+                string message;
+                if (string.IsNullOrWhiteSpace(Name))
+                {
+                    message = "Введите название привычки";
+                }
+                else if (Name.Length < 3)
+                {
+                    message = "Название должно содержать минимум 3 символа";
+                }
+                else if (!DaysOfWeekSelection.SelectedDays.Any())
+                {
+                    message = "Выберите хотя бы один день выполнения";
+                }
+                else
+                {
+                    message = "Заполните все обязательные поля";
+                }
+
+                await Shell.Current.DisplayAlert("Заполните форму", message, "OK");
+            }
+        }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using CommunityToolkit.Maui;
-using Microsoft.Extensions.DependencyInjection; 
 using Microsoft.Extensions.Logging;
-using QuestDay.Converters;
-using QuestDay.Models;
 using QuestDay.Services;
+using QuestDay.Converters;
 using QuestDay.ViewModels;
 using QuestDay.Views;
 
@@ -28,21 +26,26 @@ namespace QuestDay
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+
             builder.Services.AddSingleton<IHabitService, HabitService>();
+
             builder.Services.AddSingleton<InverseBoolConverter>();
+            builder.Services.AddSingleton<DaySelectedToColorConverter>();
+            builder.Services.AddSingleton<DaySelectedToTextColorConverter>();
+            builder.Services.AddSingleton<EnabledToColorConverter>();
+            builder.Services.AddSingleton<StringNotNullOrEmptyConverter>();
 
             builder.Services.AddTransient<HabitListViewModel>();
             builder.Services.AddTransient<AddHabitViewModel>();
             builder.Services.AddTransient<DaysViewModel>();
 
+            builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<ListPage>();
             builder.Services.AddTransient<AddPage>();
-            builder.Services.AddSingleton<DaySelectedToColorConverter>();
-            builder.Services.AddSingleton<DaySelectedToTextColorConverter>();
+            builder.Services.AddTransient<SettingPage>();
+            builder.Services.AddTransient<userPage>();
 
             return builder.Build();
         }
     }
 }
-
-

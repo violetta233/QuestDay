@@ -20,31 +20,35 @@
                         VerticalOptions="End"
                         Stroke="#FFCD72" 
                         StrokeThickness="2">
-
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="18" />
                         </Border.StrokeShape>
-
                         <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
                             <ImageButton Source="home.png" 
-                                         Clicked="OnNavClicked" CommandParameter="MainPage"
-                                         HeightRequest="30" WidthRequest="30"/>
-
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="MainPage"
+                                         HeightRequest="30" 
+                                         WidthRequest="30"/>
                             <ImageButton Source="file.png" 
-                                         Clicked="OnNavClicked" CommandParameter="ListPage"
-                                         HeightRequest="30" WidthRequest="30"/>
-
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="ListPage"
+                                         HeightRequest="30" 
+                                         WidthRequest="30"/>
                             <ImageButton Source="plus.png" 
-                                         Clicked="OnNavClicked" CommandParameter="AddPage"
-                                         HeightRequest="30" WidthRequest="30"/>
-
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="AddPage"
+                                         HeightRequest="30" 
+                                         WidthRequest="30"/>
                             <ImageButton Source="setting.png" 
-                                         Clicked="OnNavClicked" CommandParameter="SettingPage"
-                                         HeightRequest="30" WidthRequest="30"/>
-
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="SettingPage"
+                                         HeightRequest="30" 
+                                         WidthRequest="30"/>
                             <ImageButton Source="profile.png" 
-                                         Clicked="OnNavClicked" CommandParameter="userPage"
-                                         HeightRequest="30" WidthRequest="30"/>
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="userPage"
+                                         HeightRequest="30" 
+                                         WidthRequest="30"/>
                         </FlexLayout>
                     </Border>
                 </Grid>
@@ -55,30 +59,29 @@
             <Setter Property="Shell.TabBarIsVisible" Value="False" />
         </Style>
     </Shell.Resources>
-    <TabBar>
-        <ShellContent
-            Icon="home.png"
-            Route="MainPage"
-            ContentTemplate="{DataTemplate local:MainPage}" />
 
-        <ShellContent
-            Icon="file.png"
-            Route="ListPage"
-            ContentTemplate="{DataTemplate local:ListPage}" />
+    <ShellContent
+        Icon="home.png"
+        Route="MainPage"
+        ContentTemplate="{DataTemplate local:MainPage}" />
 
-        <ShellContent
-            Icon="plus.png"
-            Route="AddPage"
-            ContentTemplate="{DataTemplate local:AddPage}"/>
+    <ShellContent
+        Icon="file.png"
+        Route="ListPage"
+        ContentTemplate="{DataTemplate local:ListPage}" />
 
-        <ShellContent
-            Icon="screw.png"
-            Route="SettingPage"
-            ContentTemplate="{DataTemplate local:SettingPage}" />
+    <ShellContent
+        Icon="plus.png"
+        Route="AddPage"
+        ContentTemplate="{DataTemplate local:AddPage}"/>
 
-        <ShellContent
-            Icon="user.png"
-            Route="userPage"
-            ContentTemplate="{DataTemplate local:userPage}" />
-    </TabBar>
+    <ShellContent
+        Icon="setting.png"
+        Route="SettingPage"
+        ContentTemplate="{DataTemplate local:SettingPage}" />
+
+    <ShellContent
+        Icon="profile.png"
+        Route="userPage"
+        ContentTemplate="{DataTemplate local:userPage}" />
 </Shell>

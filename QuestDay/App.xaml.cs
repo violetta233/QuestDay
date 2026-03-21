@@ -1,8 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Controls;
 using QuestDay.Services;
-using QuestDay.Models;
-using QuestDay.Resources;
+
 namespace QuestDay
 {
     public partial class App : Application
@@ -15,17 +13,30 @@ namespace QuestDay
             _habitService = habitService;
 
             MainPage = new AppShell();
-            Task.Run(async () =>
-            {
-                await _habitService.InitializeAsync();
-            }).Wait();
-
         }
 
         protected override async void OnStart()
         {
             base.OnStart();
-            await _habitService.InitializeAsync();
+
+            try
+            {
+                await _habitService.InitializeAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка инициализации БД: {ex.Message}");
+            }
+        }
+
+        protected override void OnSleep()
+        {
+            base.OnSleep();
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
         }
     }
 }
