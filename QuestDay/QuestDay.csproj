@@ -89,13 +89,9 @@
 	  <MauiXaml Update="Views\SettingPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-
-	<ItemGroup>
-	  <None Update="userPage.xaml">
+	  <MauiXaml Update="Views\userPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
-	  </None>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

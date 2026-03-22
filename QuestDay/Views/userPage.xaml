@@ -1,85 +1,309 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="QuestDay.Views.userPage">
+             x:Class="QuestDay.Views.userPage"
+             BackgroundColor="#F8F1EA">
 
-    <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, *, Auto">
-        <Image Source="habit_home_base.png"
-               Aspect="AspectFill"
-               Grid.Row="0" Grid.Column="0" 
-               Grid.RowSpan="2"                
-               Grid.ColumnSpan="3" />
+    <ContentPage.Resources>
+        <Style x:Key="CategoryLabelStyle" TargetType="Label">
+            <Setter Property="FontFamily" Value="Montserrat-SemiBold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="TextColor" Value="#6F5B52" />
+        </Style>
 
-        <!-- Левая колонка: кнопки -->
-        <VerticalStackLayout Grid.Row="1" Grid.Column="0"
-                             VerticalOptions="Center"
-                             HorizontalOptions="Center"
-                             Spacing="20"
-                             Margin="10,0,10,0">
+        <Style x:Key="WardrobeActionButtonStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#FFF9F5" />
+            <Setter Property="TextColor" Value="#4B372F" />
+            <Setter Property="FontFamily" Value="OpenSansSemibold" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Padding" Value="16,10" />
+        </Style>
+    </ContentPage.Resources>
 
-            <!-- Кнопка шляп -->
-            <Frame WidthRequest="130" HeightRequest="130"
-                   CornerRadius="10"
-                   Padding="5"
-                   HasShadow="False"
-                   BackgroundColor="Transparent"
-                   HorizontalOptions="Center">
+    <Grid RowDefinitions="*,Auto"
+          Padding="16,18,16,105"
+          RowSpacing="18">
+
+        <Grid Grid.Row="0"
+              ColumnDefinitions="88,*"
+              ColumnSpacing="14">
+
+            <VerticalStackLayout Grid.Column="0"
+                                 Spacing="14"
+                                 VerticalOptions="Center">
+
+                <Border x:Name="HatCategoryBorder"
+                        BackgroundColor="#FFF6EE"
+                        Stroke="#F0D8C7"
+                        StrokeThickness="1.5"
+                        Padding="10"
+                        HeightRequest="86"
+                        WidthRequest="86">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="28" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnHatButtonClicked" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="6"
+                                         VerticalOptions="Center"
+                                         HorizontalOptions="Center">
+                        <Image Source="headdress.png"
+                               HeightRequest="34"
+                               WidthRequest="34"
+                               Aspect="AspectFit" />
+                        <Label Text="Шляпа"
+                               Style="{StaticResource CategoryLabelStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border x:Name="TopCategoryBorder"
+                        BackgroundColor="#FFF6EE"
+                        Stroke="#F0D8C7"
+                        StrokeThickness="1.5"
+                        Padding="10"
+                        HeightRequest="86"
+                        WidthRequest="86">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="28" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTopButtonClicked" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="6"
+                                         VerticalOptions="Center"
+                                         HorizontalOptions="Center">
+                        <Image Source="shirt.png"
+                               HeightRequest="34"
+                               WidthRequest="34"
+                               Aspect="AspectFit" />
+                        <Label Text="Майка"
+                               Style="{StaticResource CategoryLabelStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border x:Name="PaletteCategoryBorder"
+                        BackgroundColor="#FFF6EE"
+                        Stroke="#F0D8C7"
+                        StrokeThickness="1.5"
+                        Padding="10"
+                        HeightRequest="86"
+                        WidthRequest="86">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="28" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPaletteButtonClicked" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="6"
+                                         VerticalOptions="Center"
+                                         HorizontalOptions="Center">
+                        <Image Source="palette.png"
+                               HeightRequest="34"
+                               WidthRequest="34"
+                               Aspect="AspectFit" />
+                        <Label Text="Палитра"
+                               Style="{StaticResource CategoryLabelStyle}" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <Border Grid.Column="1"
+                    BackgroundColor="#F4E6DB"
+                    StrokeThickness="0"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="38" />
+                </Border.StrokeShape>
+
                 <Grid>
-                    <ImageButton Source="headdress.png"
-                                 Aspect="AspectFill"
-                                 BackgroundColor="Transparent"
-                                 Clicked="OnHatButtonClicked"
-                                 VerticalOptions="Center"
-                                 HorizontalOptions="Center" />
+                    <Image Source="habit_home_base.png"
+                           Aspect="AspectFill"
+                           Opacity="0.34" />
+
+                    <Border HeightRequest="122"
+                            WidthRequest="122"
+                            BackgroundColor="#FFF7D8"
+                            StrokeThickness="0"
+                            HorizontalOptions="End"
+                            VerticalOptions="Start"
+                            Margin="0,18,18,0"
+                            Rotation="14"
+                            Opacity="0.7">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="38" />
+                        </Border.StrokeShape>
+                    </Border>
+
+                    <Grid Padding="22,20,22,18"
+                          RowDefinitions="Auto,*">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Гардероб"
+                                   FontFamily="OpenSansSemibold"
+                                   FontSize="28"
+                                   TextColor="#3E2F2C" />
+                            <Label Text="Собери образ кролика под настроение дня"
+                                   FontFamily="OpenSansRegular"
+                                   FontSize="14"
+                                   TextColor="#8B7368" />
+                        </VerticalStackLayout>
+
+                        <Grid Grid.Row="1"
+                              VerticalOptions="Center"
+                              HorizontalOptions="Center">
+                            <Border BackgroundColor="#FFF9F5"
+                                    StrokeThickness="0"
+                                    HeightRequest="310"
+                                    WidthRequest="310"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    Rotation="-6">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="56" />
+                                </Border.StrokeShape>
+                            </Border>
+
+                            <Image Source="{Binding ActiveRabbitImage}"
+                                   Aspect="AspectFit"
+                                   HeightRequest="310"
+                                   WidthRequest="310"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+
+                            <Image Source="{Binding ActiveTopImage}"
+                                   Aspect="AspectFit"
+                                   HeightRequest="310"
+                                   WidthRequest="310"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   IsVisible="{Binding HasTopImage}" />
+
+                            <Image Source="{Binding ActiveHatImage}"
+                                   Aspect="AspectFit"
+                                   HeightRequest="210"
+                                   WidthRequest="210"
+                                   Margin="0,-76,0,0"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   IsVisible="{Binding HasHatImage}" />
+                        </Grid>
+                    </Grid>
                 </Grid>
-            </Frame>
+            </Border>
+        </Grid>
 
-            <!-- Кнопка одежды -->
-            <Frame WidthRequest="150" HeightRequest="150"
-                   CornerRadius="10"
-                   Padding="5"
-                   HasShadow="False"
-                   BackgroundColor="Transparent"
-                   HorizontalOptions="Center">
-                <Grid>
-                    <ImageButton Source="shirt.png"
-                                 Aspect="AspectFill"
-                                 BackgroundColor="Transparent"
-                                 Clicked="OnTopButtonClicked"
-                                 VerticalOptions="Center"
-                                 HorizontalOptions="Center" />
+        <Border Grid.Row="1"
+                BackgroundColor="#FFFCFA"
+                Stroke="#F0D8C7"
+                StrokeThickness="1"
+                Padding="18,18,18,14">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="34" />
+            </Border.StrokeShape>
+
+            <Grid RowDefinitions="Auto,Auto,*"
+                  RowSpacing="12">
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="12">
+                    <Border BackgroundColor="#FFF1E6"
+                            StrokeThickness="0"
+                            HeightRequest="44"
+                            WidthRequest="44"
+                            Padding="10"
+                            VerticalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <Image Source="profile.png"
+                               Aspect="AspectFit" />
+                    </Border>
+
+                    <VerticalStackLayout Grid.Column="1"
+                                         Spacing="2">
+                        <Label Text="{Binding ActiveCategoryTitle}"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="24"
+                               TextColor="#342824" />
+                        <Label Text="Нажми на карточку, чтобы примерить или снять предмет."
+                               FontFamily="OpenSansRegular"
+                               FontSize="13"
+                               TextColor="#8B7368" />
+                    </VerticalStackLayout>
                 </Grid>
-            </Frame>
 
-            <!-- Кнопка палитры -->
-            <Frame WidthRequest="130" HeightRequest="130"
-                   CornerRadius="10"
-                   Padding="5"
-                   HasShadow="False"
-                   BackgroundColor="Transparent"
-                   HorizontalOptions="Center">
-                <Grid>
-                    <ImageButton Source="palette.png"
-                                 Aspect="AspectFill"
-                                 BackgroundColor="Transparent"
-                                 Clicked="OnBottomButtonClicked"
-                                 VerticalOptions="Center"
-                                 HorizontalOptions="Center" />
-                </Grid>
-            </Frame>
-        </VerticalStackLayout>
+                <CollectionView Grid.Row="2"
+                                ItemsSource="{Binding ActiveOptions}"
+                                SelectionMode="None"
+                                HeightRequest="232">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal"
+                                           ItemSpacing="14" />
+                    </CollectionView.ItemsLayout>
 
-        <!-- Кролик -->
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border WidthRequest="170"
+                                    Padding="14"
+                                    Stroke="#F1DED0"
+                                    StrokeThickness="1"
+                                    BackgroundColor="#F8F1EB">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="24" />
+                                </Border.StrokeShape>
 
-        <Image Source="rabbit_warm.png"
-               Grid.Row="1" Grid.Column="1"
-               VerticalOptions="Center"
-               HorizontalOptions="Center"
-               Aspect="AspectFit"
-               WidthRequest="400"
-               HeightRequest="400"
-               Margin="20,0,0,0" />
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding IsSelected}"
+                                                 Value="True">
+                                        <Setter Property="BackgroundColor"
+                                                Value="#FFF4DD" />
+                                        <Setter Property="Stroke"
+                                                Value="#FFCD72" />
+                                        <Setter Property="StrokeThickness"
+                                                Value="2" />
+                                    </DataTrigger>
+                                </Border.Triggers>
 
+                                <Grid RowDefinitions="Auto,*,Auto,Auto"
+                                      RowSpacing="10">
+                                    <Label Text="{Binding Title}"
+                                           FontFamily="Montserrat-SemiBold"
+                                           FontSize="15"
+                                           TextColor="#4B372F" />
+
+                                    <Border Grid.Row="1"
+                                            BackgroundColor="#FFFCFA"
+                                            StrokeThickness="0"
+                                            Padding="10"
+                                            HeightRequest="100">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="18" />
+                                        </Border.StrokeShape>
+                                        <Image Source="{Binding PreviewImage}"
+                                               Aspect="AspectFit"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                                    </Border>
+
+                                    <Label Grid.Row="2"
+                                           Text="{Binding Description}"
+                                           FontFamily="OpenSansRegular"
+                                           FontSize="12"
+                                           TextColor="#8B7368"
+                                           LineBreakMode="WordWrap" />
+
+                                    <Button Grid.Row="3"
+                                            Style="{StaticResource WardrobeActionButtonStyle}"
+                                            Text="{Binding ActionText}"
+                                            Clicked="OnOptionActionClicked" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Border>
     </Grid>
-
 </ContentPage>
