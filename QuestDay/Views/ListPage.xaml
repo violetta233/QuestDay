@@ -26,6 +26,10 @@
             <Setter Property="TextColor" Value="Gray" />
             <Setter Property="TextDecorations" Value="Strikethrough" />
         </Style>
+
+        <Style TargetType="SwipeItem">
+            <Setter Property="BackgroundColor" Value="#FF5252" />
+        </Style>
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *, Auto">
@@ -33,7 +37,8 @@
             <Label Text="Список привычек"
                    HorizontalOptions="Start"
                    FontFamily="Montserrat-SemiBold"
-                   FontSize="22" />
+                   FontSize="22"
+                   TextColor="Black" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" 
                                IsVisible="{Binding IsBusy}" 
                                Color="#A7DFAF"
@@ -56,15 +61,22 @@
                                                    CommandParameter="{Binding .}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                                <Frame Margin="5" Padding="15" CornerRadius="10" HasShadow="True"
-                                       BackgroundColor="{Binding IsActive, Converter={StaticResource HabitIsActiveToBackgroundColorConverter}}">
-                                    <VerticalStackLayout Spacing="5">
+
+                                <Border Margin="5" 
+                                        Padding="15" 
+                                        StrokeThickness="1"
+                                        Stroke="#E0E0E0"
+                                        BackgroundColor="White"
+                                        StrokeShape="RoundRectangle 10">
+                                    <VerticalStackLayout Spacing="8">
+
                                         <Grid ColumnDefinitions="*, Auto">
                                             <Label Grid.Column="0"
                                                    Text="{Binding Name}"
                                                    FontSize="18"
                                                    FontAttributes="Bold"
                                                    VerticalOptions="Center"
+                                                   TextColor="Black"
                                                    Style="{Binding IsActive, Converter={StaticResource HabitIsActiveToTextStyleConverter}}" />
                                             <CheckBox Grid.Column="1"
                                                       IsChecked="{Binding IsCompletedForToday}"
@@ -78,31 +90,54 @@
                                                 </CheckBox.GestureRecognizers>
                                             </CheckBox>
                                         </Grid>
+
                                         <Label Text="{Binding Description}"
                                                FontSize="14"
                                                TextColor="#666666"
                                                IsVisible="{Binding Description, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
+
                                         <Label Text="{Binding SelectedDays, Converter={toolkit:ListToStringConverter}, ConverterParameter=', '}"
                                                FontSize="12"
                                                TextColor="#888888"
                                                IsVisible="{Binding SelectedDays, Converter={toolkit:IsListNotNullOrEmptyConverter}}" />
+
                                         <Label Text="{Binding StartDate, StringFormat='Начало: {0:dd.MM.yyyy}'}"
                                                FontSize="12"
                                                TextColor="#888888" />
                                     </VerticalStackLayout>
-                                </Frame>
+                                </Border>
                             </SwipeView>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <Label Text="Нет привычек. Добавьте свою первую привычку!"
-                       IsVisible="{Binding Habits.Count, Converter={StaticResource InverseBoolConverter}}"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center"
-                       FontSize="16"
-                       TextColor="Gray"
-                       Margin="20" />
+                <StackLayout IsVisible="{Binding Habits.Count, Converter={StaticResource InverseBoolConverter}}"
+                             Spacing="20"
+                             Padding="20">
+                    <Label Text="📝"
+                           FontSize="60"
+                           HorizontalOptions="Center"
+                           TextColor="#CCCCCC" />
+                    <Label Text="Нет привычек"
+                           HorizontalOptions="Center"
+                           FontFamily="Montserrat-SemiBold"
+                           FontSize="18"
+                           TextColor="#666666" />
+                    <Label Text="Добавьте свою первую привычку!"
+                           HorizontalOptions="Center"
+                           FontFamily="Montserrat-SemiBold"
+                           FontSize="14"
+                           TextColor="#999999" />
+                    <Button Text="+ Добавить привычку"
+                            Command="{Binding NavigateToAddHabitCommand}"
+                            BackgroundColor="#FFCD72"
+                            TextColor="White"
+                            FontFamily="Montserrat-SemiBold"
+                            CornerRadius="10"
+                            WidthRequest="200"
+                            HorizontalOptions="Center"
+                            Margin="0,10,0,0" />
+                </StackLayout>
             </VerticalStackLayout>
         </ScrollView>
 

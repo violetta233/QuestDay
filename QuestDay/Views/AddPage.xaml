@@ -13,16 +13,26 @@
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
         <converters:EnabledToColorConverter x:Key="EnabledToColorConverter" />
         <converters:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter" />
+
+        <Style TargetType="Entry">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+        </Style>
+
+        <Style TargetType="Editor">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+        </Style>
     </ContentPage.Resources>
 
     <Grid>
         <ScrollView>
             <VerticalStackLayout Spacing="20" Padding="20,20,20,100">
+
                 <HorizontalStackLayout Spacing="5">
                     <Label Text="Название привычки"
                            FontSize="20"
                            FontAttributes="Bold"
-                           FontFamily="Montserrat-SemiBold" />
+                           FontFamily="Montserrat-SemiBold"
+                           TextColor="Black" />
                     <Label Text="*"
                            FontSize="20"
                            FontAttributes="Bold"
@@ -30,11 +40,27 @@
                            FontFamily="Montserrat-SemiBold" />
                 </HorizontalStackLayout>
 
-                <Entry Placeholder="Введите название привычки"
-                       FontFamily="Montserrat-SemiBold"
-                       Text="{Binding Name}"
-                       ClearButtonVisibility="WhileEditing" />
-                
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Entry Grid.Row="0"
+                           Placeholder="Введите название привычки"
+                           FontFamily="Montserrat-SemiBold"
+                           Text="{Binding Name}"
+                           ClearButtonVisibility="WhileEditing"
+                           TextColor="Black"
+                           PlaceholderColor="#999999"
+                           FontSize="16" />
+
+                    <BoxView Grid.Row="1"
+                             HeightRequest="1"
+                             BackgroundColor="#CCCCCC"
+                             Margin="0,5,0,0" />
+                </Grid>
+
                 <Label Text="{Binding NameError}"
                        IsVisible="{Binding NameError, Converter={StaticResource StringNotNullOrEmptyConverter}}"
                        TextColor="Red"
@@ -45,19 +71,39 @@
                 <Label Text="Описание"
                        FontSize="18"
                        FontAttributes="Bold"
-                       FontFamily="Montserrat-SemiBold" />
-                <Editor Placeholder="Добавьте краткое описание (необязательно)"
-                        FontFamily="Montserrat-SemiBold"
-                        Text="{Binding Description}"
-                        AutoSize="TextChanges"
-                        MinimumHeightRequest="80" />
+                       FontFamily="Montserrat-SemiBold"
+                       TextColor="Black"
+                       Margin="0,10,0,0" />
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Editor Grid.Row="0"
+                            Placeholder="Добавьте краткое описание (необязательно)"
+                            FontFamily="Montserrat-SemiBold"
+                            Text="{Binding Description}"
+                            AutoSize="TextChanges"
+                            MinimumHeightRequest="80"
+                            TextColor="Black"
+                            PlaceholderColor="#999999"
+                            FontSize="14" />
+
+                    <BoxView Grid.Row="1"
+                             HeightRequest="1"
+                             BackgroundColor="#CCCCCC"
+                             Margin="0,5,0,0" />
+                </Grid>
 
                 <HorizontalStackLayout Spacing="5" Margin="0,10,0,0">
                     <Label Text="Дни недели"
                            FontFamily="Montserrat-SemiBold"
                            FontSize="18"
                            FontAttributes="Bold"
-                           HorizontalOptions="Start" />
+                           HorizontalOptions="Start"
+                           TextColor="Black" />
                     <Label Text="*"
                            FontSize="18"
                            FontAttributes="Bold"
@@ -68,11 +114,15 @@
                 <CollectionView ItemsSource="{Binding DaysOfWeekSelection.DayOptions}"
                                 HorizontalOptions="FillAndExpand">
                     <CollectionView.ItemsLayout>
-                        <GridItemsLayout Orientation="Horizontal" HorizontalItemSpacing="9" VerticalItemSpacing="5" />
+                        <GridItemsLayout Orientation="Horizontal" 
+                                         HorizontalItemSpacing="9" 
+                                         VerticalItemSpacing="5" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:DayOption">
-                            <Frame HasShadow="True" CornerRadius="25" Padding="14"
+                            <Frame HasShadow="True" 
+                                   CornerRadius="25" 
+                                   Padding="14,10"
                                    BackgroundColor="{Binding IsSelected, Converter={StaticResource DaySelectedToColorConverter}}">
                                 <Frame.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding ToggleSelectedCommand}" />
@@ -80,6 +130,8 @@
                                 <Label Text="{Binding Name}"
                                        HorizontalOptions="Center"
                                        VerticalOptions="Center"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
                                        TextColor="{Binding IsSelected, Converter={StaticResource DaySelectedToTextColorConverter}}" />
                             </Frame>
                         </DataTemplate>
@@ -102,22 +154,25 @@
                         FontFamily="Montserrat-SemiBold"
                         Command="{Binding SaveHabitCommand}"
                         IsEnabled="{Binding SaveHabitCommand.CanExecute}"
-                        BackgroundColor="{Binding SaveHabitCommand.CanExecute, 
-                            Converter={StaticResource EnabledToColorConverter}}"
-                        TextColor="White"
                         CornerRadius="10"
-                        Margin="0,20,0,0">
+                        Margin="0,20,0,0"
+                        HeightRequest="50"
+                        FontSize="16">
                     <Button.Triggers>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding SaveHabitCommand.CanExecute}"
-                                     Value="False">
-                            <Setter Property="Command" Value="{Binding ShowValidationTooltipCommand}"/>
-                            <Setter Property="Opacity" Value="0.6"/>
-                        </DataTrigger>
+
                         <DataTrigger TargetType="Button"
                                      Binding="{Binding SaveHabitCommand.CanExecute}"
                                      Value="True">
-                            <Setter Property="Opacity" Value="1"/>
+                            <Setter Property="BackgroundColor" Value="#4CAF50"/>
+                            <Setter Property="TextColor" Value="White"/>
+                        </DataTrigger>
+
+                        <DataTrigger TargetType="Button"
+                                     Binding="{Binding SaveHabitCommand.CanExecute}"
+                                     Value="False">
+                            <Setter Property="BackgroundColor" Value="#E0E0E0"/>
+                            <Setter Property="TextColor" Value="#999999"/>
+                            <Setter Property="Command" Value="{Binding ShowValidationTooltipCommand}"/>
                         </DataTrigger>
                     </Button.Triggers>
                 </Button>
@@ -137,7 +192,7 @@
                 Margin="10,0,10,25"
                 HeightRequest="65"
                 HorizontalOptions="Fill"
-                BackgroundColor="White"
+                BackgroundColor="#FFFBF6"
                 Stroke="#FFCD72" 
                 StrokeThickness="2">
                 <Border.StrokeShape>
@@ -149,25 +204,21 @@
                                  CommandParameter="MainPage"
                                  HeightRequest="30" 
                                  WidthRequest="30"/>
-
                     <ImageButton Source="file.png" 
                                  Clicked="OnNavClicked" 
                                  CommandParameter="ListPage"
                                  HeightRequest="30" 
                                  WidthRequest="30"/>
-
                     <ImageButton Source="plus.png" 
                                  Clicked="OnNavClicked" 
                                  CommandParameter="AddPage"
                                  HeightRequest="30" 
                                  WidthRequest="30"/>
-
                     <ImageButton Source="setting.png" 
                                  Clicked="OnNavClicked" 
                                  CommandParameter="SettingPage"
                                  HeightRequest="30" 
                                  WidthRequest="30"/>
-
                     <ImageButton Source="profile.png" 
                                  Clicked="OnNavClicked" 
                                  CommandParameter="userPage"

@@ -6,18 +6,16 @@
 
     <Grid RowDefinitions="*,Auto">
 
-        <!-- Основной контент -->
         <ScrollView>
             <VerticalStackLayout Spacing="16" Padding="20,10,20,140">
 
-                <!-- Заголовок -->
                 <Label Text="Настройки"
                        HorizontalOptions="Start"
                        Margin="10,20,0,10"
                        FontFamily="Montserrat-SemiBold"
+                       TextColor="Black"
                        FontSize="22" />
 
-                <!-- 1. Мое имя -->
                 <Frame BackgroundColor="White"
                        CornerRadius="12"
                        Padding="16,12"
@@ -43,14 +41,13 @@
                     </Grid>
                 </Frame>
 
-                <!-- 2. Ежедневное напоминание -->
                 <Frame BackgroundColor="White"
                        CornerRadius="12"
                        Padding="16"
                        HasShadow="False"
                        BorderColor="#E8E0D8">
                     <VerticalStackLayout Spacing="12">
-                        <!-- Заголовок + время -->
+
                         <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
                             <Label Grid.Column="0"
                                    Text="Ежедневное напоминание"
@@ -74,7 +71,6 @@
                                     Toggled="OnReminderSwitchToggled" />
                         </Grid>
 
-                        <!-- Текст напоминания -->
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <Label Text="Текст напоминания:"
                                    FontSize="14"
@@ -93,7 +89,6 @@
                     </VerticalStackLayout>
                 </Frame>
 
-                <!-- 3. Звук -->
                 <Frame BackgroundColor="White"
                        CornerRadius="12"
                        Padding="16,12"
@@ -111,7 +106,6 @@
                     </Grid>
                 </Frame>
 
-                <!-- 4. Цитаты -->
                 <Frame BackgroundColor="White"
                        CornerRadius="12"
                        Padding="16,12"
