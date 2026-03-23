@@ -7,7 +7,8 @@
     xmlns:models="clr-namespace:QuestDay.Models"       
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:converters="clr-namespace:QuestDay.Converters"
-    BackgroundColor="#FFFBF6">
+    BackgroundColor="#FFFBF6"
+    ControlTemplate="{x:Null}">
 
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
@@ -27,7 +28,7 @@
         </Style>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *, Auto">
         <HorizontalStackLayout Grid.Row="0" Margin="30, 20, 0, 0" Spacing="10">
             <Label Text="Список привычек"
                    HorizontalOptions="Start"
@@ -104,5 +105,94 @@
                        Margin="20" />
             </VerticalStackLayout>
         </ScrollView>
+        <Grid Grid.Row="2" IgnoreSafeArea="True" VerticalOptions="End">
+            <Border 
+                Margin="10,0,10,25"
+                HeightRequest="65"
+                HorizontalOptions="Fill"
+                BackgroundColor="White"
+                Stroke="#FFCD72" 
+                StrokeThickness="2">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
+                <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="home.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="MainPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="#FFF3DC"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="file.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="ListPage"
+                                     HeightRequest="30"
+                                     Opacity="1" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="plus.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="AddPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="setting.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="SettingPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="profile.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="userPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+                </FlexLayout>
+            </Border>
+        </Grid>
     </Grid>
 </ContentPage>

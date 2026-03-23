@@ -4,7 +4,8 @@
              x:Class="QuestDay.Views.AddPage"
              xmlns:viewmodels="clr-namespace:QuestDay.ViewModels"
              xmlns:converters="clr-namespace:QuestDay.Converters"
-             BackgroundColor="#FFFBF6">
+             BackgroundColor="#FFFBF6"
+             ControlTemplate="{x:Null}">
 
     <ContentPage.Resources>
         <converters:DaySelectedToColorConverter x:Key="DaySelectedToColorConverter" />
@@ -130,5 +131,95 @@
 
             </VerticalStackLayout>
         </ScrollView>
+
+        <Grid IgnoreSafeArea="True" VerticalOptions="End">
+            <Border 
+                Margin="10,0,10,25"
+                HeightRequest="65"
+                HorizontalOptions="Fill"
+                BackgroundColor="White"
+                Stroke="#FFCD72" 
+                StrokeThickness="2">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
+                <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="home.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="MainPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="file.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="ListPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="#FFF3DC"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="plus.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="AddPage"
+                                     HeightRequest="30"
+                                     Opacity="1" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="setting.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="SettingPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="profile.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="userPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+                </FlexLayout>
+            </Border>
+        </Grid>
     </Grid>
 </ContentPage>
