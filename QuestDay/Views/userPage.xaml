@@ -416,19 +416,19 @@
                                       ColumnDefinitions="*,*"
                                       ColumnSpacing="12"
                                       RowSpacing="12">
-                                    <Border BackgroundColor="{Binding OverallsCardBackgroundColor}"
+                                    <Border BackgroundColor="#E8CCB8"
                                             Stroke="{Binding OverallsCardBorderColor}"
                                             StrokeThickness="{Binding OverallsCardBorderWidth}"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
-                                            <SolidColorBrush Color="{Binding OverallsCardBackgroundColor}" />
+                                            <SolidColorBrush Color="#E8CCB8" />
                                         </Border.Background>
                                         <Grid RowDefinitions="*,Auto"
                                               RowSpacing="10"
                                               HeightRequest="182">
-                                            <Border BackgroundColor="{Binding OverallsImageBackgroundColor}"
-                                                    Stroke="{Binding OverallsImageBorderColor}"
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#CFCFCF"
                                                     StrokeThickness="1"
                                                     StrokeShape="RoundRectangle 18">
                                                 <Image Source="overalls_skin1_blue.png"
@@ -441,29 +441,31 @@
                                             <Button x:Name="OverallsActionButton"
                                                     Grid.Row="1"
                                                     Text="Надеть"
-                                                    Style="{StaticResource PanelButtonStyle}"
                                                     FontSize="11"
                                                     HeightRequest="42"
                                                     Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
                                                     TextTransform="None"
                                                     Clicked="OnOverallsClicked" />
                                         </Grid>
                                     </Border>
 
                                     <Border Grid.Column="1"
-                                            BackgroundColor="{Binding TShirtCardBackgroundColor}"
+                                            BackgroundColor="#E8CCB8"
                                             Stroke="{Binding TShirtCardBorderColor}"
                                             StrokeThickness="{Binding TShirtCardBorderWidth}"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
-                                            <SolidColorBrush Color="{Binding TShirtCardBackgroundColor}" />
+                                            <SolidColorBrush Color="#E8CCB8" />
                                         </Border.Background>
                                         <Grid RowDefinitions="*,Auto"
                                               RowSpacing="10"
                                               HeightRequest="182">
-                                            <Border BackgroundColor="{Binding TShirtImageBackgroundColor}"
-                                                    Stroke="{Binding TShirtImageBorderColor}"
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#CFCFCF"
                                                     StrokeThickness="1"
                                                     StrokeShape="RoundRectangle 18">
                                                 <Image Source="t_shirt_mechmat.png"
@@ -476,32 +478,34 @@
                                             <Button x:Name="TShirtActionButton"
                                                     Grid.Row="1"
                                                     Text="Надеть"
-                                                    Style="{StaticResource PanelButtonStyle}"
                                                     FontSize="11"
                                                     HeightRequest="42"
                                                     Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
                                                     TextTransform="None"
                                                     Clicked="OnTShirtClicked" />
                                         </Grid>
                                     </Border>
 
                                     <Border Grid.Row="1"
-                                            BackgroundColor="{Binding BeltCardBackgroundColor}"
+                                            BackgroundColor="#E8CCB8"
                                             Stroke="{Binding BeltCardBorderColor}"
                                             StrokeThickness="{Binding BeltCardBorderWidth}"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
-                                            <SolidColorBrush Color="{Binding BeltCardBackgroundColor}" />
+                                            <SolidColorBrush Color="#E8CCB8" />
                                         </Border.Background>
                                         <Grid RowDefinitions="*,Auto"
                                               RowSpacing="10"
                                               HeightRequest="182">
-                                            <Border BackgroundColor="{Binding BeltImageBackgroundColor}"
-                                                    Stroke="{Binding BeltImageBorderColor}"
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#CFCFCF"
                                                     StrokeThickness="1"
                                                     StrokeShape="RoundRectangle 18">
-                                                <Image Source="belt_1_brown.png"
+                                                <Image Source="overalls_skin1_blue.png"
                                                        Aspect="AspectFit"
                                                        HorizontalOptions="Center"
                                                        VerticalOptions="Center"
@@ -511,10 +515,12 @@
                                             <Button x:Name="BeltActionButton"
                                                     Grid.Row="1"
                                                     Text="Надеть"
-                                                    Style="{StaticResource PanelButtonStyle}"
                                                     FontSize="11"
                                                     HeightRequest="42"
                                                     Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
                                                     TextTransform="None"
                                                     Clicked="OnBeltClicked" />
                                         </Grid>
@@ -525,19 +531,19 @@
                                       ColumnDefinitions="*,*"
                                       ColumnSpacing="12"
                                       RowSpacing="12">
-                                    <Border BackgroundColor="{Binding PaletteCardBackgroundColor}"
+                                    <Border BackgroundColor="#E8CCB8"
                                             Stroke="{Binding PaletteCardBorderColor}"
                                             StrokeThickness="{Binding PaletteCardBorderWidth}"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
-                                            <SolidColorBrush Color="{Binding PaletteCardBackgroundColor}" />
+                                            <SolidColorBrush Color="#E8CCB8" />
                                         </Border.Background>
                                         <Grid RowDefinitions="*,Auto"
                                               RowSpacing="10"
                                               HeightRequest="182">
-                                            <Border BackgroundColor="{Binding PaletteImageBackgroundColor}"
-                                                    Stroke="{Binding PaletteImageBorderColor}"
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#CFCFCF"
                                                     StrokeThickness="1"
                                                     StrokeShape="RoundRectangle 18">
                                                 <Image Source="rabbit_1_warm_bg_skintone.png"
@@ -550,10 +556,12 @@
                                             <Button x:Name="PaletteActionButton"
                                                     Grid.Row="1"
                                                     Text="Надеть"
-                                                    Style="{StaticResource PanelButtonStyle}"
                                                     FontSize="11"
                                                     HeightRequest="42"
                                                     Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
                                                     TextTransform="None"
                                                     Clicked="OnPaletteVariantClicked" />
                                         </Grid>

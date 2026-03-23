@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using QuestDay.Services;
 
 namespace QuestDay.Views;
 
@@ -16,6 +17,7 @@ public partial class userPage : ContentPage
 
     private readonly Dictionary<WardrobeCategory, List<WardrobeItem>> _itemsByCategory;
     private readonly Dictionary<WardrobeCategory, WardrobeItem?> _equippedItems = [];
+    private readonly AvatarAppearanceService _avatarAppearance;
 
     private WardrobeCategory _activeCategory = WardrobeCategory.Hat;
     private string? _activeRabbitVariantImage;
@@ -123,8 +125,10 @@ public partial class userPage : ContentPage
         InitializeComponent();
         BindingContext = this;
 
+        _avatarAppearance = App.AvatarAppearance;
+        _avatarAppearance.PropertyChanged += OnAvatarAppearanceChanged;
         _itemsByCategory = CreateWardrobeItems();
-        ResetWardrobeState();
+        InitializeWardrobeState();
     }
 
     protected override void OnSizeAllocated(double width, double height)
@@ -148,7 +152,9 @@ public partial class userPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        ResetWardrobeState();
+        SyncAvatarStateFromService();
+        RefreshSlots();
+        NotifyItemStateChanged();
     }
 
     private Dictionary<WardrobeCategory, List<WardrobeItem>> CreateWardrobeItems()
@@ -335,15 +341,29 @@ public partial class userPage : ContentPage
         UpdateCategoryButtons();
     }
 
-    private void ResetWardrobeState()
+    private void OnAvatarAppearanceChanged(object? sender, PropertyChangedEventArgs e)
     {
-        ActiveRabbitVariantImage = null;
-        ActiveTopImage = null;
-        ActiveHatImage = null;
+        if (e.PropertyName is not nameof(AvatarAppearanceService.TopImage)
+            and not nameof(AvatarAppearanceService.HatImage)
+            and not nameof(AvatarAppearanceService.RabbitVariantImage)
+            and not nameof(AvatarAppearanceService.HasTopImage)
+            and not nameof(AvatarAppearanceService.HasHatImage)
+            and not nameof(AvatarAppearanceService.IsAlternateRabbitVisible))
+        {
+            return;
+        }
 
-        _equippedItems[WardrobeCategory.Hat] = null;
-        _equippedItems[WardrobeCategory.Top] = null;
-        _equippedItems[WardrobeCategory.Palette] = null;
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            SyncAvatarStateFromService();
+            RefreshSlots();
+            NotifyItemStateChanged();
+        });
+    }
+
+    private void InitializeWardrobeState()
+    {
+        SyncAvatarStateFromService();
 
         _activeCategory = WardrobeCategory.Hat;
         ActiveCategoryTitle = GetCategoryTitle(_activeCategory);
@@ -355,6 +375,27 @@ public partial class userPage : ContentPage
         RefreshSlots();
         UpdateCategoryButtons();
         NotifyItemStateChanged();
+    }
+
+    private void SyncAvatarStateFromService()
+    {
+        ActiveHatImage = _avatarAppearance.HatImage;
+        ActiveTopImage = _avatarAppearance.TopImage;
+        ActiveRabbitVariantImage = _avatarAppearance.RabbitVariantImage;
+
+        _equippedItems[WardrobeCategory.Hat] = FindEquippedItem(WardrobeCategory.Hat, _avatarAppearance.HatImage);
+        _equippedItems[WardrobeCategory.Top] = FindEquippedItem(WardrobeCategory.Top, _avatarAppearance.TopImage);
+        _equippedItems[WardrobeCategory.Palette] = FindEquippedItem(WardrobeCategory.Palette, _avatarAppearance.RabbitVariantImage);
+    }
+
+    private WardrobeItem? FindEquippedItem(WardrobeCategory category, string? appliedImage)
+    {
+        if (string.IsNullOrWhiteSpace(appliedImage))
+        {
+            return null;
+        }
+
+        return _itemsByCategory[category].FirstOrDefault(item => item.AppliedImage == appliedImage);
     }
 
     private void RefreshSlots()
@@ -402,12 +443,15 @@ public partial class userPage : ContentPage
         {
             case WardrobeCategory.Hat:
                 ActiveHatImage = item.AppliedImage;
+                _avatarAppearance.HatImage = item.AppliedImage;
                 break;
             case WardrobeCategory.Top:
                 ActiveTopImage = item.AppliedImage;
+                _avatarAppearance.TopImage = item.AppliedImage;
                 break;
             case WardrobeCategory.Palette:
                 ActiveRabbitVariantImage = item.AppliedImage;
+                _avatarAppearance.RabbitVariantImage = item.AppliedImage;
                 break;
         }
 
@@ -422,12 +466,15 @@ public partial class userPage : ContentPage
         {
             case WardrobeCategory.Hat:
                 ActiveHatImage = null;
+                _avatarAppearance.HatImage = null;
                 break;
             case WardrobeCategory.Top:
                 ActiveTopImage = null;
+                _avatarAppearance.TopImage = null;
                 break;
             case WardrobeCategory.Palette:
                 ActiveRabbitVariantImage = null;
+                _avatarAppearance.RabbitVariantImage = null;
                 break;
         }
 
@@ -519,14 +566,14 @@ public partial class userPage : ContentPage
     private Color GetCardBackgroundColor(string previewImage, WardrobeCategory category)
     {
         return IsItemEquipped(previewImage, category)
-            ? Color.FromArgb("#E1B79D")
+            ? Color.FromArgb("#E3C1AB")
             : Color.FromArgb("#E8CCB8");
     }
 
     private Color GetCardBorderColor(string previewImage, WardrobeCategory category)
     {
         return IsItemEquipped(previewImage, category)
-            ? Color.FromArgb("#AD7F66")
+            ? Color.FromArgb("#B6866C")
             : Color.FromArgb("#BF9277");
     }
 
@@ -538,35 +585,35 @@ public partial class userPage : ContentPage
     private Color GetImageBackgroundColor(string previewImage, WardrobeCategory category)
     {
         return IsItemEquipped(previewImage, category)
-            ? Color.FromArgb("#E8D2C1")
-            : Color.FromArgb("#EADBCF");
+            ? Color.FromArgb("#D9D9D9")
+            : Color.FromArgb("#E6E6E6");
     }
 
     private Color GetImageBorderColor(string previewImage, WardrobeCategory category)
     {
         return IsItemEquipped(previewImage, category)
-            ? Color.FromArgb("#C69C82")
-            : Color.FromArgb("#D2B39F");
+            ? Color.FromArgb("#BFA797")
+            : Color.FromArgb("#C9B4A5");
     }
 
     private Color GetButtonBackgroundColor(string previewImage, WardrobeCategory category)
     {
         return IsItemEquipped(previewImage, category)
-            ? Color.FromArgb("#CFA488")
-            : Color.FromArgb("#D8B39B");
+            ? Color.FromArgb("#D5D3D0")
+            : Color.FromArgb("#F6EEE8");
     }
 
     private Color GetButtonBorderColor(string previewImage, WardrobeCategory category)
     {
         return IsItemEquipped(previewImage, category)
-            ? Color.FromArgb("#A9785D")
+            ? Color.FromArgb("#AAA59F")
             : Color.FromArgb("#BF9277");
     }
 
     private Color GetButtonTextColor(string previewImage, WardrobeCategory category)
     {
         return IsItemEquipped(previewImage, category)
-            ? Color.FromArgb("#38231A")
+            ? Color.FromArgb("#4E4A46")
             : Color.FromArgb("#4B3429");
     }
 

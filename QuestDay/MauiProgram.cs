@@ -28,6 +28,7 @@ namespace QuestDay
 #endif
 
             builder.Services.AddSingleton<IHabitService, HabitService>();
+            builder.Services.AddSingleton<AvatarAppearanceService>();
 
             builder.Services.AddSingleton<InverseBoolConverter>();
             builder.Services.AddSingleton<DaySelectedToColorConverter>();

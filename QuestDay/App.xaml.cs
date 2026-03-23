@@ -3,17 +3,19 @@ using QuestDay.Services;
 
 namespace QuestDay
 {
-    public partial class App : Application
+public partial class App : Application
+{
+    private readonly IHabitService _habitService;
+    public static AvatarAppearanceService AvatarAppearance { get; private set; } = null!;
+
+    public App(IHabitService habitService, AvatarAppearanceService avatarAppearance)
     {
-        private readonly IHabitService _habitService;
+        InitializeComponent();
+        _habitService = habitService;
+        AvatarAppearance = avatarAppearance;
 
-        public App(IHabitService habitService)
-        {
-            InitializeComponent();
-            _habitService = habitService;
-
-            MainPage = new AppShell();
-        }
+        MainPage = new AppShell();
+    }
 
         protected override async void OnStart()
         {

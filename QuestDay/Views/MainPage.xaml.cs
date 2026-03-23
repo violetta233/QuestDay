@@ -1,6 +1,3 @@
-﻿using System.Diagnostics;
-using QuestDay.ViewModels;
-
 namespace QuestDay.Views
 {
     public partial class MainPage : ContentPage
@@ -8,7 +5,7 @@ namespace QuestDay.Views
         public MainPage()
         {
             InitializeComponent();
+            BindingContext = App.AvatarAppearance;
         }
     }
 }
-
