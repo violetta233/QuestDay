@@ -1,18 +1,136 @@
-<ContentPage 
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="QuestDay.Views.SettingPage"
-    xmlns:local="clr-namespace:QuestDay"
-    BackgroundColor="#FFFBF6">
-    <ScrollView>
-        <VerticalStackLayout Spacing="25">
-            <Label 
-            Text="Настройки"
-            HorizontalOptions="Start"
-            Margin="30, 20, 0, 0"
-            FontFamily="Montserrat-SemiBold"
-            FontSize="22" />
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="QuestDay.Views.SettingPage"
+             BackgroundColor="#FFFBF6">
 
-        </VerticalStackLayout>
-    </ScrollView>
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Основной контент -->
+        <ScrollView>
+            <VerticalStackLayout Spacing="16" Padding="20,10,20,140">
+
+                <!-- Заголовок -->
+                <Label Text="Настройки"
+                       HorizontalOptions="Start"
+                       Margin="10,20,0,10"
+                       FontFamily="Montserrat-SemiBold"
+                       FontSize="22" />
+
+                <!-- 1. Мое имя -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="12"
+                       Padding="16,12"
+                       HasShadow="False"
+                       BorderColor="#E8E0D8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="Мое имя"
+                               FontSize="16"
+                               TextColor="#333333"
+                               VerticalOptions="Center" />
+                        <Entry x:Name="NameEntry"
+                               Grid.Column="1"
+                               Placeholder="Имя"
+                               Text=""
+                               FontSize="16"
+                               TextColor="#333333"
+                               PlaceholderColor="#CCCCCC"
+                               BackgroundColor="Transparent"
+                               HorizontalOptions="End"
+                               WidthRequest="150"
+                               TextChanged="OnNameTextChanged" />
+                    </Grid>
+                </Frame>
+
+                <!-- 2. Ежедневное напоминание -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="12"
+                       Padding="16"
+                       HasShadow="False"
+                       BorderColor="#E8E0D8">
+                    <VerticalStackLayout Spacing="12">
+                        <!-- Заголовок + время -->
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                            <Label Grid.Column="0"
+                                   Text="Ежедневное напоминание"
+                                   FontSize="16"
+                                   TextColor="#333333"
+                                   VerticalOptions="Center" />
+                            <Entry x:Name="TimeEntry"
+                                   Grid.Column="1"
+                                   Placeholder="14:00"
+                                   Text="14:00"
+                                   FontSize="16"
+                                   Keyboard="Numeric"
+                                   MaxLength="5"
+                                   WidthRequest="70"
+                                   HorizontalOptions="End"
+                                   BackgroundColor="Transparent"
+                                   TextColor="#333333"
+                                   TextChanged="OnTimeEntryTextChanged" />
+                            <Switch x:Name="ReminderSwitch" 
+                                    Grid.Column="2"
+                                    Toggled="OnReminderSwitchToggled" />
+                        </Grid>
+
+                        <!-- Текст напоминания -->
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Label Text="Текст напоминания:"
+                                   FontSize="14"
+                                   TextColor="#666666"
+                                   VerticalOptions="Center" />
+                            <Entry x:Name="ReminderTextEntry"
+                                   Grid.Column="1"
+                                   Placeholder="Введите текст напоминания"
+                                   Text=""
+                                   FontSize="14"
+                                   TextColor="#333333"
+                                   PlaceholderColor="#CCCCCC"
+                                   BackgroundColor="Transparent"
+                                   TextChanged="OnReminderTextEntryTextChanged" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- 3. Звук -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="12"
+                       Padding="16,12"
+                       HasShadow="False"
+                       BorderColor="#E8E0D8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="Звук"
+                               FontSize="16"
+                               TextColor="#333333"
+                               VerticalOptions="Center" />
+                        <Switch x:Name="SoundSwitch" 
+                                Grid.Column="1"
+                                Toggled="OnSoundSwitchToggled" />
+                    </Grid>
+                </Frame>
+
+                <!-- 4. Цитаты -->
+                <Frame BackgroundColor="White"
+                       CornerRadius="12"
+                       Padding="16,12"
+                       HasShadow="False"
+                       BorderColor="#E8E0D8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="Цитаты"
+                               FontSize="16"
+                               TextColor="#333333"
+                               VerticalOptions="Center" />
+                        <Switch x:Name="QuoteSwitch" 
+                                Grid.Column="1"
+                                Toggled="OnQuoteSwitchToggled" />
+                    </Grid>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
 </ContentPage>
