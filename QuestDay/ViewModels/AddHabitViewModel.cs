@@ -11,6 +11,7 @@ using Plugin.LocalNotification;
 using QuestDay.Messages;
 using QuestDay.Models;
 using QuestDay.Services;
+using QuestDay.Extensions;
 
 namespace QuestDay.ViewModels
 {
@@ -187,7 +188,7 @@ namespace QuestDay.ViewModels
 
             foreach (var day in habit.SelectedDays)
             {   
-                DateTime notifyTime = GetNextOccurrence(day, 16, 15);
+                DateTime notifyTime = GetNextOccurrence(day, 18, 0);
             
                 var request = new NotificationRequest
                 {
