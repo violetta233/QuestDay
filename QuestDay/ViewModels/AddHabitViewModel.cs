@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -111,11 +112,12 @@ namespace QuestDay.ViewModels
                     Description = Description,
                     SelectedDays = DaysOfWeekSelection.SelectedDays.ToList(),
                     StartDate = DateTime.Now,
-                    IsActive = false
+                    IsActive = true
                 };
 
                 habit = await _habitService.AddHabitAsync(habit);
 
+                Debug.WriteLine($"Отправка сообщения о новой привычке: {habit.Name}, Id: {habit.Id}");
                 WeakReferenceMessenger.Default.Send(new NewHabitMessage(habit));
 
                 await Shell.Current.DisplayAlert("Успех", $"Привычка '{habit.Name}' добавлена!", "OK");
@@ -130,6 +132,7 @@ namespace QuestDay.ViewModels
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Ошибка при сохранении: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Произошла ошибка при сохранении: {ex.Message}", "Закрыть");
             }
             finally

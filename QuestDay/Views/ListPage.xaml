@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -6,9 +7,13 @@
     xmlns:models="clr-namespace:QuestDay.Models"       
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:converters="clr-namespace:QuestDay.Converters"
-    BackgroundColor="#FFFBF6">
+    BackgroundColor="#FFFBF6"
+    ControlTemplate="{x:Null}">
+
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <converters:HabitIsActiveToBackgroundColorConverter x:Key="HabitIsActiveToBackgroundColorConverter" />
+        <converters:HabitIsActiveToTextStyleConverter x:Key="HabitIsActiveToTextStyleConverter" />
         <toolkit:ListToStringConverter x:Key="ListToStringConverter" />
         <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
         <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
@@ -22,6 +27,7 @@
             <Setter Property="TextDecorations" Value="Strikethrough" />
         </Style>
     </ContentPage.Resources>
+
     <Grid RowDefinitions="Auto, *, Auto">
         <HorizontalStackLayout Grid.Row="0" Margin="30, 20, 0, 0" Spacing="10">
             <Label Text="Список привычек"
@@ -38,7 +44,7 @@
             <VerticalStackLayout Spacing="10">
                 <CollectionView ItemsSource="{Binding Habits}"
                                 SelectionMode="None"
-                                                                    Margin="10">
+                                Margin="10">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:Habit">
                             <SwipeView>
@@ -68,7 +74,7 @@
                                                 <CheckBox.GestureRecognizers>
                                                     <TapGestureRecognizer 
                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=ToggleHabitCompletionCommand}"
-            CommandParameter="{Binding .}" />
+                                                        CommandParameter="{Binding .}" />
                                                 </CheckBox.GestureRecognizers>
                                             </CheckBox>
                                         </Grid>
@@ -89,9 +95,56 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <Label Text="Нет привычек. Добавьте свою первую привычку!"
+                       IsVisible="{Binding Habits.Count, Converter={StaticResource InverseBoolConverter}}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       FontSize="16"
+                       TextColor="Gray"
+                       Margin="20" />
             </VerticalStackLayout>
         </ScrollView>
 
-       
+        <Grid Grid.Row="2" IgnoreSafeArea="True" VerticalOptions="End">
+            <Border 
+                Margin="10,0,10,25"
+                HeightRequest="65"
+                HorizontalOptions="Fill"
+                BackgroundColor="White"
+                Stroke="#FFCD72" 
+                StrokeThickness="2">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
+                <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
+                    <ImageButton Source="home.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="MainPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+                    <ImageButton Source="file.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="ListPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+                    <ImageButton Source="plus.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="AddPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+                    <ImageButton Source="setting.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="SettingPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+                    <ImageButton Source="profile.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="userPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+                </FlexLayout>
+            </Border>
+        </Grid>
     </Grid>
 </ContentPage>

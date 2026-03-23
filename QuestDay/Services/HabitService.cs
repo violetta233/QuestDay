@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,15 +19,17 @@ namespace QuestDay.Services
 
         public async Task InitializeAsync()
         {
-            
-                if (_database is not null)
-                    return;
+            if (_database is not null)
+                return;
 
-                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "QuestDayHabits.db3");
-                _database = new SQLiteAsyncConnection(dbPath);
-                await _database.CreateTableAsync<HabitCompletion>();
-                await _database.CreateTableAsync<Habit>();
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "QuestDayHabits.db3");
+            Debug.WriteLine($"Путь к БД: {dbPath}");
+            _database = new SQLiteAsyncConnection(dbPath);
+            await _database.CreateTableAsync<HabitCompletion>();
+            await _database.CreateTableAsync<Habit>();
+            Debug.WriteLine("База данных инициализирована");
         }
+
         public Task<List<HabitCompletion>> GetHabitCompletionsAsync()
         {
             return _database.Table<HabitCompletion>().ToListAsync();
@@ -43,12 +46,14 @@ namespace QuestDay.Services
                 return _database.InsertAsync(completion);
             }
         }
+
         public async Task<Habit> AddHabitAsync(Habit habit)
         {
+            Debug.WriteLine($"Сохранение привычки: {habit.Name}");
             await _database.InsertAsync(habit);
-            var allHabits = await _database.Table<Habit>()
-        .OrderByDescending(h => h.Id)
-        .ToListAsync();
+
+            var allHabits = await _database.Table<Habit>().ToListAsync();
+            Debug.WriteLine($"Всего привычек в БД после сохранения: {allHabits.Count}");
 
             var savedHabit = allHabits.FirstOrDefault(h =>
                 h.Name == habit.Name &&
@@ -56,6 +61,7 @@ namespace QuestDay.Services
 
             if (savedHabit != null)
             {
+                Debug.WriteLine($"Найдена сохраненная привычка: Id={savedHabit.Id}");
                 return savedHabit;
             }
 
@@ -64,17 +70,21 @@ namespace QuestDay.Services
 
         public async Task<List<Habit>> GetHabitsAsync()
         {
-            return await _database.Table<Habit>().ToListAsync();
+            var habits = await _database.Table<Habit>().ToListAsync();
+            Debug.WriteLine($"GetHabitsAsync: загружено {habits.Count} привычек");
+            return habits;
         }
 
         public async Task UpdateHabitAsync(Habit habit)
         {
             await _database.UpdateAsync(habit);
+            Debug.WriteLine($"Привычка обновлена: {habit.Name}");
         }
 
         public async Task DeleteHabitAsync(Habit habit)
         {
             await _database.DeleteAsync(habit);
+            Debug.WriteLine($"Привычка удалена: {habit.Name}");
         }
 
         public async Task<Habit> GetHabitByIdAsync(int id)
@@ -98,11 +108,13 @@ namespace QuestDay.Services
                     CompletionDate = completionDate,
                     IsCompleted = isCompleted
                 });
+                Debug.WriteLine($"Создана запись выполнения для привычки {habitId} на {completionDate:dd.MM.yyyy}: {isCompleted}");
             }
             else
             {
                 existingCompletion.IsCompleted = isCompleted;
                 await _database.UpdateAsync(existingCompletion);
+                Debug.WriteLine($"Обновлена запись выполнения для привычки {habitId} на {completionDate:dd.MM.yyyy}: {isCompleted}");
             }
         }
 

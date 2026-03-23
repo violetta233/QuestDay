@@ -8,6 +8,7 @@ using QuestDay.Services;
 using QuestDay.Views;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,8 +27,12 @@ namespace QuestDay.ViewModels
         public HabitListViewModel(IHabitService habitService)
         {
             _habitService = habitService;
-
             WeakReferenceMessenger.Default.Register<NewHabitMessage>(this);
+
+            Habits.CollectionChanged += (s, e) =>
+            {
+                Debug.WriteLine($"Коллекция Habits изменилась. Новое количество: {Habits.Count}");
+            };
         }
 
         public async Task InitializeAsync()
@@ -38,13 +43,19 @@ namespace QuestDay.ViewModels
 
         public void Receive(NewHabitMessage message)
         {
+            Debug.WriteLine($"Получено сообщение о новой привычке: {message.Value.Name}, Id: {message.Value.Id}");
+
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 if (!Habits.Any(h => h.Id == message.Value.Id))
                 {
                     Habits.Add(message.Value);
+                    Debug.WriteLine($"Привычка добавлена в коллекцию. Всего привычек: {Habits.Count}");
                 }
-                //message.Value.IsCompletedForToday = await _habitService.GetHabitCompletionStatusAsync(message.Value.Id, DateTime.Today);
+                else
+                {
+                    Debug.WriteLine($"Привычка с Id {message.Value.Id} уже существует в коллекции");
+                }
             });
         }
 
@@ -56,16 +67,26 @@ namespace QuestDay.ViewModels
             IsBusy = true;
             try
             {
+                Debug.WriteLine("Начало загрузки привычек");
                 Habits.Clear();
                 var habitsFromDb = await _habitService.GetHabitsAsync();
+
+                Debug.WriteLine($"Загружено из БД: {habitsFromDb.Count} привычек");
+
                 foreach (var habit in habitsFromDb)
                 {
+                    Debug.WriteLine($"Добавляем привычку: {habit.Name}, Id: {habit.Id}, IsActive: {habit.IsActive}");
                     habit.IsCompletedForToday = await _habitService.GetHabitCompletionStatusAsync(habit.Id, DateTime.Today);
                     Habits.Add(habit);
                 }
+
+                Debug.WriteLine($"После добавления в ObservableCollection: {Habits.Count} привычек");
+
+                OnPropertyChanged(nameof(Habits));
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Ошибка загрузки: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось загрузить привычки: {ex.Message}", "ОК");
             }
             finally
@@ -73,6 +94,7 @@ namespace QuestDay.ViewModels
                 IsBusy = false;
             }
         }
+
         private bool CanLoadHabits() => !IsBusy;
 
         [RelayCommand]
@@ -87,13 +109,16 @@ namespace QuestDay.ViewModels
                 {
                     await _habitService.DeleteHabitAsync(habitToDelete);
                     Habits.Remove(habitToDelete);
+                    Debug.WriteLine($"Привычка '{habitToDelete.Name}' удалена");
                 }
                 catch (Exception ex)
                 {
+                    Debug.WriteLine($"Ошибка удаления: {ex}");
                     await Shell.Current.DisplayAlert("Ошибка", $"Не удалось удалить привычку: {ex.Message}", "ОК");
                 }
             }
         }
+
         [RelayCommand]
         private async Task ToggleHabitIsActiveStatus(Habit habitToToggle)
         {
@@ -102,9 +127,11 @@ namespace QuestDay.ViewModels
             try
             {
                 await _habitService.UpdateHabitAsync(habitToToggle);
+                Debug.WriteLine($"Статус активности привычки '{habitToToggle.Name}' изменен на: {habitToToggle.IsActive}");
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Ошибка обновления статуса: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось обновить статус активности привычки: {ex.Message}", "ОК");
             }
         }
@@ -114,6 +141,7 @@ namespace QuestDay.ViewModels
         {
             await Shell.Current.GoToAsync(nameof(AddPage));
         }
+
         [RelayCommand]
         private async Task ToggleHabitCompletion(Habit habitToToggleCompletion)
         {
@@ -127,13 +155,14 @@ namespace QuestDay.ViewModels
                     DateTime.Today,
                     habitToToggleCompletion.IsCompletedForToday
                 );
+                Debug.WriteLine($"Статус выполнения привычки '{habitToToggleCompletion.Name}' изменен на: {habitToToggleCompletion.IsCompletedForToday}");
             }
             catch (Exception ex)
             {
                 habitToToggleCompletion.IsCompletedForToday = !habitToToggleCompletion.IsCompletedForToday;
+                Debug.WriteLine($"Ошибка обновления выполнения: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось обновить статус выполнения привычки: {ex.Message}", "ОК");
             }
         }
-
     }
 }

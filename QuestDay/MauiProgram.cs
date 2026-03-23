@@ -29,16 +29,21 @@ namespace QuestDay
 
             builder.Services.AddSingleton<IHabitService, HabitService>();
 
+            // Регистрация конвертеров
             builder.Services.AddSingleton<InverseBoolConverter>();
             builder.Services.AddSingleton<DaySelectedToColorConverter>();
             builder.Services.AddSingleton<DaySelectedToTextColorConverter>();
             builder.Services.AddSingleton<EnabledToColorConverter>();
             builder.Services.AddSingleton<StringNotNullOrEmptyConverter>();
+            builder.Services.AddSingleton<HabitIsActiveToBackgroundColorConverter>();
+            builder.Services.AddSingleton<HabitIsActiveToTextStyleConverter>();
 
+            // Регистрация ViewModels
             builder.Services.AddTransient<HabitListViewModel>();
             builder.Services.AddTransient<AddHabitViewModel>();
             builder.Services.AddTransient<DaysViewModel>();
 
+            // Регистрация страниц
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<ListPage>();
             builder.Services.AddTransient<AddPage>();
