@@ -130,7 +130,7 @@
                            TextColor="#999999" />
                     <Button Text="+ Добавить привычку"
                             Command="{Binding NavigateToAddHabitCommand}"
-                            BackgroundColor="#FFCD72"
+                            BackgroundColor="#A7DFAF"
                             TextColor="White"
                             FontFamily="Montserrat-SemiBold"
                             CornerRadius="10"
