@@ -13,7 +13,6 @@ public partial class userPage : ContentPage
     private const string PaletteTitle = "\u041E\u043A\u0440\u0430\u0441\u043A\u0430";
     private const string WearText = "\u041D\u0430\u0434\u0435\u0442\u044C";
     private const string RemoveText = "\u0421\u043D\u044F\u0442\u044C";
-    private const string EmptyText = "\u041F\u0443\u0441\u0442\u043E";
 
     private readonly Dictionary<WardrobeCategory, List<WardrobeItem>> _itemsByCategory;
     private readonly Dictionary<WardrobeCategory, WardrobeItem?> _equippedItems = [];
@@ -75,6 +74,50 @@ public partial class userPage : ContentPage
 
     public bool IsAlternateRabbitVisible => !string.IsNullOrWhiteSpace(ActiveRabbitVariantImage);
 
+    public string OverallsActionText => GetActionText("overalls_skin1_blue.png", WardrobeCategory.Top);
+
+    public string TShirtActionText => GetActionText("t_shirt_mechmat.png", WardrobeCategory.Top);
+
+    public string BeltActionText => GetActionText("belt_1_brown.png", WardrobeCategory.Top);
+
+    public string PaletteActionText => GetActionText("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+
+    public Color OverallsCardBackgroundColor => GetCardBackgroundColor("overalls_skin1_blue.png", WardrobeCategory.Top);
+    public Color OverallsCardBorderColor => GetCardBorderColor("overalls_skin1_blue.png", WardrobeCategory.Top);
+    public double OverallsCardBorderWidth => GetCardBorderWidth("overalls_skin1_blue.png", WardrobeCategory.Top);
+    public Color OverallsImageBackgroundColor => GetImageBackgroundColor("overalls_skin1_blue.png", WardrobeCategory.Top);
+    public Color OverallsImageBorderColor => GetImageBorderColor("overalls_skin1_blue.png", WardrobeCategory.Top);
+    public Color OverallsButtonBackgroundColor => GetButtonBackgroundColor("overalls_skin1_blue.png", WardrobeCategory.Top);
+    public Color OverallsButtonBorderColor => GetButtonBorderColor("overalls_skin1_blue.png", WardrobeCategory.Top);
+    public Color OverallsButtonTextColor => GetButtonTextColor("overalls_skin1_blue.png", WardrobeCategory.Top);
+
+    public Color TShirtCardBackgroundColor => GetCardBackgroundColor("t_shirt_mechmat.png", WardrobeCategory.Top);
+    public Color TShirtCardBorderColor => GetCardBorderColor("t_shirt_mechmat.png", WardrobeCategory.Top);
+    public double TShirtCardBorderWidth => GetCardBorderWidth("t_shirt_mechmat.png", WardrobeCategory.Top);
+    public Color TShirtImageBackgroundColor => GetImageBackgroundColor("t_shirt_mechmat.png", WardrobeCategory.Top);
+    public Color TShirtImageBorderColor => GetImageBorderColor("t_shirt_mechmat.png", WardrobeCategory.Top);
+    public Color TShirtButtonBackgroundColor => GetButtonBackgroundColor("t_shirt_mechmat.png", WardrobeCategory.Top);
+    public Color TShirtButtonBorderColor => GetButtonBorderColor("t_shirt_mechmat.png", WardrobeCategory.Top);
+    public Color TShirtButtonTextColor => GetButtonTextColor("t_shirt_mechmat.png", WardrobeCategory.Top);
+
+    public Color BeltCardBackgroundColor => GetCardBackgroundColor("belt_1_brown.png", WardrobeCategory.Top);
+    public Color BeltCardBorderColor => GetCardBorderColor("belt_1_brown.png", WardrobeCategory.Top);
+    public double BeltCardBorderWidth => GetCardBorderWidth("belt_1_brown.png", WardrobeCategory.Top);
+    public Color BeltImageBackgroundColor => GetImageBackgroundColor("belt_1_brown.png", WardrobeCategory.Top);
+    public Color BeltImageBorderColor => GetImageBorderColor("belt_1_brown.png", WardrobeCategory.Top);
+    public Color BeltButtonBackgroundColor => GetButtonBackgroundColor("belt_1_brown.png", WardrobeCategory.Top);
+    public Color BeltButtonBorderColor => GetButtonBorderColor("belt_1_brown.png", WardrobeCategory.Top);
+    public Color BeltButtonTextColor => GetButtonTextColor("belt_1_brown.png", WardrobeCategory.Top);
+
+    public Color PaletteCardBackgroundColor => GetCardBackgroundColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    public Color PaletteCardBorderColor => GetCardBorderColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    public double PaletteCardBorderWidth => GetCardBorderWidth("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    public Color PaletteImageBackgroundColor => GetImageBackgroundColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    public Color PaletteImageBorderColor => GetImageBorderColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    public Color PaletteButtonBackgroundColor => GetButtonBackgroundColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    public Color PaletteButtonBorderColor => GetButtonBorderColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    public Color PaletteButtonTextColor => GetButtonTextColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+
     public userPage()
     {
         InitializeComponent();
@@ -96,6 +139,7 @@ public partial class userPage : ContentPage
         var leftRailWidth = width < 430 ? 150 : 168;
         var panelWidth = Math.Min(310, Math.Max(215, width - leftRailWidth - 44));
         SelectionPanel.WidthRequest = panelWidth;
+        SelectionPanel.Padding = width < 520 ? new Thickness(14, 16, 14, 14) : new Thickness(18);
 
         var isCompact = width < 430;
         RabbitPreview.Scale = isCompact ? 0.93 : 1.0;
@@ -111,10 +155,7 @@ public partial class userPage : ContentPage
     {
         return new Dictionary<WardrobeCategory, List<WardrobeItem>>
         {
-            [WardrobeCategory.Hat] =
-            [
-                new WardrobeItem(WardrobeCategory.Hat, "\u0428\u043B\u044F\u043F\u0430", "headdress.png", "headdress.png")
-            ],
+            [WardrobeCategory.Hat] = [],
             [WardrobeCategory.Top] =
             [
                 new WardrobeItem(WardrobeCategory.Top, "\u041A\u043E\u043C\u0431\u0438\u043D\u0435\u0437\u043E\u043D", "overalls_skin1_blue.png", "overalls_skin1_blue.png"),
@@ -123,7 +164,6 @@ public partial class userPage : ContentPage
             ],
             [WardrobeCategory.Palette] =
             [
-                new WardrobeItem(WardrobeCategory.Palette, "\u0422\u0451\u043F\u043B\u044B\u0439", "rabbit_warm.png", "rabbit_warm.png"),
                 new WardrobeItem(WardrobeCategory.Palette, "\u0421\u0432\u0435\u0442\u043B\u044B\u0439", "rabbit_1_warm_bg_skintone.png", "rabbit_1_warm_bg_skintone.png")
             ]
         };
@@ -196,9 +236,9 @@ public partial class userPage : ContentPage
             return;
         }
 
-        border.Background = new SolidColorBrush(Color.FromArgb("#FFF5EB"));
-        border.Stroke = Color.FromArgb("#CFA98D");
-        border.Scale = 1.03;
+        border.Background = new SolidColorBrush(Color.FromArgb("#F3F3F3"));
+        border.Stroke = Color.FromArgb("#D4C8BD");
+        border.Scale = 1.02;
     }
 
     private void OnSlotPointerExited(object? sender, PointerEventArgs e)
@@ -209,8 +249,8 @@ public partial class userPage : ContentPage
             return;
         }
 
-        border.Background = new SolidColorBrush(slot.SlotBackgroundColor);
-        border.Stroke = slot.SlotBorderColor;
+        border.Background = new SolidColorBrush(slot.CardBackgroundColor);
+        border.Stroke = slot.CardBorderColor;
         border.Scale = 1.0;
     }
 
@@ -224,6 +264,14 @@ public partial class userPage : ContentPage
         ApplySlotSelection(slot);
         RefreshSlots();
     }
+
+    private void OnOverallsClicked(object? sender, EventArgs e) => ToggleItem("overalls_skin1_blue.png", WardrobeCategory.Top);
+
+    private void OnTShirtClicked(object? sender, EventArgs e) => ToggleItem("t_shirt_mechmat.png", WardrobeCategory.Top);
+
+    private void OnBeltClicked(object? sender, EventArgs e) => ToggleItem("belt_1_brown.png", WardrobeCategory.Top);
+
+    private void OnPaletteVariantClicked(object? sender, EventArgs e) => ToggleItem("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
 
     private void OnPanelButtonPointerEntered(object? sender, PointerEventArgs e)
     {
@@ -259,7 +307,8 @@ public partial class userPage : ContentPage
     {
         _activeCategory = category;
         ActiveCategoryTitle = GetCategoryTitle(category);
-        RefreshSlots(selectEquippedItem: true);
+        UpdateCategorySections();
+        RefreshSlots();
         UpdateCategoryButtons();
 
         if (_isSelectionPanelOpen)
@@ -294,25 +343,23 @@ public partial class userPage : ContentPage
 
         _equippedItems[WardrobeCategory.Hat] = null;
         _equippedItems[WardrobeCategory.Top] = null;
-        _equippedItems[WardrobeCategory.Palette] = _itemsByCategory[WardrobeCategory.Palette]
-            .FirstOrDefault(item => item.AppliedImage == DefaultRabbitBaseImage);
+        _equippedItems[WardrobeCategory.Palette] = null;
 
         _activeCategory = WardrobeCategory.Hat;
         ActiveCategoryTitle = GetCategoryTitle(_activeCategory);
+        UpdateCategorySections();
         SelectionPanel.IsVisible = false;
         SelectionPanel.TranslationX = 360;
         _isSelectionPanelOpen = false;
 
-        RefreshSlots(selectEquippedItem: false);
+        RefreshSlots();
         UpdateCategoryButtons();
+        NotifyItemStateChanged();
     }
 
-    private void RefreshSlots(bool selectEquippedItem = false)
+    private void RefreshSlots()
     {
         ActiveSlots.Clear();
-
-        var removeSlot = WardrobeSlot.CreateRemoveSlot(_activeCategory, RemoveText);
-        ActiveSlots.Add(removeSlot);
 
         foreach (var item in _itemsByCategory[_activeCategory])
         {
@@ -321,7 +368,7 @@ public partial class userPage : ContentPage
 
         while (ActiveSlots.Count < PlaceholderSlotsPerCategory)
         {
-            ActiveSlots.Add(WardrobeSlot.CreatePlaceholder(_activeCategory, EmptyText));
+            ActiveSlots.Add(WardrobeSlot.CreatePlaceholder(_activeCategory));
         }
 
         foreach (var slot in ActiveSlots)
@@ -332,21 +379,18 @@ public partial class userPage : ContentPage
 
     private void ApplySlotSelection(WardrobeSlot slot)
     {
-        switch (slot.Kind)
+        if (slot.Kind != WardrobeSlotKind.Item || slot.Item is null)
         {
-            case WardrobeSlotKind.Remove:
-                RemoveEquippedItem(_activeCategory);
-                break;
-            case WardrobeSlotKind.Item when slot.Item is not null:
-                if (IsSelectedItemEquipped(slot.Item))
-                {
-                    RemoveEquippedItem(slot.Item.Category);
-                }
-                else
-                {
-                    EquipItem(slot.Item);
-                }
-                break;
+            return;
+        }
+
+        if (IsSelectedItemEquipped(slot.Item))
+        {
+            RemoveEquippedItem(slot.Item.Category);
+        }
+        else
+        {
+            EquipItem(slot.Item);
         }
     }
 
@@ -363,16 +407,16 @@ public partial class userPage : ContentPage
                 ActiveTopImage = item.AppliedImage;
                 break;
             case WardrobeCategory.Palette:
-                ActiveRabbitVariantImage = item.AppliedImage == DefaultRabbitBaseImage ? null : item.AppliedImage;
+                ActiveRabbitVariantImage = item.AppliedImage;
                 break;
         }
+
+        NotifyItemStateChanged();
     }
 
     private void RemoveEquippedItem(WardrobeCategory category)
     {
-        _equippedItems[category] = category == WardrobeCategory.Palette
-            ? _itemsByCategory[WardrobeCategory.Palette].FirstOrDefault(item => item.AppliedImage == DefaultRabbitBaseImage)
-            : null;
+        _equippedItems[category] = null;
 
         switch (category)
         {
@@ -386,6 +430,8 @@ public partial class userPage : ContentPage
                 ActiveRabbitVariantImage = null;
                 break;
         }
+
+        NotifyItemStateChanged();
     }
 
     private bool IsSelectedItemEquipped(WardrobeItem? item)
@@ -438,6 +484,188 @@ public partial class userPage : ContentPage
         OnPropertyChanged(propertyName);
         return true;
     }
+
+    private void ToggleItem(string previewImage, WardrobeCategory category)
+    {
+        var item = _itemsByCategory[category].FirstOrDefault(x => x.PreviewImage == previewImage);
+        if (item is null)
+        {
+            return;
+        }
+
+        if (IsSelectedItemEquipped(item))
+        {
+            RemoveEquippedItem(category);
+        }
+        else
+        {
+            EquipItem(item);
+        }
+
+        NotifyItemStateChanged();
+    }
+
+    private string GetActionText(string previewImage, WardrobeCategory category)
+    {
+        return IsItemEquipped(previewImage, category) ? RemoveText : WearText;
+    }
+
+    private bool IsItemEquipped(string previewImage, WardrobeCategory category)
+    {
+        return _equippedItems.TryGetValue(category, out var equippedItem)
+            && equippedItem?.PreviewImage == previewImage;
+    }
+
+    private Color GetCardBackgroundColor(string previewImage, WardrobeCategory category)
+    {
+        return IsItemEquipped(previewImage, category)
+            ? Color.FromArgb("#E1B79D")
+            : Color.FromArgb("#E8CCB8");
+    }
+
+    private Color GetCardBorderColor(string previewImage, WardrobeCategory category)
+    {
+        return IsItemEquipped(previewImage, category)
+            ? Color.FromArgb("#AD7F66")
+            : Color.FromArgb("#BF9277");
+    }
+
+    private double GetCardBorderWidth(string previewImage, WardrobeCategory category)
+    {
+        return IsItemEquipped(previewImage, category) ? 2.0 : 1.6;
+    }
+
+    private Color GetImageBackgroundColor(string previewImage, WardrobeCategory category)
+    {
+        return IsItemEquipped(previewImage, category)
+            ? Color.FromArgb("#E8D2C1")
+            : Color.FromArgb("#EADBCF");
+    }
+
+    private Color GetImageBorderColor(string previewImage, WardrobeCategory category)
+    {
+        return IsItemEquipped(previewImage, category)
+            ? Color.FromArgb("#C69C82")
+            : Color.FromArgb("#D2B39F");
+    }
+
+    private Color GetButtonBackgroundColor(string previewImage, WardrobeCategory category)
+    {
+        return IsItemEquipped(previewImage, category)
+            ? Color.FromArgb("#CFA488")
+            : Color.FromArgb("#D8B39B");
+    }
+
+    private Color GetButtonBorderColor(string previewImage, WardrobeCategory category)
+    {
+        return IsItemEquipped(previewImage, category)
+            ? Color.FromArgb("#A9785D")
+            : Color.FromArgb("#BF9277");
+    }
+
+    private Color GetButtonTextColor(string previewImage, WardrobeCategory category)
+    {
+        return IsItemEquipped(previewImage, category)
+            ? Color.FromArgb("#38231A")
+            : Color.FromArgb("#4B3429");
+    }
+
+    private void NotifyItemStateChanged()
+    {
+        UpdateActionButtons();
+
+        OnPropertyChanged(nameof(OverallsActionText));
+        OnPropertyChanged(nameof(TShirtActionText));
+        OnPropertyChanged(nameof(BeltActionText));
+        OnPropertyChanged(nameof(PaletteActionText));
+
+        OnPropertyChanged(nameof(OverallsCardBackgroundColor));
+        OnPropertyChanged(nameof(OverallsCardBorderColor));
+        OnPropertyChanged(nameof(OverallsCardBorderWidth));
+        OnPropertyChanged(nameof(OverallsImageBackgroundColor));
+        OnPropertyChanged(nameof(OverallsImageBorderColor));
+        OnPropertyChanged(nameof(OverallsButtonBackgroundColor));
+        OnPropertyChanged(nameof(OverallsButtonBorderColor));
+        OnPropertyChanged(nameof(OverallsButtonTextColor));
+
+        OnPropertyChanged(nameof(TShirtCardBackgroundColor));
+        OnPropertyChanged(nameof(TShirtCardBorderColor));
+        OnPropertyChanged(nameof(TShirtCardBorderWidth));
+        OnPropertyChanged(nameof(TShirtImageBackgroundColor));
+        OnPropertyChanged(nameof(TShirtImageBorderColor));
+        OnPropertyChanged(nameof(TShirtButtonBackgroundColor));
+        OnPropertyChanged(nameof(TShirtButtonBorderColor));
+        OnPropertyChanged(nameof(TShirtButtonTextColor));
+
+        OnPropertyChanged(nameof(BeltCardBackgroundColor));
+        OnPropertyChanged(nameof(BeltCardBorderColor));
+        OnPropertyChanged(nameof(BeltCardBorderWidth));
+        OnPropertyChanged(nameof(BeltImageBackgroundColor));
+        OnPropertyChanged(nameof(BeltImageBorderColor));
+        OnPropertyChanged(nameof(BeltButtonBackgroundColor));
+        OnPropertyChanged(nameof(BeltButtonBorderColor));
+        OnPropertyChanged(nameof(BeltButtonTextColor));
+
+        OnPropertyChanged(nameof(PaletteCardBackgroundColor));
+        OnPropertyChanged(nameof(PaletteCardBorderColor));
+        OnPropertyChanged(nameof(PaletteCardBorderWidth));
+        OnPropertyChanged(nameof(PaletteImageBackgroundColor));
+        OnPropertyChanged(nameof(PaletteImageBorderColor));
+        OnPropertyChanged(nameof(PaletteButtonBackgroundColor));
+        OnPropertyChanged(nameof(PaletteButtonBorderColor));
+        OnPropertyChanged(nameof(PaletteButtonTextColor));
+    }
+
+    private void UpdateActionButtons()
+    {
+        ApplyActionButtonState(
+            OverallsActionButton,
+            OverallsActionText,
+            OverallsButtonBackgroundColor,
+            OverallsButtonBorderColor,
+            OverallsButtonTextColor);
+
+        ApplyActionButtonState(
+            TShirtActionButton,
+            TShirtActionText,
+            TShirtButtonBackgroundColor,
+            TShirtButtonBorderColor,
+            TShirtButtonTextColor);
+
+        ApplyActionButtonState(
+            BeltActionButton,
+            BeltActionText,
+            BeltButtonBackgroundColor,
+            BeltButtonBorderColor,
+            BeltButtonTextColor);
+
+        ApplyActionButtonState(
+            PaletteActionButton,
+            PaletteActionText,
+            PaletteButtonBackgroundColor,
+            PaletteButtonBorderColor,
+            PaletteButtonTextColor);
+    }
+
+    private static void ApplyActionButtonState(Button? button, string text, Color backgroundColor, Color borderColor, Color textColor)
+    {
+        if (button is null)
+        {
+            return;
+        }
+
+        button.Text = text;
+        button.BackgroundColor = backgroundColor;
+        button.BorderColor = borderColor;
+        button.TextColor = textColor;
+    }
+
+    private void UpdateCategorySections()
+    {
+        HatCardsSection.IsVisible = _activeCategory == WardrobeCategory.Hat;
+        TopCardsSection.IsVisible = _activeCategory == WardrobeCategory.Top;
+        PaletteCardsSection.IsVisible = _activeCategory == WardrobeCategory.Palette;
+    }
 }
 
 public sealed class WardrobeItem
@@ -463,12 +691,11 @@ public sealed class WardrobeSlot : INotifyPropertyChanged
 {
     private bool _isEquipped;
 
-    private WardrobeSlot(WardrobeSlotKind kind, WardrobeCategory category, WardrobeItem? item, string displayText)
+    private WardrobeSlot(WardrobeSlotKind kind, WardrobeCategory category, WardrobeItem? item)
     {
         Kind = kind;
         Category = category;
         Item = item;
-        DisplayText = displayText;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -479,7 +706,13 @@ public sealed class WardrobeSlot : INotifyPropertyChanged
 
     public WardrobeItem? Item { get; }
 
-    public string DisplayText { get; }
+    public string? ImageSource => Item?.PreviewImage;
+
+    public bool HasImage => !string.IsNullOrWhiteSpace(ImageSource);
+
+    public bool IsActionVisible => Kind == WardrobeSlotKind.Item;
+
+    public bool IsPlaceholderVisible => Kind == WardrobeSlotKind.Placeholder;
 
     public bool IsEquipped
     {
@@ -493,86 +726,75 @@ public sealed class WardrobeSlot : INotifyPropertyChanged
 
             _isEquipped = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(SlotBackgroundColor));
-            OnPropertyChanged(nameof(SlotBorderColor));
-            OnPropertyChanged(nameof(SlotBorderWidth));
-            OnPropertyChanged(nameof(SlotTextColor));
             OnPropertyChanged(nameof(ActionText));
+            OnPropertyChanged(nameof(CardBackgroundColor));
+            OnPropertyChanged(nameof(CardBorderColor));
+            OnPropertyChanged(nameof(CardBorderWidth));
+            OnPropertyChanged(nameof(ImageBackgroundColor));
+            OnPropertyChanged(nameof(ImageBorderColor));
+            OnPropertyChanged(nameof(ImageBorderWidth));
             OnPropertyChanged(nameof(ActionBackgroundColor));
             OnPropertyChanged(nameof(ActionBorderColor));
             OnPropertyChanged(nameof(ActionTextColor));
         }
     }
 
-    public string PreviewText => Kind switch
+    public string ActionText => IsEquipped ? "\u0421\u043D\u044F\u0442\u044C" : "\u041D\u0430\u0434\u0435\u0442\u044C";
+
+    public Color CardBackgroundColor => Kind switch
     {
-        WardrobeSlotKind.Remove => "Снять\nтекущий",
-        WardrobeSlotKind.Item => Item?.Title ?? "Предмет",
-        _ => "Пустой\nслот"
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#F0F0F0"),
+        WardrobeSlotKind.Item => Color.FromArgb("#FAFAFA"),
+        WardrobeSlotKind.Placeholder => Color.FromArgb("#F1F1F1"),
+        _ => Color.FromArgb("#FAFAFA")
     };
 
-    public string ActionText => Kind switch
+    public Color CardBorderColor => Kind switch
     {
-        WardrobeSlotKind.Remove => "Снять",
-        WardrobeSlotKind.Item => IsEquipped ? "Снять" : "Надеть",
-        _ => "Надеть"
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#D5C8BD"),
+        WardrobeSlotKind.Placeholder => Color.FromArgb("#D9D9D9"),
+        _ => Color.FromArgb("#E4DFDA")
     };
 
-    public Color SlotBackgroundColor => Kind switch
+    public double CardBorderWidth => Kind == WardrobeSlotKind.Placeholder ? 1.4 : IsEquipped ? 1.8 : 1.2;
+
+    public Color ImageBackgroundColor => Kind switch
     {
-        WardrobeSlotKind.Remove => Color.FromArgb("#F2E2D5"),
-        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#F6DEBF"),
-        WardrobeSlotKind.Item => Color.FromArgb("#F8EFE6"),
-        WardrobeSlotKind.Placeholder => Color.FromArgb("#FBF4ED"),
-        _ => Color.FromArgb("#FFFDF9")
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#ECECEC"),
+        WardrobeSlotKind.Placeholder => Color.FromArgb("#E9E9E9"),
+        _ => Color.FromArgb("#F4F4F4")
     };
 
-    public Color SlotBorderColor => Kind switch
+    public Color ImageBorderColor => Kind switch
     {
-        WardrobeSlotKind.Remove => Color.FromArgb("#C79A7E"),
-        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#C9965A"),
-        WardrobeSlotKind.Placeholder => Color.FromArgb("#DABFB0"),
-        _ => Color.FromArgb("#D0AF9A")
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#D9CDC2"),
+        WardrobeSlotKind.Placeholder => Color.FromArgb("#DCDCDC"),
+        _ => Color.FromArgb("#ECE7E2")
     };
 
-    public double SlotBorderWidth => Kind switch
-    {
-        WardrobeSlotKind.Remove => 2.0,
-        WardrobeSlotKind.Item when IsEquipped => 2.3,
-        _ => 1.8
-    };
-
-    public Color SlotTextColor => Kind == WardrobeSlotKind.Placeholder
-        ? Color.FromArgb("#A48C80")
-        : Color.FromArgb("#4C382F");
+    public double ImageBorderWidth => IsEquipped ? 1.2 : 1.0;
 
     public Color ActionBackgroundColor => Kind switch
     {
-        WardrobeSlotKind.Remove => Color.FromArgb("#E9CBB6"),
-        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#F4EDE5"),
-        WardrobeSlotKind.Item => Color.FromArgb("#FFFFFF"),
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#F7F7F7"),
         _ => Color.FromArgb("#FFFFFF")
     };
 
     public Color ActionBorderColor => Kind switch
     {
-        WardrobeSlotKind.Remove => Color.FromArgb("#CFA98D"),
-        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#D6C2B4"),
-        _ => Color.FromArgb("#E0D0C4")
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#D7CBC0"),
+        _ => Color.FromArgb("#E4E0DB")
     };
 
     public Color ActionTextColor => Kind switch
     {
-        WardrobeSlotKind.Remove => Color.FromArgb("#5B4034"),
-        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#8A63D2"),
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#4B3429"),
         _ => Color.FromArgb("#2C1F1A")
     };
 
-    public static WardrobeSlot CreateItemSlot(WardrobeItem item) => new(WardrobeSlotKind.Item, item.Category, item, item.Title);
+    public static WardrobeSlot CreateItemSlot(WardrobeItem item) => new(WardrobeSlotKind.Item, item.Category, item);
 
-    public static WardrobeSlot CreateRemoveSlot(WardrobeCategory category, string displayText) => new(WardrobeSlotKind.Remove, category, null, displayText);
-
-    public static WardrobeSlot CreatePlaceholder(WardrobeCategory category, string displayText) => new(WardrobeSlotKind.Placeholder, category, null, displayText);
+    public static WardrobeSlot CreatePlaceholder(WardrobeCategory category) => new(WardrobeSlotKind.Placeholder, category, null);
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
@@ -582,7 +804,6 @@ public sealed class WardrobeSlot : INotifyPropertyChanged
 
 public enum WardrobeSlotKind
 {
-    Remove,
     Item,
     Placeholder
 }

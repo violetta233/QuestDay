@@ -280,8 +280,8 @@
                         <RoundRectangle CornerRadius="30" />
                     </Border.StrokeShape>
 
-                    <Grid RowDefinitions="Auto,Auto,*"
-                          RowSpacing="14">
+                    <Grid RowDefinitions="Auto,*"
+                          RowSpacing="10">
                         <Grid ColumnDefinitions="Auto,*"
                               ColumnSpacing="12">
                             <Button x:Name="BackButton"
@@ -302,118 +302,264 @@
                                    TextColor="#3D2B24" />
                         </Grid>
 
-                        <Grid Grid.Row="1"
-                              HorizontalOptions="Center"
-                              VerticalOptions="Center"
-                              WidthRequest="210"
-                              HeightRequest="250"
-                              InputTransparent="True">
-                            <Image Source="rabbit_warm.png"
-                                   Aspect="AspectFit"
-                                   WidthRequest="190"
-                                   HeightRequest="235"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End" />
+                        <ScrollView Grid.Row="1"
+                                    HeightRequest="560"
+                                    Margin="0,6,0,0"
+                                    VerticalScrollBarVisibility="Never">
+                            <VerticalStackLayout Spacing="16">
+                                <Grid HorizontalOptions="Center"
+                                      VerticalOptions="Center"
+                                      WidthRequest="226"
+                                      HeightRequest="280"
+                                      InputTransparent="True">
+                                    <Image Source="rabbit_warm.png"
+                                           Aspect="AspectFit"
+                                           WidthRequest="224"
+                                           HeightRequest="272"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="End" />
 
-                            <Image Source="{Binding ActiveRabbitVariantImage}"
-                                   Aspect="AspectFit"
-                                   WidthRequest="190"
-                                   HeightRequest="235"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   IsVisible="{Binding IsAlternateRabbitVisible}" />
+                                    <Image Source="{Binding ActiveRabbitVariantImage}"
+                                           Aspect="AspectFit"
+                                           WidthRequest="224"
+                                           HeightRequest="272"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="End"
+                                           IsVisible="{Binding IsAlternateRabbitVisible}" />
 
-                            <Image Source="{Binding ActiveTopImage}"
-                                   Aspect="AspectFit"
-                                   WidthRequest="190"
-                                   HeightRequest="235"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="End"
-                                   IsVisible="{Binding HasTopImage}" />
+                                    <Image Source="{Binding ActiveTopImage}"
+                                           Aspect="AspectFit"
+                                           WidthRequest="224"
+                                           HeightRequest="272"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="End"
+                                           IsVisible="{Binding HasTopImage}" />
 
-                            <Image Source="{Binding ActiveHatImage}"
-                                   Aspect="AspectFit"
-                                   WidthRequest="116"
-                                   HeightRequest="116"
-                                   Margin="0,16,0,0"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Start"
-                                   IsVisible="{Binding HasHatImage}" />
-                        </Grid>
+                                    <Image Source="{Binding ActiveHatImage}"
+                                           Aspect="AspectFit"
+                                           WidthRequest="106"
+                                           HeightRequest="106"
+                                           Margin="0,18,0,0"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Start"
+                                           IsVisible="{Binding HasHatImage}" />
+                                </Grid>
 
-                        <ScrollView Grid.Row="2"
-                                    HeightRequest="344"
-                                    VerticalOptions="Start">
-                            <FlexLayout BindableLayout.ItemsSource="{Binding ActiveSlots}"
-                                        HorizontalOptions="Center"
-                                        MaximumWidthRequest="250"
-                                        Wrap="Wrap"
-                                        Direction="Row"
-                                        JustifyContent="SpaceBetween"
-                                        AlignContent="Start">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="local:WardrobeSlot">
-                                        <Border BackgroundColor="{Binding SlotBackgroundColor}"
-                                                Stroke="{Binding SlotBorderColor}"
-                                                StrokeThickness="{Binding SlotBorderWidth}"
-                                                ClassId="slot"
-                                                Margin="0,0,0,14"
-                                                HeightRequest="146"
-                                                WidthRequest="118"
-                                                Padding="8">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="20" />
-                                            </Border.StrokeShape>
-                                            <Border.Shadow>
-                                                <Shadow Brush="#2E8A5F47"
-                                                        Offset="0,4"
-                                                        Radius="10"
-                                                        Opacity="0.18" />
-                                            </Border.Shadow>
-                                            <Border.GestureRecognizers>
-                                                <PointerGestureRecognizer PointerEntered="OnSlotPointerEntered"
-                                                                         PointerExited="OnSlotPointerExited" />
-                                            </Border.GestureRecognizers>
+                                <Grid  x:Name="HatCardsSection"
+                                      ColumnDefinitions="*,*"
+                                      ColumnSpacing="12"
+                                      RowSpacing="12">
+                                    <Border Style="{x:Null}"
+                                            Stroke="#BF9277"
+                                            StrokeThickness="1.6"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid HeightRequest="174">
+                                            <Border BackgroundColor="#F1F1F1"
+                                                    Stroke="#D8C4B7"
+                                                    StrokeThickness="1"
+                                                    StrokeShape="RoundRectangle 18" />
+                                        </Grid>
+                                    </Border>
+                                    <Border Grid.Column="1"
+                                            Stroke="#BF9277"
+                                            StrokeThickness="1.6"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid HeightRequest="174">
+                                            <Border BackgroundColor="#F1F1F1"
+                                                    Stroke="#D8C4B7"
+                                                    StrokeThickness="1"
+                                                    StrokeShape="RoundRectangle 18" />
+                                        </Grid>
+                                    </Border>
+                                    <Border Grid.Row="1"
+                                            Stroke="#BF9277"
+                                            StrokeThickness="1.6"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid HeightRequest="174">
+                                            <Border BackgroundColor="#F1F1F1"
+                                                    Stroke="#D8C4B7"
+                                                    StrokeThickness="1"
+                                                    StrokeShape="RoundRectangle 18" />
+                                        </Grid>
+                                    </Border>
+                                    <Border Grid.Row="1"
+                                            Grid.Column="1"
+                                            Stroke="#BF9277"
+                                            StrokeThickness="1.6"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid HeightRequest="174">
+                                            <Border BackgroundColor="#F1F1F1"
+                                                    Stroke="#D8C4B7"
+                                                    StrokeThickness="1"
+                                                    StrokeShape="RoundRectangle 18" />
+                                        </Grid>
+                                    </Border>
+                                </Grid>
 
-                                            <Grid RowDefinitions="*,Auto"
-                                                  RowSpacing="8">
-                                                <Border BackgroundColor="#FFFDFC"
-                                                        Stroke="#D9C2B2"
-                                                        StrokeThickness="1.4"
-                                                        Padding="8">
-                                                    <Border.StrokeShape>
-                                                        <RoundRectangle CornerRadius="16" />
-                                                    </Border.StrokeShape>
-                                                    <Grid>
-                                                        <Label Text="{Binding PreviewText}"
-                                                               TextColor="{Binding SlotTextColor}"
-                                                               FontFamily="Montserrat-SemiBold"
-                                                               FontSize="13"
-                                                               HorizontalTextAlignment="Center"
-                                                               VerticalTextAlignment="Center"
-                                                               LineBreakMode="WordWrap"
-                                                               MaxLines="3" />
-                                                    </Grid>
-                                                </Border>
+                                <Grid x:Name="TopCardsSection"
+                                      ColumnDefinitions="*,*"
+                                      ColumnSpacing="12"
+                                      RowSpacing="12">
+                                    <Border BackgroundColor="{Binding OverallsCardBackgroundColor}"
+                                            Stroke="{Binding OverallsCardBorderColor}"
+                                            StrokeThickness="{Binding OverallsCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding OverallsCardBackgroundColor}" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="{Binding OverallsImageBackgroundColor}"
+                                                    Stroke="{Binding OverallsImageBorderColor}"
+                                                    StrokeThickness="1"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="overalls_skin1_blue.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="OverallsActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    Style="{StaticResource PanelButtonStyle}"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    TextTransform="None"
+                                                    Clicked="OnOverallsClicked" />
+                                        </Grid>
+                                    </Border>
 
-                                                <Button Grid.Row="1"
-                                                        Text="{Binding ActionText}"
-                                                        Clicked="OnSlotActionClicked"
-                                                        BindingContext="{Binding .}"
-                                                        BackgroundColor="{Binding ActionBackgroundColor}"
-                                                        TextColor="{Binding ActionTextColor}"
-                                                        BorderColor="{Binding ActionBorderColor}"
-                                                        BorderWidth="1.4"
-                                                        CornerRadius="16"
-                                                        HeightRequest="36"
-                                                        FontFamily="Montserrat-SemiBold"
-                                                        FontSize="12"
-                                                        Shadow="{x:Null}" />
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </FlexLayout>
+                                    <Border Grid.Column="1"
+                                            BackgroundColor="{Binding TShirtCardBackgroundColor}"
+                                            Stroke="{Binding TShirtCardBorderColor}"
+                                            StrokeThickness="{Binding TShirtCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding TShirtCardBackgroundColor}" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="{Binding TShirtImageBackgroundColor}"
+                                                    Stroke="{Binding TShirtImageBorderColor}"
+                                                    StrokeThickness="1"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="t_shirt_mechmat.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="TShirtActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    Style="{StaticResource PanelButtonStyle}"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    TextTransform="None"
+                                                    Clicked="OnTShirtClicked" />
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Grid.Row="1"
+                                            BackgroundColor="{Binding BeltCardBackgroundColor}"
+                                            Stroke="{Binding BeltCardBorderColor}"
+                                            StrokeThickness="{Binding BeltCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding BeltCardBackgroundColor}" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="{Binding BeltImageBackgroundColor}"
+                                                    Stroke="{Binding BeltImageBorderColor}"
+                                                    StrokeThickness="1"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="belt_1_brown.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="BeltActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    Style="{StaticResource PanelButtonStyle}"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    TextTransform="None"
+                                                    Clicked="OnBeltClicked" />
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+
+                                <Grid x:Name="PaletteCardsSection"
+                                      ColumnDefinitions="*,*"
+                                      ColumnSpacing="12"
+                                      RowSpacing="12">
+                                    <Border BackgroundColor="{Binding PaletteCardBackgroundColor}"
+                                            Stroke="{Binding PaletteCardBorderColor}"
+                                            StrokeThickness="{Binding PaletteCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding PaletteCardBackgroundColor}" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="{Binding PaletteImageBackgroundColor}"
+                                                    Stroke="{Binding PaletteImageBorderColor}"
+                                                    StrokeThickness="1"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="rabbit_1_warm_bg_skintone.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="112"
+                                                       WidthRequest="112" />
+                                            </Border>
+                                            <Button x:Name="PaletteActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    Style="{StaticResource PanelButtonStyle}"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    TextTransform="None"
+                                                    Clicked="OnPaletteVariantClicked" />
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </VerticalStackLayout>
                         </ScrollView>
                     </Grid>
                 </Border>
