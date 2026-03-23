@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Maui.ApplicationModel;
+using Plugin.LocalNotification;
 using QuestDay.Messages;
 using QuestDay.Models;
 using QuestDay.Services;
@@ -120,6 +121,9 @@ namespace QuestDay.ViewModels
                 Debug.WriteLine($"Отправка сообщения о новой привычке: {habit.Name}, Id: {habit.Id}");
                 WeakReferenceMessenger.Default.Send(new NewHabitMessage(habit));
 
+                // Планируем уведомление для новой привычки
+                await ScheduleHabitNotification(habit);
+
                 await Shell.Current.DisplayAlert("Успех", $"Привычка '{habit.Name}' добавлена!", "OK");
                 Name = string.Empty;
                 Description = string.Empty;
@@ -173,5 +177,54 @@ namespace QuestDay.ViewModels
                 await Shell.Current.DisplayAlert("Заполните форму", message, "OK");
             }
         }
+
+        private async Task ScheduleHabitNotification(Habit habit)
+        {
+            if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
+            {
+                await LocalNotificationCenter.Current.RequestNotificationPermission();
+            }
+
+            foreach (var day in habit.SelectedDays)
+            {   
+                DateTime notifyTime = GetNextOccurrence(day, 16, 15);
+            
+                var request = new NotificationRequest
+                {
+                    NotificationId = habit.GetNotificationId(day),
+                    Title = "QuestDay: Время для вашей привычки!",
+                    Description = habit.Description,
+                    Subtitle = habit.Name,
+                    BadgeNumber = 1,
+                    
+                    Schedule = new NotificationRequestSchedule
+                    {
+                        NotifyTime = notifyTime,
+                        NotifyRepeatInterval = TimeSpan.FromDays(7) 
+                    },
+
+                    Image = new NotificationImage
+                    {
+                        ResourceName = "appicon.png" 
+                    },
+
+                    ReturningData = "page_to_open=Details&id=" + habit.Id
+                };
+
+                await LocalNotificationCenter.Current.Show(request);        
+            }
+        }
+
+        private DateTime GetNextOccurrence(DayOfWeek day, int hour, int minute)
+        {
+            DateTime start = DateTime.Now.Date.AddHours(hour).AddMinutes(minute);
+            if (DateTime.Now >= start) start = start.AddDays(1);
+
+            while (start.DayOfWeek != day)
+            {
+                start = start.AddDays(1);
+            }
+            return start;
+        }    
     }
 }

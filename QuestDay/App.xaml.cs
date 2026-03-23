@@ -1,5 +1,9 @@
 ﻿using Microsoft.Maui.Controls;
 using QuestDay.Services;
+using QuestDay.Models;
+using QuestDay.Resources;
+using Plugin.LocalNotification;
+using Plugin.LocalNotification.EventArgs;
 
 namespace QuestDay
 {
@@ -11,6 +15,7 @@ namespace QuestDay
         {
             InitializeComponent();
             _habitService = habitService;
+            LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
 
             MainPage = new AppShell();
         }
@@ -38,5 +43,14 @@ namespace QuestDay
         {
             base.OnResume();
         }
+
+        private void OnNotificationTapped(NotificationActionEventArgs e)
+        {
+            if (e.IsTapped)
+            {
+                // Логика перехода на нужную страницу на основе e.Request.ReturningData
+                // Shell.Current.GoToAsync("///DetailsPage");
+            }
+        }        
     }
 }

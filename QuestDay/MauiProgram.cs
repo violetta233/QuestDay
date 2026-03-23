@@ -1,5 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Plugin.LocalNotification;
+using QuestDay.Converters;
+using QuestDay.Models;
 using QuestDay.Services;
 using QuestDay.Converters;
 using QuestDay.ViewModels;
@@ -15,6 +18,7 @@ namespace QuestDay
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                .UseLocalNotification() // Регистрация сервиса для локальных уведомлений
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
