@@ -10,9 +10,9 @@ namespace QuestDay.Converters
         {
             if (value is bool isEnabled)
             {
-                return isEnabled ? Color.FromArgb("#4CAF50") : Color.FromArgb("#CCCCCC");
+                return isEnabled ? Color.FromArgb("#4CAF50") : Color.FromArgb("#E0E0E0");
             }
-            return Color.FromArgb("#CCCCCC");
+            return Color.FromArgb("#E0E0E0");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
