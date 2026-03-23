@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:QuestDay.Views"
+    x:Name="ThisShell"
     Shell.FlyoutBehavior="Disabled"
     Title="QuestDay">
 
@@ -24,31 +25,155 @@
                             <RoundRectangle CornerRadius="18" />
                         </Border.StrokeShape>
                         <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
-                            <ImageButton Source="home.png" 
-                                         Clicked="OnNavClicked" 
-                                         CommandParameter="MainPage"
-                                         HeightRequest="30" 
-                                         WidthRequest="30"/>
-                            <ImageButton Source="file.png" 
-                                         Clicked="OnNavClicked" 
-                                         CommandParameter="ListPage"
-                                         HeightRequest="30" 
-                                         WidthRequest="30"/>
-                            <ImageButton Source="plus.png" 
-                                         Clicked="OnNavClicked" 
-                                         CommandParameter="AddPage"
-                                         HeightRequest="30" 
-                                         WidthRequest="30"/>
-                            <ImageButton Source="setting.png" 
-                                         Clicked="OnNavClicked" 
-                                         CommandParameter="SettingPage"
-                                         HeightRequest="30" 
-                                         WidthRequest="30"/>
-                            <ImageButton Source="profile.png" 
-                                         Clicked="OnNavClicked" 
-                                         CommandParameter="userPage"
-                                         HeightRequest="30" 
-                                         WidthRequest="30"/>
+                            <Border Padding="10"
+                                    BackgroundColor="Transparent"
+                                    StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                 Value="MainPage">
+                                        <Setter Property="BackgroundColor" Value="#FFF3DC" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <ImageButton Source="home.png" 
+                                             BackgroundColor="Transparent"
+                                             Clicked="OnNavClicked" 
+                                             CommandParameter="MainPage"
+                                             HeightRequest="30" 
+                                             Opacity="0.55"
+                                             WidthRequest="30">
+                                    <ImageButton.Triggers>
+                                        <DataTrigger TargetType="ImageButton"
+                                                     Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                     Value="MainPage">
+                                            <Setter Property="Opacity" Value="1" />
+                                        </DataTrigger>
+                                    </ImageButton.Triggers>
+                                </ImageButton>
+                            </Border>
+
+                            <Border Padding="10"
+                                    BackgroundColor="Transparent"
+                                    StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                 Value="ListPage">
+                                        <Setter Property="BackgroundColor" Value="#FFF3DC" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <ImageButton Source="file.png" 
+                                             BackgroundColor="Transparent"
+                                             Clicked="OnNavClicked" 
+                                             CommandParameter="ListPage"
+                                             HeightRequest="30" 
+                                             Opacity="0.55"
+                                             WidthRequest="30">
+                                    <ImageButton.Triggers>
+                                        <DataTrigger TargetType="ImageButton"
+                                                     Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                     Value="ListPage">
+                                            <Setter Property="Opacity" Value="1" />
+                                        </DataTrigger>
+                                    </ImageButton.Triggers>
+                                </ImageButton>
+                            </Border>
+
+                            <Border Padding="10"
+                                    BackgroundColor="Transparent"
+                                    StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                 Value="AddPage">
+                                        <Setter Property="BackgroundColor" Value="#FFF3DC" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <ImageButton Source="plus.png" 
+                                             BackgroundColor="Transparent"
+                                             Clicked="OnNavClicked" 
+                                             CommandParameter="AddPage"
+                                             HeightRequest="30" 
+                                             Opacity="0.55"
+                                             WidthRequest="30">
+                                    <ImageButton.Triggers>
+                                        <DataTrigger TargetType="ImageButton"
+                                                     Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                     Value="AddPage">
+                                            <Setter Property="Opacity" Value="1" />
+                                        </DataTrigger>
+                                    </ImageButton.Triggers>
+                                </ImageButton>
+                            </Border>
+
+                            <Border Padding="10"
+                                    BackgroundColor="Transparent"
+                                    StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                 Value="SettingPage">
+                                        <Setter Property="BackgroundColor" Value="#FFF3DC" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <ImageButton Source="setting.png" 
+                                             BackgroundColor="Transparent"
+                                             Clicked="OnNavClicked" 
+                                             CommandParameter="SettingPage"
+                                             HeightRequest="30" 
+                                             Opacity="0.55"
+                                             WidthRequest="30">
+                                    <ImageButton.Triggers>
+                                        <DataTrigger TargetType="ImageButton"
+                                                     Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                     Value="SettingPage">
+                                            <Setter Property="Opacity" Value="1" />
+                                        </DataTrigger>
+                                    </ImageButton.Triggers>
+                                </ImageButton>
+                            </Border>
+
+                            <Border Padding="10"
+                                    BackgroundColor="Transparent"
+                                    StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16" />
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                 Value="userPage">
+                                        <Setter Property="BackgroundColor" Value="#FFF3DC" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <ImageButton Source="profile.png" 
+                                             BackgroundColor="Transparent"
+                                             Clicked="OnNavClicked" 
+                                             CommandParameter="userPage"
+                                             HeightRequest="30" 
+                                             Opacity="0.55"
+                                             WidthRequest="30">
+                                    <ImageButton.Triggers>
+                                        <DataTrigger TargetType="ImageButton"
+                                                     Binding="{Binding Source={x:Reference ThisShell}, Path=CurrentRoute}"
+                                                     Value="userPage">
+                                            <Setter Property="Opacity" Value="1" />
+                                        </DataTrigger>
+                                    </ImageButton.Triggers>
+                                </ImageButton>
+                            </Border>
                         </FlexLayout>
                     </Border>
                 </Grid>

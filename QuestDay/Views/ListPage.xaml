@@ -7,8 +7,7 @@
     xmlns:models="clr-namespace:QuestDay.Models"       
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:converters="clr-namespace:QuestDay.Converters"
-    BackgroundColor="#FFFBF6"
-    ControlTemplate="{x:Null}">
+    BackgroundColor="#FFFBF6">
 
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
@@ -28,7 +27,7 @@
         </Style>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, *, Auto">
+    <Grid RowDefinitions="Auto, *">
         <HorizontalStackLayout Grid.Row="0" Margin="30, 20, 0, 0" Spacing="10">
             <Label Text="Список привычек"
                    HorizontalOptions="Start"
@@ -105,46 +104,5 @@
                        Margin="20" />
             </VerticalStackLayout>
         </ScrollView>
-
-        <Grid Grid.Row="2" IgnoreSafeArea="True" VerticalOptions="End">
-            <Border 
-                Margin="10,0,10,25"
-                HeightRequest="65"
-                HorizontalOptions="Fill"
-                BackgroundColor="White"
-                Stroke="#FFCD72" 
-                StrokeThickness="2">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="18" />
-                </Border.StrokeShape>
-                <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
-                    <ImageButton Source="home.png" 
-                                 Clicked="OnNavClicked" 
-                                 CommandParameter="MainPage"
-                                 HeightRequest="30" 
-                                 WidthRequest="30"/>
-                    <ImageButton Source="file.png" 
-                                 Clicked="OnNavClicked" 
-                                 CommandParameter="ListPage"
-                                 HeightRequest="30" 
-                                 WidthRequest="30"/>
-                    <ImageButton Source="plus.png" 
-                                 Clicked="OnNavClicked" 
-                                 CommandParameter="AddPage"
-                                 HeightRequest="30" 
-                                 WidthRequest="30"/>
-                    <ImageButton Source="setting.png" 
-                                 Clicked="OnNavClicked" 
-                                 CommandParameter="SettingPage"
-                                 HeightRequest="30" 
-                                 WidthRequest="30"/>
-                    <ImageButton Source="profile.png" 
-                                 Clicked="OnNavClicked" 
-                                 CommandParameter="userPage"
-                                 HeightRequest="30" 
-                                 WidthRequest="30"/>
-                </FlexLayout>
-            </Border>
-        </Grid>
     </Grid>
 </ContentPage>
