@@ -1,27 +1,20 @@
 ﻿using Microsoft.Maui.Controls;
-using QuestDay.Services;
-using QuestDay.Models;
-using QuestDay.Resources;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.EventArgs;
+using QuestDay.Services;
 
 namespace QuestDay
 {
-public partial class App : Application
-{
-    private readonly IHabitService _habitService;
-    public static AvatarAppearanceService AvatarAppearance { get; private set; } = null!;
-
-    public App(IHabitService habitService, AvatarAppearanceService avatarAppearance)
+    public partial class App : Application
     {
-        InitializeComponent();
-        _habitService = habitService;
-        AvatarAppearance = avatarAppearance;
+        private readonly IHabitService _habitService;
+        public static AvatarAppearanceService AvatarAppearance { get; } = new AvatarAppearanceService();
 
         public App(IHabitService habitService)
         {
             InitializeComponent();
             _habitService = habitService;
+
             LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
 
             MainPage = new AppShell();
@@ -53,11 +46,15 @@ public partial class App : Application
 
         private void OnNotificationTapped(NotificationActionEventArgs e)
         {
-            if (e.IsTapped)
+            System.Diagnostics.Debug.WriteLine($"Уведомление нажато: {e.Request.NotificationId}");
+
+            MainThread.BeginInvokeOnMainThread(async () =>
             {
-                // Логика перехода на нужную страницу на основе e.Request.ReturningData
-                // Shell.Current.GoToAsync("///DetailsPage");
-            }
-        }        
+                var data = e.Request.ReturningData;
+                if (!string.IsNullOrEmpty(data) && data.Contains("id="))
+                {
+                }
+            });
+        }
     }
 }
