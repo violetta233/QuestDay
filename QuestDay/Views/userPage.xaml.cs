@@ -176,6 +176,7 @@ public partial class userPage : ContentPage
     {
         base.OnAppearing();
         SyncAvatarStateFromService();
+        EnsurePaletteIsEquipped();
         RefreshSlots();
         NotifyItemStateChanged();
     }
@@ -391,6 +392,7 @@ public partial class userPage : ContentPage
     private void InitializeWardrobeState()
     {
         SyncAvatarStateFromService();
+        EnsurePaletteIsEquipped();
 
         _activeCategory = WardrobeCategory.Hat;
         ActiveCategoryTitle = GetCategoryTitle(_activeCategory);
@@ -571,7 +573,14 @@ public partial class userPage : ContentPage
 
         if (IsSelectedItemEquipped(item))
         {
-            RemoveEquippedItem(category);
+            if (category == WardrobeCategory.Palette)
+            {
+                EquipAlternatePalette(item);
+            }
+            else
+            {
+                RemoveEquippedItem(category);
+            }
         }
         else
         {
@@ -758,6 +767,35 @@ public partial class userPage : ContentPage
         HatCardsSection.IsVisible = _activeCategory == WardrobeCategory.Hat;
         TopCardsSection.IsVisible = _activeCategory == WardrobeCategory.Top;
         PaletteCardsSection.IsVisible = _activeCategory == WardrobeCategory.Palette;
+    }
+
+    private void EnsurePaletteIsEquipped()
+    {
+        if (_equippedItems.TryGetValue(WardrobeCategory.Palette, out var equippedPalette) && equippedPalette is not null)
+        {
+            return;
+        }
+
+        var defaultPalette = _itemsByCategory[WardrobeCategory.Palette]
+            .FirstOrDefault(item => item.PreviewImage == DefaultPaletteImageName);
+
+        if (defaultPalette is not null)
+        {
+            EquipItem(defaultPalette);
+        }
+    }
+
+    private void EquipAlternatePalette(WardrobeItem currentItem)
+    {
+        var alternatePalette = _itemsByCategory[WardrobeCategory.Palette]
+            .FirstOrDefault(item => !string.Equals(item.PreviewImage, currentItem.PreviewImage, StringComparison.OrdinalIgnoreCase));
+
+        if (alternatePalette is null)
+        {
+            return;
+        }
+
+        EquipItem(alternatePalette);
     }
 
     private void UpdateRabbitImages()
