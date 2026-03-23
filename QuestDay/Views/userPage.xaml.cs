@@ -14,6 +14,11 @@ public partial class userPage : ContentPage
     private const string PaletteTitle = "\u041E\u043A\u0440\u0430\u0441\u043A\u0430";
     private const string WearText = "\u041D\u0430\u0434\u0435\u0442\u044C";
     private const string RemoveText = "\u0421\u043D\u044F\u0442\u044C";
+    private const string OverallsImageName = "overalls_skin1_blue.png";
+    private const string TShirtImageName = "t_shirt_mechmat.png";
+    private const string OverallsAndBeltImageName = "overalls_and_balt.png";
+    private const string DefaultPaletteImageName = "rabbit_1_warm_bg_skintone.png";
+    private const string WhitePaletteImageName = "rabbit_3_white_bg_skintone.png";
 
     private readonly Dictionary<WardrobeCategory, List<WardrobeItem>> _itemsByCategory;
     private readonly Dictionary<WardrobeCategory, WardrobeItem?> _equippedItems = [];
@@ -21,6 +26,7 @@ public partial class userPage : ContentPage
 
     private WardrobeCategory _activeCategory = WardrobeCategory.Hat;
     private string? _activeRabbitVariantImage;
+    private string _activeRabbitCompositeImage = DefaultPaletteImageName;
     private string? _activeTopImage;
     private string? _activeHatImage;
     private string _activeCategoryTitle = HatsTitle;
@@ -38,6 +44,12 @@ public partial class userPage : ContentPage
                 OnPropertyChanged(nameof(IsAlternateRabbitVisible));
             }
         }
+    }
+
+    public string ActiveRabbitCompositeImage
+    {
+        get => _activeRabbitCompositeImage;
+        set => SetProperty(ref _activeRabbitCompositeImage, value);
     }
 
     public string? ActiveTopImage
@@ -76,49 +88,60 @@ public partial class userPage : ContentPage
 
     public bool IsAlternateRabbitVisible => !string.IsNullOrWhiteSpace(ActiveRabbitVariantImage);
 
-    public string OverallsActionText => GetActionText("overalls_skin1_blue.png", WardrobeCategory.Top);
+    public string OverallsActionText => GetActionText(OverallsImageName, WardrobeCategory.Top);
 
-    public string TShirtActionText => GetActionText("t_shirt_mechmat.png", WardrobeCategory.Top);
+    public string TShirtActionText => GetActionText(TShirtImageName, WardrobeCategory.Top);
 
-    public string BeltActionText => GetActionText("belt_1_brown.png", WardrobeCategory.Top);
+    public string OverallsAndBeltActionText => GetActionText(OverallsAndBeltImageName, WardrobeCategory.Top);
 
-    public string PaletteActionText => GetActionText("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    public string PaletteActionText => GetActionText(DefaultPaletteImageName, WardrobeCategory.Palette);
 
-    public Color OverallsCardBackgroundColor => GetCardBackgroundColor("overalls_skin1_blue.png", WardrobeCategory.Top);
-    public Color OverallsCardBorderColor => GetCardBorderColor("overalls_skin1_blue.png", WardrobeCategory.Top);
-    public double OverallsCardBorderWidth => GetCardBorderWidth("overalls_skin1_blue.png", WardrobeCategory.Top);
-    public Color OverallsImageBackgroundColor => GetImageBackgroundColor("overalls_skin1_blue.png", WardrobeCategory.Top);
-    public Color OverallsImageBorderColor => GetImageBorderColor("overalls_skin1_blue.png", WardrobeCategory.Top);
-    public Color OverallsButtonBackgroundColor => GetButtonBackgroundColor("overalls_skin1_blue.png", WardrobeCategory.Top);
-    public Color OverallsButtonBorderColor => GetButtonBorderColor("overalls_skin1_blue.png", WardrobeCategory.Top);
-    public Color OverallsButtonTextColor => GetButtonTextColor("overalls_skin1_blue.png", WardrobeCategory.Top);
+    public string WhitePaletteActionText => GetActionText(WhitePaletteImageName, WardrobeCategory.Palette);
 
-    public Color TShirtCardBackgroundColor => GetCardBackgroundColor("t_shirt_mechmat.png", WardrobeCategory.Top);
-    public Color TShirtCardBorderColor => GetCardBorderColor("t_shirt_mechmat.png", WardrobeCategory.Top);
-    public double TShirtCardBorderWidth => GetCardBorderWidth("t_shirt_mechmat.png", WardrobeCategory.Top);
-    public Color TShirtImageBackgroundColor => GetImageBackgroundColor("t_shirt_mechmat.png", WardrobeCategory.Top);
-    public Color TShirtImageBorderColor => GetImageBorderColor("t_shirt_mechmat.png", WardrobeCategory.Top);
-    public Color TShirtButtonBackgroundColor => GetButtonBackgroundColor("t_shirt_mechmat.png", WardrobeCategory.Top);
-    public Color TShirtButtonBorderColor => GetButtonBorderColor("t_shirt_mechmat.png", WardrobeCategory.Top);
-    public Color TShirtButtonTextColor => GetButtonTextColor("t_shirt_mechmat.png", WardrobeCategory.Top);
+    public Color OverallsCardBackgroundColor => GetCardBackgroundColor(OverallsImageName, WardrobeCategory.Top);
+    public Color OverallsCardBorderColor => GetCardBorderColor(OverallsImageName, WardrobeCategory.Top);
+    public double OverallsCardBorderWidth => GetCardBorderWidth(OverallsImageName, WardrobeCategory.Top);
+    public Color OverallsImageBackgroundColor => GetImageBackgroundColor(OverallsImageName, WardrobeCategory.Top);
+    public Color OverallsImageBorderColor => GetImageBorderColor(OverallsImageName, WardrobeCategory.Top);
+    public Color OverallsButtonBackgroundColor => GetButtonBackgroundColor(OverallsImageName, WardrobeCategory.Top);
+    public Color OverallsButtonBorderColor => GetButtonBorderColor(OverallsImageName, WardrobeCategory.Top);
+    public Color OverallsButtonTextColor => GetButtonTextColor(OverallsImageName, WardrobeCategory.Top);
 
-    public Color BeltCardBackgroundColor => GetCardBackgroundColor("belt_1_brown.png", WardrobeCategory.Top);
-    public Color BeltCardBorderColor => GetCardBorderColor("belt_1_brown.png", WardrobeCategory.Top);
-    public double BeltCardBorderWidth => GetCardBorderWidth("belt_1_brown.png", WardrobeCategory.Top);
-    public Color BeltImageBackgroundColor => GetImageBackgroundColor("belt_1_brown.png", WardrobeCategory.Top);
-    public Color BeltImageBorderColor => GetImageBorderColor("belt_1_brown.png", WardrobeCategory.Top);
-    public Color BeltButtonBackgroundColor => GetButtonBackgroundColor("belt_1_brown.png", WardrobeCategory.Top);
-    public Color BeltButtonBorderColor => GetButtonBorderColor("belt_1_brown.png", WardrobeCategory.Top);
-    public Color BeltButtonTextColor => GetButtonTextColor("belt_1_brown.png", WardrobeCategory.Top);
+    public Color TShirtCardBackgroundColor => GetCardBackgroundColor(TShirtImageName, WardrobeCategory.Top);
+    public Color TShirtCardBorderColor => GetCardBorderColor(TShirtImageName, WardrobeCategory.Top);
+    public double TShirtCardBorderWidth => GetCardBorderWidth(TShirtImageName, WardrobeCategory.Top);
+    public Color TShirtImageBackgroundColor => GetImageBackgroundColor(TShirtImageName, WardrobeCategory.Top);
+    public Color TShirtImageBorderColor => GetImageBorderColor(TShirtImageName, WardrobeCategory.Top);
+    public Color TShirtButtonBackgroundColor => GetButtonBackgroundColor(TShirtImageName, WardrobeCategory.Top);
+    public Color TShirtButtonBorderColor => GetButtonBorderColor(TShirtImageName, WardrobeCategory.Top);
+    public Color TShirtButtonTextColor => GetButtonTextColor(TShirtImageName, WardrobeCategory.Top);
 
-    public Color PaletteCardBackgroundColor => GetCardBackgroundColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
-    public Color PaletteCardBorderColor => GetCardBorderColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
-    public double PaletteCardBorderWidth => GetCardBorderWidth("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
-    public Color PaletteImageBackgroundColor => GetImageBackgroundColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
-    public Color PaletteImageBorderColor => GetImageBorderColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
-    public Color PaletteButtonBackgroundColor => GetButtonBackgroundColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
-    public Color PaletteButtonBorderColor => GetButtonBorderColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
-    public Color PaletteButtonTextColor => GetButtonTextColor("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    public Color OverallsAndBeltCardBackgroundColor => GetCardBackgroundColor(OverallsAndBeltImageName, WardrobeCategory.Top);
+    public Color OverallsAndBeltCardBorderColor => GetCardBorderColor(OverallsAndBeltImageName, WardrobeCategory.Top);
+    public double OverallsAndBeltCardBorderWidth => GetCardBorderWidth(OverallsAndBeltImageName, WardrobeCategory.Top);
+    public Color OverallsAndBeltImageBackgroundColor => GetImageBackgroundColor(OverallsAndBeltImageName, WardrobeCategory.Top);
+    public Color OverallsAndBeltImageBorderColor => GetImageBorderColor(OverallsAndBeltImageName, WardrobeCategory.Top);
+    public Color OverallsAndBeltButtonBackgroundColor => GetButtonBackgroundColor(OverallsAndBeltImageName, WardrobeCategory.Top);
+    public Color OverallsAndBeltButtonBorderColor => GetButtonBorderColor(OverallsAndBeltImageName, WardrobeCategory.Top);
+    public Color OverallsAndBeltButtonTextColor => GetButtonTextColor(OverallsAndBeltImageName, WardrobeCategory.Top);
+
+    public Color PaletteCardBackgroundColor => GetCardBackgroundColor(DefaultPaletteImageName, WardrobeCategory.Palette);
+    public Color PaletteCardBorderColor => GetCardBorderColor(DefaultPaletteImageName, WardrobeCategory.Palette);
+    public double PaletteCardBorderWidth => GetCardBorderWidth(DefaultPaletteImageName, WardrobeCategory.Palette);
+    public Color PaletteImageBackgroundColor => GetImageBackgroundColor(DefaultPaletteImageName, WardrobeCategory.Palette);
+    public Color PaletteImageBorderColor => GetImageBorderColor(DefaultPaletteImageName, WardrobeCategory.Palette);
+    public Color PaletteButtonBackgroundColor => GetButtonBackgroundColor(DefaultPaletteImageName, WardrobeCategory.Palette);
+    public Color PaletteButtonBorderColor => GetButtonBorderColor(DefaultPaletteImageName, WardrobeCategory.Palette);
+    public Color PaletteButtonTextColor => GetButtonTextColor(DefaultPaletteImageName, WardrobeCategory.Palette);
+
+    public Color WhitePaletteCardBackgroundColor => GetCardBackgroundColor(WhitePaletteImageName, WardrobeCategory.Palette);
+    public Color WhitePaletteCardBorderColor => GetCardBorderColor(WhitePaletteImageName, WardrobeCategory.Palette);
+    public double WhitePaletteCardBorderWidth => GetCardBorderWidth(WhitePaletteImageName, WardrobeCategory.Palette);
+    public Color WhitePaletteImageBackgroundColor => GetImageBackgroundColor(WhitePaletteImageName, WardrobeCategory.Palette);
+    public Color WhitePaletteImageBorderColor => GetImageBorderColor(WhitePaletteImageName, WardrobeCategory.Palette);
+    public Color WhitePaletteButtonBackgroundColor => GetButtonBackgroundColor(WhitePaletteImageName, WardrobeCategory.Palette);
+    public Color WhitePaletteButtonBorderColor => GetButtonBorderColor(WhitePaletteImageName, WardrobeCategory.Palette);
+    public Color WhitePaletteButtonTextColor => GetButtonTextColor(WhitePaletteImageName, WardrobeCategory.Palette);
 
     public userPage()
     {
@@ -164,13 +187,14 @@ public partial class userPage : ContentPage
             [WardrobeCategory.Hat] = [],
             [WardrobeCategory.Top] =
             [
-                new WardrobeItem(WardrobeCategory.Top, "\u041A\u043E\u043C\u0431\u0438\u043D\u0435\u0437\u043E\u043D", "overalls_skin1_blue.png", "overalls_skin1_blue.png"),
-                new WardrobeItem(WardrobeCategory.Top, "\u0424\u0443\u0442\u0431\u043E\u043B\u043A\u0430", "t_shirt_mechmat.png", "t_shirt_mechmat.png"),
-                new WardrobeItem(WardrobeCategory.Top, "\u0420\u0435\u043C\u0435\u043D\u044C", "belt_1_brown.png", "belt_1_brown.png")
+                new WardrobeItem(WardrobeCategory.Top, "\u041A\u043E\u043C\u0431\u0438\u043D\u0435\u0437\u043E\u043D", OverallsImageName, OverallsImageName),
+                new WardrobeItem(WardrobeCategory.Top, "\u0424\u0443\u0442\u0431\u043E\u043B\u043A\u0430", TShirtImageName, TShirtImageName),
+                new WardrobeItem(WardrobeCategory.Top, "\u041A\u043E\u043C\u0431\u0438\u043D\u0435\u0437\u043E\u043D \u0441 \u0440\u0435\u043C\u043D\u0451\u043C", OverallsAndBeltImageName, OverallsAndBeltImageName)
             ],
             [WardrobeCategory.Palette] =
             [
-                new WardrobeItem(WardrobeCategory.Palette, "\u0421\u0432\u0435\u0442\u043B\u044B\u0439", "rabbit_1_warm_bg_skintone.png", "rabbit_1_warm_bg_skintone.png")
+                new WardrobeItem(WardrobeCategory.Palette, "\u0421\u0432\u0435\u0442\u043B\u044B\u0439", DefaultPaletteImageName, DefaultPaletteImageName),
+                new WardrobeItem(WardrobeCategory.Palette, "\u0411\u0435\u043B\u044B\u0439", WhitePaletteImageName, WhitePaletteImageName)
             ]
         };
     }
@@ -271,13 +295,15 @@ public partial class userPage : ContentPage
         RefreshSlots();
     }
 
-    private void OnOverallsClicked(object? sender, EventArgs e) => ToggleItem("overalls_skin1_blue.png", WardrobeCategory.Top);
+    private void OnOverallsClicked(object? sender, EventArgs e) => ToggleItem(OverallsImageName, WardrobeCategory.Top);
 
-    private void OnTShirtClicked(object? sender, EventArgs e) => ToggleItem("t_shirt_mechmat.png", WardrobeCategory.Top);
+    private void OnTShirtClicked(object? sender, EventArgs e) => ToggleItem(TShirtImageName, WardrobeCategory.Top);
 
-    private void OnBeltClicked(object? sender, EventArgs e) => ToggleItem("belt_1_brown.png", WardrobeCategory.Top);
+    private void OnOverallsAndBeltClicked(object? sender, EventArgs e) => ToggleItem(OverallsAndBeltImageName, WardrobeCategory.Top);
 
-    private void OnPaletteVariantClicked(object? sender, EventArgs e) => ToggleItem("rabbit_1_warm_bg_skintone.png", WardrobeCategory.Palette);
+    private void OnPaletteVariantClicked(object? sender, EventArgs e) => ToggleItem(DefaultPaletteImageName, WardrobeCategory.Palette);
+
+    private void OnWhitePaletteVariantClicked(object? sender, EventArgs e) => ToggleItem(WhitePaletteImageName, WardrobeCategory.Palette);
 
     private void OnPanelButtonPointerEntered(object? sender, PointerEventArgs e)
     {
@@ -346,6 +372,7 @@ public partial class userPage : ContentPage
         if (e.PropertyName is not nameof(AvatarAppearanceService.TopImage)
             and not nameof(AvatarAppearanceService.HatImage)
             and not nameof(AvatarAppearanceService.RabbitVariantImage)
+            and not nameof(AvatarAppearanceService.CurrentRabbitImage)
             and not nameof(AvatarAppearanceService.HasTopImage)
             and not nameof(AvatarAppearanceService.HasHatImage)
             and not nameof(AvatarAppearanceService.IsAlternateRabbitVisible))
@@ -382,6 +409,8 @@ public partial class userPage : ContentPage
         ActiveHatImage = _avatarAppearance.HatImage;
         ActiveTopImage = _avatarAppearance.TopImage;
         ActiveRabbitVariantImage = _avatarAppearance.RabbitVariantImage;
+        ActiveRabbitCompositeImage = _avatarAppearance.CurrentRabbitImage;
+        UpdateRabbitImages();
 
         _equippedItems[WardrobeCategory.Hat] = FindEquippedItem(WardrobeCategory.Hat, _avatarAppearance.HatImage);
         _equippedItems[WardrobeCategory.Top] = FindEquippedItem(WardrobeCategory.Top, _avatarAppearance.TopImage);
@@ -623,8 +652,9 @@ public partial class userPage : ContentPage
 
         OnPropertyChanged(nameof(OverallsActionText));
         OnPropertyChanged(nameof(TShirtActionText));
-        OnPropertyChanged(nameof(BeltActionText));
+        OnPropertyChanged(nameof(OverallsAndBeltActionText));
         OnPropertyChanged(nameof(PaletteActionText));
+        OnPropertyChanged(nameof(WhitePaletteActionText));
 
         OnPropertyChanged(nameof(OverallsCardBackgroundColor));
         OnPropertyChanged(nameof(OverallsCardBorderColor));
@@ -644,14 +674,14 @@ public partial class userPage : ContentPage
         OnPropertyChanged(nameof(TShirtButtonBorderColor));
         OnPropertyChanged(nameof(TShirtButtonTextColor));
 
-        OnPropertyChanged(nameof(BeltCardBackgroundColor));
-        OnPropertyChanged(nameof(BeltCardBorderColor));
-        OnPropertyChanged(nameof(BeltCardBorderWidth));
-        OnPropertyChanged(nameof(BeltImageBackgroundColor));
-        OnPropertyChanged(nameof(BeltImageBorderColor));
-        OnPropertyChanged(nameof(BeltButtonBackgroundColor));
-        OnPropertyChanged(nameof(BeltButtonBorderColor));
-        OnPropertyChanged(nameof(BeltButtonTextColor));
+        OnPropertyChanged(nameof(OverallsAndBeltCardBackgroundColor));
+        OnPropertyChanged(nameof(OverallsAndBeltCardBorderColor));
+        OnPropertyChanged(nameof(OverallsAndBeltCardBorderWidth));
+        OnPropertyChanged(nameof(OverallsAndBeltImageBackgroundColor));
+        OnPropertyChanged(nameof(OverallsAndBeltImageBorderColor));
+        OnPropertyChanged(nameof(OverallsAndBeltButtonBackgroundColor));
+        OnPropertyChanged(nameof(OverallsAndBeltButtonBorderColor));
+        OnPropertyChanged(nameof(OverallsAndBeltButtonTextColor));
 
         OnPropertyChanged(nameof(PaletteCardBackgroundColor));
         OnPropertyChanged(nameof(PaletteCardBorderColor));
@@ -661,6 +691,15 @@ public partial class userPage : ContentPage
         OnPropertyChanged(nameof(PaletteButtonBackgroundColor));
         OnPropertyChanged(nameof(PaletteButtonBorderColor));
         OnPropertyChanged(nameof(PaletteButtonTextColor));
+
+        OnPropertyChanged(nameof(WhitePaletteCardBackgroundColor));
+        OnPropertyChanged(nameof(WhitePaletteCardBorderColor));
+        OnPropertyChanged(nameof(WhitePaletteCardBorderWidth));
+        OnPropertyChanged(nameof(WhitePaletteImageBackgroundColor));
+        OnPropertyChanged(nameof(WhitePaletteImageBorderColor));
+        OnPropertyChanged(nameof(WhitePaletteButtonBackgroundColor));
+        OnPropertyChanged(nameof(WhitePaletteButtonBorderColor));
+        OnPropertyChanged(nameof(WhitePaletteButtonTextColor));
     }
 
     private void UpdateActionButtons()
@@ -680,11 +719,11 @@ public partial class userPage : ContentPage
             TShirtButtonTextColor);
 
         ApplyActionButtonState(
-            BeltActionButton,
-            BeltActionText,
-            BeltButtonBackgroundColor,
-            BeltButtonBorderColor,
-            BeltButtonTextColor);
+            OverallsAndBeltActionButton,
+            OverallsAndBeltActionText,
+            OverallsAndBeltButtonBackgroundColor,
+            OverallsAndBeltButtonBorderColor,
+            OverallsAndBeltButtonTextColor);
 
         ApplyActionButtonState(
             PaletteActionButton,
@@ -692,6 +731,13 @@ public partial class userPage : ContentPage
             PaletteButtonBackgroundColor,
             PaletteButtonBorderColor,
             PaletteButtonTextColor);
+
+        ApplyActionButtonState(
+            WhitePaletteActionButton,
+            WhitePaletteActionText,
+            WhitePaletteButtonBackgroundColor,
+            WhitePaletteButtonBorderColor,
+            WhitePaletteButtonTextColor);
     }
 
     private static void ApplyActionButtonState(Button? button, string text, Color backgroundColor, Color borderColor, Color textColor)
@@ -712,6 +758,19 @@ public partial class userPage : ContentPage
         HatCardsSection.IsVisible = _activeCategory == WardrobeCategory.Hat;
         TopCardsSection.IsVisible = _activeCategory == WardrobeCategory.Top;
         PaletteCardsSection.IsVisible = _activeCategory == WardrobeCategory.Palette;
+    }
+
+    private void UpdateRabbitImages()
+    {
+        if (PreviewRabbitImage is not null)
+        {
+            PreviewRabbitImage.Source = ActiveRabbitCompositeImage;
+        }
+
+        if (PanelRabbitImage is not null)
+        {
+            PanelRabbitImage.Source = ActiveRabbitCompositeImage;
+        }
     }
 }
 

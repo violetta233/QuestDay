@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:QuestDay.Views"
@@ -229,22 +229,13 @@
                            HeightRequest="485"
                            HorizontalOptions="Center"
                            VerticalOptions="End" />
-
-                    <Image Source="{Binding ActiveRabbitVariantImage}"
+                    <Image x:Name="PreviewRabbitImage"
+                           Source="{Binding ActiveRabbitCompositeImage}"
                            Aspect="AspectFit"
                            WidthRequest="385"
                            HeightRequest="485"
                            HorizontalOptions="Center"
-                           VerticalOptions="End"
-                           IsVisible="{Binding IsAlternateRabbitVisible}" />
-
-                    <Image Source="{Binding ActiveTopImage}"
-                           Aspect="AspectFit"
-                           WidthRequest="385"
-                           HeightRequest="485"
-                           HorizontalOptions="Center"
-                           VerticalOptions="End"
-                           IsVisible="{Binding HasTopImage}" />
+                           VerticalOptions="End" />
 
                     <Image Source="{Binding ActiveHatImage}"
                            Aspect="AspectFit"
@@ -280,7 +271,7 @@
                         <RoundRectangle CornerRadius="30" />
                     </Border.StrokeShape>
 
-                    <Grid RowDefinitions="Auto,*"
+                    <Grid RowDefinitions="Auto,Auto,*"
                           RowSpacing="10">
                         <Grid ColumnDefinitions="Auto,*"
                               ColumnSpacing="12">
@@ -302,56 +293,47 @@
                                    TextColor="#3D2B24" />
                         </Grid>
 
-                        <ScrollView Grid.Row="1"
-                                    HeightRequest="560"
+                        <Grid Grid.Row="1"
+                              HorizontalOptions="Center"
+                              VerticalOptions="Start"
+                              WidthRequest="226"
+                              HeightRequest="280"
+                              InputTransparent="True">
+                            <Image Source="rabbit_warm.png"
+                                   Aspect="AspectFit"
+                                   WidthRequest="224"
+                                   HeightRequest="272"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End" />
+                            <Image x:Name="PanelRabbitImage"
+                                   Source="{Binding ActiveRabbitCompositeImage}"
+                                   Aspect="AspectFit"
+                                   WidthRequest="224"
+                                   HeightRequest="272"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End" />
+
+                            <Image Source="{Binding ActiveHatImage}"
+                                   Aspect="AspectFit"
+                                   WidthRequest="106"
+                                   HeightRequest="106"
+                                   Margin="0,18,0,0"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Start"
+                                   IsVisible="{Binding HasHatImage}" />
+                        </Grid>
+
+                        <ScrollView Grid.Row="2"
                                     Margin="0,6,0,0"
                                     VerticalScrollBarVisibility="Never">
                             <VerticalStackLayout Spacing="16">
-                                <Grid HorizontalOptions="Center"
-                                      VerticalOptions="Center"
-                                      WidthRequest="226"
-                                      HeightRequest="280"
-                                      InputTransparent="True">
-                                    <Image Source="rabbit_warm.png"
-                                           Aspect="AspectFit"
-                                           WidthRequest="224"
-                                           HeightRequest="272"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="End" />
-
-                                    <Image Source="{Binding ActiveRabbitVariantImage}"
-                                           Aspect="AspectFit"
-                                           WidthRequest="224"
-                                           HeightRequest="272"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="End"
-                                           IsVisible="{Binding IsAlternateRabbitVisible}" />
-
-                                    <Image Source="{Binding ActiveTopImage}"
-                                           Aspect="AspectFit"
-                                           WidthRequest="224"
-                                           HeightRequest="272"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="End"
-                                           IsVisible="{Binding HasTopImage}" />
-
-                                    <Image Source="{Binding ActiveHatImage}"
-                                           Aspect="AspectFit"
-                                           WidthRequest="106"
-                                           HeightRequest="106"
-                                           Margin="0,18,0,0"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="Start"
-                                           IsVisible="{Binding HasHatImage}" />
-                                </Grid>
-
                                 <Grid  x:Name="HatCardsSection"
                                       ColumnDefinitions="*,*"
                                       ColumnSpacing="12"
                                       RowSpacing="12">
                                     <Border Style="{x:Null}"
-                                            Stroke="#BF9277"
-                                            StrokeThickness="1.6"
+                                            Stroke="#B6866C"
+                                            StrokeThickness="2"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
@@ -359,14 +341,14 @@
                                         </Border.Background>
                                         <Grid HeightRequest="174">
                                             <Border BackgroundColor="#F1F1F1"
-                                                    Stroke="#D8C4B7"
-                                                    StrokeThickness="1"
+                                                    Stroke="#C6A692"
+                                                    StrokeThickness="1.4"
                                                     StrokeShape="RoundRectangle 18" />
                                         </Grid>
                                     </Border>
                                     <Border Grid.Column="1"
-                                            Stroke="#BF9277"
-                                            StrokeThickness="1.6"
+                                            Stroke="#B6866C"
+                                            StrokeThickness="2"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
@@ -374,14 +356,14 @@
                                         </Border.Background>
                                         <Grid HeightRequest="174">
                                             <Border BackgroundColor="#F1F1F1"
-                                                    Stroke="#D8C4B7"
-                                                    StrokeThickness="1"
+                                                    Stroke="#C6A692"
+                                                    StrokeThickness="1.4"
                                                     StrokeShape="RoundRectangle 18" />
                                         </Grid>
                                     </Border>
                                     <Border Grid.Row="1"
-                                            Stroke="#BF9277"
-                                            StrokeThickness="1.6"
+                                            Stroke="#B6866C"
+                                            StrokeThickness="2"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
@@ -389,15 +371,15 @@
                                         </Border.Background>
                                         <Grid HeightRequest="174">
                                             <Border BackgroundColor="#F1F1F1"
-                                                    Stroke="#D8C4B7"
-                                                    StrokeThickness="1"
+                                                    Stroke="#C6A692"
+                                                    StrokeThickness="1.4"
                                                     StrokeShape="RoundRectangle 18" />
                                         </Grid>
                                     </Border>
                                     <Border Grid.Row="1"
                                             Grid.Column="1"
-                                            Stroke="#BF9277"
-                                            StrokeThickness="1.6"
+                                            Stroke="#B6866C"
+                                            StrokeThickness="2"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
@@ -405,20 +387,22 @@
                                         </Border.Background>
                                         <Grid HeightRequest="174">
                                             <Border BackgroundColor="#F1F1F1"
-                                                    Stroke="#D8C4B7"
-                                                    StrokeThickness="1"
+                                                    Stroke="#C6A692"
+                                                    StrokeThickness="1.4"
                                                     StrokeShape="RoundRectangle 18" />
                                         </Grid>
                                     </Border>
+
                                 </Grid>
 
                                 <Grid x:Name="TopCardsSection"
                                       ColumnDefinitions="*,*"
+                                      RowDefinitions="Auto,Auto"
                                       ColumnSpacing="12"
                                       RowSpacing="12">
                                     <Border BackgroundColor="#E8CCB8"
-                                            Stroke="{Binding OverallsCardBorderColor}"
-                                            StrokeThickness="{Binding OverallsCardBorderWidth}"
+                                            Stroke="{Binding OverallsAndBeltCardBorderColor}"
+                                            StrokeThickness="{Binding OverallsAndBeltCardBorderWidth}"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
@@ -428,17 +412,17 @@
                                               RowSpacing="10"
                                               HeightRequest="182">
                                             <Border BackgroundColor="#E7E7E7"
-                                                    Stroke="#CFCFCF"
-                                                    StrokeThickness="1"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
                                                     StrokeShape="RoundRectangle 18">
-                                                <Image Source="overalls_skin1_blue.png"
+                                                <Image Source="overalls_and_balt.png"
                                                        Aspect="AspectFit"
                                                        HorizontalOptions="Center"
                                                        VerticalOptions="Center"
                                                        HeightRequest="108"
                                                        WidthRequest="108" />
                                             </Border>
-                                            <Button x:Name="OverallsActionButton"
+                                            <Button x:Name="OverallsAndBeltActionButton"
                                                     Grid.Row="1"
                                                     Text="Надеть"
                                                     FontSize="11"
@@ -448,7 +432,7 @@
                                                     BorderWidth="2"
                                                     FontFamily="Montserrat-SemiBold"
                                                     TextTransform="None"
-                                                    Clicked="OnOverallsClicked" />
+                                                    Clicked="OnOverallsAndBeltClicked" />
                                         </Grid>
                                     </Border>
 
@@ -465,8 +449,8 @@
                                               RowSpacing="10"
                                               HeightRequest="182">
                                             <Border BackgroundColor="#E7E7E7"
-                                                    Stroke="#CFCFCF"
-                                                    StrokeThickness="1"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
                                                     StrokeShape="RoundRectangle 18">
                                                 <Image Source="t_shirt_mechmat.png"
                                                        Aspect="AspectFit"
@@ -490,9 +474,10 @@
                                     </Border>
 
                                     <Border Grid.Row="1"
+                                            Grid.Column="0"
                                             BackgroundColor="#E8CCB8"
-                                            Stroke="{Binding BeltCardBorderColor}"
-                                            StrokeThickness="{Binding BeltCardBorderWidth}"
+                                            Stroke="{Binding OverallsCardBorderColor}"
+                                            StrokeThickness="{Binding OverallsCardBorderWidth}"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
@@ -502,8 +487,8 @@
                                               RowSpacing="10"
                                               HeightRequest="182">
                                             <Border BackgroundColor="#E7E7E7"
-                                                    Stroke="#CFCFCF"
-                                                    StrokeThickness="1"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
                                                     StrokeShape="RoundRectangle 18">
                                                 <Image Source="overalls_skin1_blue.png"
                                                        Aspect="AspectFit"
@@ -512,7 +497,7 @@
                                                        HeightRequest="108"
                                                        WidthRequest="108" />
                                             </Border>
-                                            <Button x:Name="BeltActionButton"
+                                            <Button x:Name="OverallsActionButton"
                                                     Grid.Row="1"
                                                     Text="Надеть"
                                                     FontSize="11"
@@ -522,9 +507,10 @@
                                                     BorderWidth="2"
                                                     FontFamily="Montserrat-SemiBold"
                                                     TextTransform="None"
-                                                    Clicked="OnBeltClicked" />
+                                                    Clicked="OnOverallsClicked" />
                                         </Grid>
                                     </Border>
+
                                 </Grid>
 
                                 <Grid x:Name="PaletteCardsSection"
@@ -543,8 +529,8 @@
                                               RowSpacing="10"
                                               HeightRequest="182">
                                             <Border BackgroundColor="#E7E7E7"
-                                                    Stroke="#CFCFCF"
-                                                    StrokeThickness="1"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
                                                     StrokeShape="RoundRectangle 18">
                                                 <Image Source="rabbit_1_warm_bg_skintone.png"
                                                        Aspect="AspectFit"
@@ -564,6 +550,42 @@
                                                     FontFamily="Montserrat-SemiBold"
                                                     TextTransform="None"
                                                     Clicked="OnPaletteVariantClicked" />
+                                        </Grid>
+                                    </Border>
+                                    <Border Grid.Column="1"
+                                            BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding WhitePaletteCardBorderColor}"
+                                            StrokeThickness="{Binding WhitePaletteCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="rabbit_3_white_bg_skintone.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="112"
+                                                       WidthRequest="112" />
+                                            </Border>
+                                            <Button x:Name="WhitePaletteActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnWhitePaletteVariantClicked" />
                                         </Grid>
                                     </Border>
                                 </Grid>
