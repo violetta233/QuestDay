@@ -32,6 +32,7 @@ namespace QuestDay
 #endif
 
             builder.Services.AddSingleton<IHabitService, HabitService>();
+            builder.Services.AddSingleton<AvatarAppearanceService>();
 
             // Регистрация конвертеров
             builder.Services.AddSingleton<InverseBoolConverter>();

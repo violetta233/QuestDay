@@ -8,12 +8,33 @@
         HorizontalOptions="FillAndExpand">
         <Image Source="habit_home.png"
                Aspect="AspectFill" />
-        <Image Source="rabbit_warm.png"  
-               VerticalOptions="Center"
-               HorizontalOptions="Center"
-               Aspect="AspectFit"
-               WidthRequest="400"
-               HeightRequest="400" />
+        <Grid VerticalOptions="Center"
+              HorizontalOptions="Center"
+              WidthRequest="400"
+              HeightRequest="400"
+              InputTransparent="True">
+            <Image Source="rabbit_warm.png"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit"
+                   WidthRequest="400"
+                   HeightRequest="400" />
+            <Image x:Name="MainRabbitImage"
+                   Source="{Binding CurrentRabbitImage}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit"
+                   WidthRequest="400"
+                   HeightRequest="400" />
+            <Image Source="{Binding HatImage}"
+                   VerticalOptions="Start"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit"
+                   WidthRequest="230"
+                   HeightRequest="230"
+                   Margin="0,48,0,0"
+                   IsVisible="{Binding HasHatImage}" />
+        </Grid>
     </Grid>
 
 </ContentPage>
