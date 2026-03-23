@@ -280,8 +280,8 @@
                         <RoundRectangle CornerRadius="30" />
                     </Border.StrokeShape>
 
-                    <Grid RowDefinitions="Auto,Auto,*,Auto"
-                          RowSpacing="16">
+                    <Grid RowDefinitions="Auto,Auto,*"
+                          RowSpacing="14">
                         <Grid ColumnDefinitions="Auto,*"
                               ColumnSpacing="12">
                             <Button x:Name="BackButton"
@@ -305,106 +305,116 @@
                         <Grid Grid.Row="1"
                               HorizontalOptions="Center"
                               VerticalOptions="Center"
-                              WidthRequest="220"
-                              HeightRequest="280"
+                              WidthRequest="210"
+                              HeightRequest="250"
                               InputTransparent="True">
                             <Image Source="rabbit_warm.png"
                                    Aspect="AspectFit"
-                                   WidthRequest="210"
-                                   HeightRequest="270"
+                                   WidthRequest="190"
+                                   HeightRequest="235"
                                    HorizontalOptions="Center"
                                    VerticalOptions="End" />
 
                             <Image Source="{Binding ActiveRabbitVariantImage}"
                                    Aspect="AspectFit"
-                                   WidthRequest="210"
-                                   HeightRequest="270"
+                                   WidthRequest="190"
+                                   HeightRequest="235"
                                    HorizontalOptions="Center"
                                    VerticalOptions="End"
                                    IsVisible="{Binding IsAlternateRabbitVisible}" />
 
                             <Image Source="{Binding ActiveTopImage}"
                                    Aspect="AspectFit"
-                                   WidthRequest="210"
-                                   HeightRequest="270"
+                                   WidthRequest="190"
+                                   HeightRequest="235"
                                    HorizontalOptions="Center"
                                    VerticalOptions="End"
                                    IsVisible="{Binding HasTopImage}" />
 
                             <Image Source="{Binding ActiveHatImage}"
                                    Aspect="AspectFit"
-                                   WidthRequest="124"
-                                   HeightRequest="124"
-                                   Margin="0,18,0,0"
+                                   WidthRequest="116"
+                                   HeightRequest="116"
+                                   Margin="0,16,0,0"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Start"
                                    IsVisible="{Binding HasHatImage}" />
                         </Grid>
 
-                        <CollectionView Grid.Row="2"
-                                        ItemsSource="{Binding ActiveSlots}"
-                                        SelectionMode="None"
-                                        VerticalOptions="FillAndExpand">
-                            <CollectionView.ItemsLayout>
-                                <GridItemsLayout Orientation="Vertical"
-                                                 Span="3"
-                                                 VerticalItemSpacing="12"
-                                                 HorizontalItemSpacing="12" />
-                            </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="local:WardrobeSlot">
-                                    <Border BackgroundColor="{Binding SlotBackgroundColor}"
-                                            Stroke="{Binding SlotBorderColor}"
-                                            StrokeThickness="{Binding SlotBorderWidth}"
-                                            ClassId="slot"
-                                            HeightRequest="84"
-                                            WidthRequest="84"
-                                            Padding="6">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="18" />
-                                        </Border.StrokeShape>
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer Tapped="OnSlotTapped" />
-                                            <PointerGestureRecognizer PointerEntered="OnSlotPointerEntered"
-                                                                     PointerExited="OnSlotPointerExited" />
-                                        </Border.GestureRecognizers>
+                        <ScrollView Grid.Row="2"
+                                    HeightRequest="344"
+                                    VerticalOptions="Start">
+                            <FlexLayout BindableLayout.ItemsSource="{Binding ActiveSlots}"
+                                        HorizontalOptions="Center"
+                                        MaximumWidthRequest="250"
+                                        Wrap="Wrap"
+                                        Direction="Row"
+                                        JustifyContent="SpaceBetween"
+                                        AlignContent="Start">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="local:WardrobeSlot">
+                                        <Border BackgroundColor="{Binding SlotBackgroundColor}"
+                                                Stroke="{Binding SlotBorderColor}"
+                                                StrokeThickness="{Binding SlotBorderWidth}"
+                                                ClassId="slot"
+                                                Margin="0,0,0,14"
+                                                HeightRequest="146"
+                                                WidthRequest="118"
+                                                Padding="8">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="20" />
+                                            </Border.StrokeShape>
+                                            <Border.Shadow>
+                                                <Shadow Brush="#2E8A5F47"
+                                                        Offset="0,4"
+                                                        Radius="10"
+                                                        Opacity="0.18" />
+                                            </Border.Shadow>
+                                            <Border.GestureRecognizers>
+                                                <PointerGestureRecognizer PointerEntered="OnSlotPointerEntered"
+                                                                         PointerExited="OnSlotPointerExited" />
+                                            </Border.GestureRecognizers>
 
-                                        <Grid RowDefinitions="*,Auto"
-                                              RowSpacing="2">
-                                            <Image Source="{Binding PreviewImage}"
-                                                   Aspect="AspectFit"
-                                                   HeightRequest="42"
-                                                   WidthRequest="42"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center"
-                                                   IsVisible="{Binding HasPreviewImage}" />
+                                            <Grid RowDefinitions="*,Auto"
+                                                  RowSpacing="8">
+                                                <Border BackgroundColor="#FFFDFC"
+                                                        Stroke="#D9C2B2"
+                                                        StrokeThickness="1.4"
+                                                        Padding="8">
+                                                    <Border.StrokeShape>
+                                                        <RoundRectangle CornerRadius="16" />
+                                                    </Border.StrokeShape>
+                                                    <Grid>
+                                                        <Label Text="{Binding PreviewText}"
+                                                               TextColor="{Binding SlotTextColor}"
+                                                               FontFamily="Montserrat-SemiBold"
+                                                               FontSize="13"
+                                                               HorizontalTextAlignment="Center"
+                                                               VerticalTextAlignment="Center"
+                                                               LineBreakMode="WordWrap"
+                                                               MaxLines="3" />
+                                                    </Grid>
+                                                </Border>
 
-                                            <Label Grid.Row="1"
-                                                   Text="{Binding DisplayText}"
-                                                   TextColor="{Binding SlotTextColor}"
-                                                   FontFamily="Montserrat-SemiBold"
-                                                   FontSize="11"
-                                                   HorizontalTextAlignment="Center"
-                                                   VerticalTextAlignment="Center"
-                                                   LineBreakMode="TailTruncation"
-                                                   MaxLines="2" />
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-
-                        <Button x:Name="ActionButton"
-                                Grid.Row="3"
-                                Text="{Binding ActionButtonText}"
-                                Style="{StaticResource PanelButtonStyle}"
-                                Clicked="OnActionButtonClicked"
-                                IsEnabled="{Binding IsActionButtonEnabled}">
-                            <Button.GestureRecognizers>
-                                <PointerGestureRecognizer PointerEntered="OnPanelButtonPointerEntered"
-                                                         PointerExited="OnPanelButtonPointerExited" />
-                            </Button.GestureRecognizers>
-                        </Button>
+                                                <Button Grid.Row="1"
+                                                        Text="{Binding ActionText}"
+                                                        Clicked="OnSlotActionClicked"
+                                                        BindingContext="{Binding .}"
+                                                        BackgroundColor="{Binding ActionBackgroundColor}"
+                                                        TextColor="{Binding ActionTextColor}"
+                                                        BorderColor="{Binding ActionBorderColor}"
+                                                        BorderWidth="1.4"
+                                                        CornerRadius="16"
+                                                        HeightRequest="36"
+                                                        FontFamily="Montserrat-SemiBold"
+                                                        FontSize="12"
+                                                        Shadow="{x:Null}" />
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </FlexLayout>
+                        </ScrollView>
                     </Grid>
                 </Border>
             </Grid>

@@ -19,12 +19,10 @@ public partial class userPage : ContentPage
     private readonly Dictionary<WardrobeCategory, WardrobeItem?> _equippedItems = [];
 
     private WardrobeCategory _activeCategory = WardrobeCategory.Hat;
-    private WardrobeSlot? _selectedSlot;
     private string? _activeRabbitVariantImage;
     private string? _activeTopImage;
     private string? _activeHatImage;
     private string _activeCategoryTitle = HatsTitle;
-    private string _actionButtonText = WearText;
     private bool _isSelectionPanelOpen;
 
     public ObservableCollection<WardrobeSlot> ActiveSlots { get; } = [];
@@ -70,14 +68,6 @@ public partial class userPage : ContentPage
         get => _activeCategoryTitle;
         set => SetProperty(ref _activeCategoryTitle, value);
     }
-
-    public string ActionButtonText
-    {
-        get => _actionButtonText;
-        set => SetProperty(ref _actionButtonText, value);
-    }
-
-    public bool IsActionButtonEnabled => _selectedSlot is not null && _selectedSlot.Kind != WardrobeSlotKind.Placeholder;
 
     public bool HasTopImage => !string.IsNullOrWhiteSpace(ActiveTopImage);
 
@@ -197,31 +187,11 @@ public partial class userPage : ContentPage
         await CloseSelectionPanelAsync();
     }
 
-    private void OnSlotClicked(object? sender, EventArgs e)
-    {
-        if (sender is not Button { BindingContext: WardrobeSlot slot })
-        {
-            return;
-        }
-
-        SelectSlot(slot, applyImmediately: true);
-    }
-
-    private void OnSlotTapped(object? sender, TappedEventArgs e)
-    {
-        if (sender is not Border { BindingContext: WardrobeSlot slot })
-        {
-            return;
-        }
-
-        SelectSlot(slot, applyImmediately: true);
-    }
-
     private void OnSlotPointerEntered(object? sender, PointerEventArgs e)
     {
         if (sender is not PointerGestureRecognizer { Parent: Border border } ||
             border.BindingContext is not WardrobeSlot slot ||
-            slot.IsSelected)
+            slot.IsEquipped)
         {
             return;
         }
@@ -242,6 +212,17 @@ public partial class userPage : ContentPage
         border.Background = new SolidColorBrush(slot.SlotBackgroundColor);
         border.Stroke = slot.SlotBorderColor;
         border.Scale = 1.0;
+    }
+
+    private void OnSlotActionClicked(object? sender, EventArgs e)
+    {
+        if (sender is not Button { BindingContext: WardrobeSlot slot })
+        {
+            return;
+        }
+
+        ApplySlotSelection(slot);
+        RefreshSlots();
     }
 
     private void OnPanelButtonPointerEntered(object? sender, PointerEventArgs e)
@@ -272,17 +253,6 @@ public partial class userPage : ContentPage
         }
 
         button.Scale = 1.0;
-    }
-
-    private void OnActionButtonClicked(object? sender, EventArgs e)
-    {
-        if (_selectedSlot is null || _selectedSlot.Kind == WardrobeSlotKind.Placeholder)
-        {
-            return;
-        }
-
-        ApplySlotSelection(_selectedSlot);
-        RefreshSlots();
     }
 
     private async Task OpenCategoryAsync(WardrobeCategory category)
@@ -329,10 +299,6 @@ public partial class userPage : ContentPage
 
         _activeCategory = WardrobeCategory.Hat;
         ActiveCategoryTitle = GetCategoryTitle(_activeCategory);
-        _selectedSlot = null;
-        ActionButtonText = WearText;
-        OnPropertyChanged(nameof(IsActionButtonEnabled));
-
         SelectionPanel.IsVisible = false;
         SelectionPanel.TranslationX = 360;
         _isSelectionPanelOpen = false;
@@ -358,56 +324,9 @@ public partial class userPage : ContentPage
             ActiveSlots.Add(WardrobeSlot.CreatePlaceholder(_activeCategory, EmptyText));
         }
 
-        var slotToSelect = selectEquippedItem
-            ? GetDefaultSlotForCategory()
-            : _selectedSlot is not null
-                ? FindMatchingSlot(_selectedSlot)
-                : null;
-
-        SelectSlot(slotToSelect ?? removeSlot, applyImmediately: false);
-    }
-
-    private WardrobeSlot GetDefaultSlotForCategory()
-    {
-        var equippedItem = _equippedItems[_activeCategory];
-        if (equippedItem is null)
+        foreach (var slot in ActiveSlots)
         {
-            return ActiveSlots[0];
-        }
-
-        return ActiveSlots.First(slot => slot.Item == equippedItem);
-    }
-
-    private WardrobeSlot? FindMatchingSlot(WardrobeSlot sourceSlot)
-    {
-        if (sourceSlot.Kind == WardrobeSlotKind.Remove)
-        {
-            return ActiveSlots.FirstOrDefault(slot => slot.Kind == WardrobeSlotKind.Remove);
-        }
-
-        if (sourceSlot.Kind == WardrobeSlotKind.Item)
-        {
-            return ActiveSlots.FirstOrDefault(slot => slot.Item == sourceSlot.Item);
-        }
-
-        return ActiveSlots.FirstOrDefault(slot => slot.Kind == WardrobeSlotKind.Placeholder);
-    }
-
-    private void SelectSlot(WardrobeSlot slot, bool applyImmediately)
-    {
-        foreach (var existingSlot in ActiveSlots)
-        {
-            existingSlot.IsSelected = ReferenceEquals(existingSlot, slot);
-        }
-
-        _selectedSlot = slot;
-        UpdateActionButtonState();
-        OnPropertyChanged(nameof(IsActionButtonEnabled));
-
-        if (applyImmediately)
-        {
-            ApplySlotSelection(slot);
-            RefreshSlots();
+            slot.IsEquipped = slot.Kind == WardrobeSlotKind.Item && IsSelectedItemEquipped(slot.Item);
         }
     }
 
@@ -467,16 +386,6 @@ public partial class userPage : ContentPage
                 ActiveRabbitVariantImage = null;
                 break;
         }
-    }
-
-    private void UpdateActionButtonState()
-    {
-        ActionButtonText = _selectedSlot?.Kind switch
-        {
-            WardrobeSlotKind.Remove => RemoveText,
-            WardrobeSlotKind.Item => IsSelectedItemEquipped(_selectedSlot.Item) ? RemoveText : WearText,
-            _ => WearText
-        };
     }
 
     private bool IsSelectedItemEquipped(WardrobeItem? item)
@@ -552,7 +461,7 @@ public sealed class WardrobeItem
 
 public sealed class WardrobeSlot : INotifyPropertyChanged
 {
-    private bool _isSelected;
+    private bool _isEquipped;
 
     private WardrobeSlot(WardrobeSlotKind kind, WardrobeCategory category, WardrobeItem? item, string displayText)
     {
@@ -572,46 +481,92 @@ public sealed class WardrobeSlot : INotifyPropertyChanged
 
     public string DisplayText { get; }
 
-    public string? PreviewImage => Kind == WardrobeSlotKind.Item ? Item?.PreviewImage : null;
-
-    public bool HasPreviewImage => !string.IsNullOrWhiteSpace(PreviewImage);
-
-    public bool IsSelected
+    public bool IsEquipped
     {
-        get => _isSelected;
+        get => _isEquipped;
         set
         {
-            if (_isSelected == value)
+            if (_isEquipped == value)
             {
                 return;
             }
 
-            _isSelected = value;
+            _isEquipped = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(SlotBackgroundColor));
             OnPropertyChanged(nameof(SlotBorderColor));
             OnPropertyChanged(nameof(SlotBorderWidth));
             OnPropertyChanged(nameof(SlotTextColor));
+            OnPropertyChanged(nameof(ActionText));
+            OnPropertyChanged(nameof(ActionBackgroundColor));
+            OnPropertyChanged(nameof(ActionBorderColor));
+            OnPropertyChanged(nameof(ActionTextColor));
         }
     }
 
+    public string PreviewText => Kind switch
+    {
+        WardrobeSlotKind.Remove => "Снять\nтекущий",
+        WardrobeSlotKind.Item => Item?.Title ?? "Предмет",
+        _ => "Пустой\nслот"
+    };
+
+    public string ActionText => Kind switch
+    {
+        WardrobeSlotKind.Remove => "Снять",
+        WardrobeSlotKind.Item => IsEquipped ? "Снять" : "Надеть",
+        _ => "Надеть"
+    };
+
     public Color SlotBackgroundColor => Kind switch
     {
-        WardrobeSlotKind.Remove when IsSelected => Color.FromArgb("#FBE0D9"),
-        WardrobeSlotKind.Remove => Color.FromArgb("#FFF8F1"),
-        WardrobeSlotKind.Placeholder when IsSelected => Color.FromArgb("#F4E2D6"),
-        WardrobeSlotKind.Placeholder => Color.FromArgb("#FAF4EE"),
-        _ when IsSelected => Color.FromArgb("#FCE7C8"),
+        WardrobeSlotKind.Remove => Color.FromArgb("#F2E2D5"),
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#F6DEBF"),
+        WardrobeSlotKind.Item => Color.FromArgb("#F8EFE6"),
+        WardrobeSlotKind.Placeholder => Color.FromArgb("#FBF4ED"),
         _ => Color.FromArgb("#FFFDF9")
     };
 
-    public Color SlotBorderColor => IsSelected ? Color.FromArgb("#C9965A") : Color.FromArgb("#D9BFAE");
+    public Color SlotBorderColor => Kind switch
+    {
+        WardrobeSlotKind.Remove => Color.FromArgb("#C79A7E"),
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#C9965A"),
+        WardrobeSlotKind.Placeholder => Color.FromArgb("#DABFB0"),
+        _ => Color.FromArgb("#D0AF9A")
+    };
 
-    public double SlotBorderWidth => IsSelected ? 2 : 1.5;
+    public double SlotBorderWidth => Kind switch
+    {
+        WardrobeSlotKind.Remove => 2.0,
+        WardrobeSlotKind.Item when IsEquipped => 2.3,
+        _ => 1.8
+    };
 
     public Color SlotTextColor => Kind == WardrobeSlotKind.Placeholder
         ? Color.FromArgb("#A48C80")
         : Color.FromArgb("#4C382F");
+
+    public Color ActionBackgroundColor => Kind switch
+    {
+        WardrobeSlotKind.Remove => Color.FromArgb("#E9CBB6"),
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#F4EDE5"),
+        WardrobeSlotKind.Item => Color.FromArgb("#FFFFFF"),
+        _ => Color.FromArgb("#FFFFFF")
+    };
+
+    public Color ActionBorderColor => Kind switch
+    {
+        WardrobeSlotKind.Remove => Color.FromArgb("#CFA98D"),
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#D6C2B4"),
+        _ => Color.FromArgb("#E0D0C4")
+    };
+
+    public Color ActionTextColor => Kind switch
+    {
+        WardrobeSlotKind.Remove => Color.FromArgb("#5B4034"),
+        WardrobeSlotKind.Item when IsEquipped => Color.FromArgb("#8A63D2"),
+        _ => Color.FromArgb("#2C1F1A")
+    };
 
     public static WardrobeSlot CreateItemSlot(WardrobeItem item) => new(WardrobeSlotKind.Item, item.Category, item, item.Title);
 
