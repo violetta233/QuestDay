@@ -1,6 +1,6 @@
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
-
+using Plugin.Maui.Audio;
 namespace QuestDay.Views;
 
 public partial class SettingPage : ContentPage
@@ -90,6 +90,13 @@ public partial class SettingPage : ContentPage
     private void OnSoundSwitchToggled(object sender, ToggledEventArgs e)
     {
         Preferences.Default.Set(SoundEnabledKey, e.Value);
+        if (App.BackgroundMusic != null)
+        {
+            if (e.Value)
+                App.BackgroundMusic.Play();
+            else
+                App.BackgroundMusic.Stop();
+        }
     }
 
     private void OnQuoteSwitchToggled(object sender, ToggledEventArgs e)

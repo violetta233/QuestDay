@@ -59,6 +59,10 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+		<None Remove="Resources\Audio\background.mp3" />
+		<MauiAsset Include="Resources\Audio\background.mp3">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</MauiAsset>
 
 		<MauiSplashScreen Include="Resources\Splash\rabbit_splash.png" BaseSize="440,575" Color="#FFFBF6" />
 	</ItemGroup>
@@ -70,6 +74,7 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
 		<!--<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" /> -->
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.21" />
+		<PackageReference Include="Plugin.Maui.Audio" Version="4.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
