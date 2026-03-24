@@ -63,10 +63,6 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-		<None Remove="Resources\Audio\background.mp3" />
-		<MauiAsset Include="Resources\Audio\background.mp3">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</MauiAsset>
 
 		<MauiSplashScreen Include="Resources\Splash\rabbit_splash.png" BaseSize="440,575" Color="#FFFBF6" />
 	</ItemGroup>
@@ -112,6 +108,11 @@
 	  <MauiXaml Update="Views\userPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<MauiAsset Include="Resources\Audio\background_music.mp3" />
 	</ItemGroup>
 
 </Project>

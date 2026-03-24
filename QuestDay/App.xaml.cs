@@ -1,18 +1,16 @@
 ﻿using Microsoft.Maui.Controls;
 using Plugin.LocalNotification;
 using Plugin.LocalNotification.EventArgs;
-using QuestDay.Models;
-using QuestDay.Resources;
 using QuestDay.Services;
-using System.Collections.ObjectModel;
 using Plugin.Maui.Audio;
+
 namespace QuestDay
 {
     public partial class App : Application
     {
         private readonly IHabitService _habitService;
         public static AvatarAppearanceService AvatarAppearance { get; } = new AvatarAppearanceService();
-        public static IAudioPlayer BackgroundMusic { get; private set; }
+        public static IAudioPlayer? BackgroundMusic { get; private set; }
         private const string SoundEnabledKey = "SoundEnabled";
 
         public App(IHabitService habitService)
@@ -20,32 +18,56 @@ namespace QuestDay
             InitializeComponent();
             _habitService = habitService;
             LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
-            LoadBackgroundMusic();
-            MainPage = new AppShell();
-            Task.Run(async () =>
-            {
-                 await _habitService.InitializeAsync();
-            }).Wait();
+
+            Task.Run(async () => await LoadBackgroundMusicAsync()).Wait();
 
             MainPage = new AppShell();
         }
-        private async void LoadBackgroundMusic()
+
+        private async Task LoadBackgroundMusicAsync()
         {
             try
             {
-                using var stream = await FileSystem.OpenAppPackageFileAsync("Resources/Audio/background.mp3");
-                BackgroundMusic = AudioManager.Current.CreatePlayer(stream);
-                BackgroundMusic.Loop = true;
-                BackgroundMusic.Volume = 0.5;
-                bool isSoundEnabled = Preferences.Default.Get(SoundEnabledKey, true);
-                if (isSoundEnabled)
+                string[] possiblePaths =
                 {
-                    BackgroundMusic.Play();
+                    "background_music.mp3",
+                    "Audio/background_music.mp3",
+                    "Resources/Audio/background_music.mp3",
+                    "background_music"
+                };
+
+                foreach (var path in possiblePaths)
+                {
+                    try
+                    {
+                        var stream = await FileSystem.OpenAppPackageFileAsync(path);
+                        if (stream != null)
+                        {
+                            BackgroundMusic = AudioManager.Current.CreatePlayer(stream);
+                            BackgroundMusic.Loop = true;
+                            BackgroundMusic.Volume = 0.5;
+
+                            bool isSoundEnabled = Preferences.Default.Get(SoundEnabledKey, true);
+                            if (isSoundEnabled)
+                            {
+                                BackgroundMusic.Play();
+                            }
+
+                            System.Diagnostics.Debug.WriteLine($"Музыка загружена! Путь: {path}");
+                            return;
+                        }
+                    }
+                    catch
+                    {
+                    }
                 }
+
+                System.Diagnostics.Debug.WriteLine("Не удалось найти музыкальный файл");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Ошибка загрузки музыки: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
             }
         }
 
@@ -56,6 +78,13 @@ namespace QuestDay
             try
             {
                 await _habitService.InitializeAsync();
+
+                bool isSoundEnabled = Preferences.Default.Get(SoundEnabledKey, true);
+                if (isSoundEnabled && BackgroundMusic != null && !BackgroundMusic.IsPlaying)
+                {
+                    BackgroundMusic.Play();
+                    System.Diagnostics.Debug.WriteLine("Музыка запущена");
+                }
             }
             catch (Exception ex)
             {
@@ -66,24 +95,27 @@ namespace QuestDay
         protected override void OnSleep()
         {
             base.OnSleep();
+            if (BackgroundMusic?.IsPlaying == true)
+            {
+                BackgroundMusic.Pause();
+                System.Diagnostics.Debug.WriteLine("Музыка на паузе");
+            }
         }
 
         protected override void OnResume()
         {
             base.OnResume();
+            bool isSoundEnabled = Preferences.Default.Get(SoundEnabledKey, true);
+            if (isSoundEnabled && BackgroundMusic != null && !BackgroundMusic.IsPlaying)
+            {
+                BackgroundMusic.Play();
+                System.Diagnostics.Debug.WriteLine("Музыка возобновлена");
+            }
         }
 
         private void OnNotificationTapped(NotificationActionEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"Уведомление нажато: {e.Request.NotificationId}");
-
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                var data = e.Request.ReturningData;
-                if (!string.IsNullOrEmpty(data) && data.Contains("id="))
-                {
-                }
-            });
         }
     }
 }

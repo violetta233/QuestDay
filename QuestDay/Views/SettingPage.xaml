@@ -34,7 +34,6 @@
                         <Entry x:Name="NameEntry"
                                Grid.Column="1"
                                Placeholder="Имя"
-                               Text=""
                                FontSize="16"
                                TextColor="#333333"
                                PlaceholderColor="#CCCCCC"
@@ -61,7 +60,6 @@
                             <Entry x:Name="TimeEntry"
                                    Grid.Column="1"
                                    Placeholder="14:00"
-                                   Text="14:00"
                                    FontSize="16"
                                    Keyboard="Numeric"
                                    MaxLength="5"
@@ -72,6 +70,7 @@
                                    TextChanged="OnTimeEntryTextChanged" />
                             <Switch x:Name="ReminderSwitch" 
                                     Grid.Column="2"
+                                    IsToggled="True"
                                     Toggled="OnReminderSwitchToggled" />
                         </Grid>
 
@@ -83,7 +82,6 @@
                             <Entry x:Name="ReminderTextEntry"
                                    Grid.Column="1"
                                    Placeholder="Введите текст напоминания"
-                                   Text=""
                                    FontSize="14"
                                    TextColor="#333333"
                                    PlaceholderColor="#CCCCCC"
@@ -106,6 +104,7 @@
                                VerticalOptions="Center" />
                         <Switch x:Name="SoundSwitch" 
                                 Grid.Column="1"
+                                IsToggled="True"
                                 Toggled="OnSoundSwitchToggled" />
                     </Grid>
                 </Frame>
@@ -123,19 +122,20 @@
                                VerticalOptions="Center" />
                         <Switch x:Name="QuoteSwitch" 
                                 Grid.Column="1"
+                                IsToggled="True"
                                 Toggled="OnQuoteSwitchToggled" />
                     </Grid>
                 </Frame>
 
             </VerticalStackLayout>
         </ScrollView>
-        <Image Source="rabbitsetting.png"
-       Grid.Row="0"
-       HorizontalOptions="End"
-       VerticalOptions="End"
-       Margin="0,0,20,40"
-       WidthRequest="300"
-       HeightRequest="300"/>
-    </Grid>
 
+        <Image Source="rabbitsetting.png"
+               Grid.Row="0"
+               HorizontalOptions="End"
+               VerticalOptions="End"
+               Margin="0,0,20,40"
+               WidthRequest="300"
+               HeightRequest="300"/>
+    </Grid>
 </ContentPage>
