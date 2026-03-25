@@ -237,14 +237,6 @@
                            HorizontalOptions="Center"
                            VerticalOptions="End" />
 
-                    <Image Source="{Binding ActiveHatImage}"
-                           Aspect="AspectFit"
-                           WidthRequest="228"
-                           HeightRequest="228"
-                           Margin="0,40,0,0"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Start"
-                           IsVisible="{Binding HasHatImage}" />
                 </Grid>
 
                 <Border x:Name="SelectionPanel"
@@ -313,14 +305,6 @@
                                    HorizontalOptions="Center"
                                    VerticalOptions="End" />
 
-                            <Image Source="{Binding ActiveHatImage}"
-                                   Aspect="AspectFit"
-                                   WidthRequest="106"
-                                   HeightRequest="106"
-                                   Margin="0,18,0,0"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Start"
-                                   IsVisible="{Binding HasHatImage}" />
                         </Grid>
 
                         <ScrollView Grid.Row="2"
@@ -331,68 +315,77 @@
                                       ColumnDefinitions="*,*"
                                       ColumnSpacing="12"
                                       RowSpacing="12">
-                                    <Border Style="{x:Null}"
-                                            Stroke="#B6866C"
-                                            StrokeThickness="2"
+                                    <Border BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding Hat1CardBorderColor}"
+                                            StrokeThickness="{Binding Hat1CardBorderWidth}"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
-                                            <SolidColorBrush Color="#E8CCB8" />
+                                            <SolidColorBrush Color="{Binding Hat1CardBackgroundColor}" />
                                         </Border.Background>
-                                        <Grid HeightRequest="174">
-                                            <Border BackgroundColor="#F1F1F1"
-                                                    Stroke="#C6A692"
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
                                                     StrokeThickness="1.4"
-                                                    StrokeShape="RoundRectangle 18" />
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="hat_one.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="Hat1ActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnHat1Clicked" />
                                         </Grid>
                                     </Border>
                                     <Border Grid.Column="1"
-                                            Stroke="#B6866C"
-                                            StrokeThickness="2"
+                                            BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding Hat2CardBorderColor}"
+                                            StrokeThickness="{Binding Hat2CardBorderWidth}"
                                             Padding="10"
                                             StrokeShape="RoundRectangle 20">
                                         <Border.Background>
-                                            <SolidColorBrush Color="#E8CCB8" />
+                                            <SolidColorBrush Color="{Binding Hat2CardBackgroundColor}" />
                                         </Border.Background>
-                                        <Grid HeightRequest="174">
-                                            <Border BackgroundColor="#F1F1F1"
-                                                    Stroke="#C6A692"
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
                                                     StrokeThickness="1.4"
-                                                    StrokeShape="RoundRectangle 18" />
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="hat_two.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="Hat2ActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnHat2Clicked" />
                                         </Grid>
                                     </Border>
-                                    <Border Grid.Row="1"
-                                            Stroke="#B6866C"
-                                            StrokeThickness="2"
-                                            Padding="10"
-                                            StrokeShape="RoundRectangle 20">
-                                        <Border.Background>
-                                            <SolidColorBrush Color="#E8CCB8" />
-                                        </Border.Background>
-                                        <Grid HeightRequest="174">
-                                            <Border BackgroundColor="#F1F1F1"
-                                                    Stroke="#C6A692"
-                                                    StrokeThickness="1.4"
-                                                    StrokeShape="RoundRectangle 18" />
-                                        </Grid>
-                                    </Border>
-                                    <Border Grid.Row="1"
-                                            Grid.Column="1"
-                                            Stroke="#B6866C"
-                                            StrokeThickness="2"
-                                            Padding="10"
-                                            StrokeShape="RoundRectangle 20">
-                                        <Border.Background>
-                                            <SolidColorBrush Color="#E8CCB8" />
-                                        </Border.Background>
-                                        <Grid HeightRequest="174">
-                                            <Border BackgroundColor="#F1F1F1"
-                                                    Stroke="#C6A692"
-                                                    StrokeThickness="1.4"
-                                                    StrokeShape="RoundRectangle 18" />
-                                        </Grid>
-                                    </Border>
-
                                 </Grid>
 
                                 <Grid x:Name="TopCardsSection"

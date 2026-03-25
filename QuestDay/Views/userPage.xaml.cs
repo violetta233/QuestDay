@@ -14,6 +14,8 @@ public partial class userPage : ContentPage
     private const string PaletteTitle = "\u041E\u043A\u0440\u0430\u0441\u043A\u0430";
     private const string WearText = "\u041D\u0430\u0434\u0435\u0442\u044C";
     private const string RemoveText = "\u0421\u043D\u044F\u0442\u044C";
+    private const string Hat1ImageName = "hat_one.png";
+    private const string Hat2ImageName = "hat_two.png";
     private const string OverallsImageName = "overalls_skin1_blue.png";
     private const string TShirtImageName = "t_shirt_mechmat.png";
     private const string OverallsAndBeltImageName = "overalls_and_balt.png";
@@ -94,6 +96,10 @@ public partial class userPage : ContentPage
 
     public string OverallsAndBeltActionText => GetActionText(OverallsAndBeltImageName, WardrobeCategory.Top);
 
+    public string Hat1ActionText => GetActionText(Hat1ImageName, WardrobeCategory.Hat);
+
+    public string Hat2ActionText => GetActionText(Hat2ImageName, WardrobeCategory.Hat);
+
     public string PaletteActionText => GetActionText(DefaultPaletteImageName, WardrobeCategory.Palette);
 
     public string WhitePaletteActionText => GetActionText(WhitePaletteImageName, WardrobeCategory.Palette);
@@ -124,6 +130,24 @@ public partial class userPage : ContentPage
     public Color OverallsAndBeltButtonBackgroundColor => GetButtonBackgroundColor(OverallsAndBeltImageName, WardrobeCategory.Top);
     public Color OverallsAndBeltButtonBorderColor => GetButtonBorderColor(OverallsAndBeltImageName, WardrobeCategory.Top);
     public Color OverallsAndBeltButtonTextColor => GetButtonTextColor(OverallsAndBeltImageName, WardrobeCategory.Top);
+
+    public Color Hat1CardBackgroundColor => GetCardBackgroundColor(Hat1ImageName, WardrobeCategory.Hat);
+    public Color Hat1CardBorderColor => GetCardBorderColor(Hat1ImageName, WardrobeCategory.Hat);
+    public double Hat1CardBorderWidth => GetCardBorderWidth(Hat1ImageName, WardrobeCategory.Hat);
+    public Color Hat1ImageBackgroundColor => GetImageBackgroundColor(Hat1ImageName, WardrobeCategory.Hat);
+    public Color Hat1ImageBorderColor => GetImageBorderColor(Hat1ImageName, WardrobeCategory.Hat);
+    public Color Hat1ButtonBackgroundColor => GetButtonBackgroundColor(Hat1ImageName, WardrobeCategory.Hat);
+    public Color Hat1ButtonBorderColor => GetButtonBorderColor(Hat1ImageName, WardrobeCategory.Hat);
+    public Color Hat1ButtonTextColor => GetButtonTextColor(Hat1ImageName, WardrobeCategory.Hat);
+
+    public Color Hat2CardBackgroundColor => GetCardBackgroundColor(Hat2ImageName, WardrobeCategory.Hat);
+    public Color Hat2CardBorderColor => GetCardBorderColor(Hat2ImageName, WardrobeCategory.Hat);
+    public double Hat2CardBorderWidth => GetCardBorderWidth(Hat2ImageName, WardrobeCategory.Hat);
+    public Color Hat2ImageBackgroundColor => GetImageBackgroundColor(Hat2ImageName, WardrobeCategory.Hat);
+    public Color Hat2ImageBorderColor => GetImageBorderColor(Hat2ImageName, WardrobeCategory.Hat);
+    public Color Hat2ButtonBackgroundColor => GetButtonBackgroundColor(Hat2ImageName, WardrobeCategory.Hat);
+    public Color Hat2ButtonBorderColor => GetButtonBorderColor(Hat2ImageName, WardrobeCategory.Hat);
+    public Color Hat2ButtonTextColor => GetButtonTextColor(Hat2ImageName, WardrobeCategory.Hat);
 
     public Color PaletteCardBackgroundColor => GetCardBackgroundColor(DefaultPaletteImageName, WardrobeCategory.Palette);
     public Color PaletteCardBorderColor => GetCardBorderColor(DefaultPaletteImageName, WardrobeCategory.Palette);
@@ -185,7 +209,11 @@ public partial class userPage : ContentPage
     {
         return new Dictionary<WardrobeCategory, List<WardrobeItem>>
         {
-            [WardrobeCategory.Hat] = [],
+            [WardrobeCategory.Hat] =
+            [
+                new WardrobeItem(WardrobeCategory.Hat, "Hat 1", Hat1ImageName, Hat1ImageName),
+                new WardrobeItem(WardrobeCategory.Hat, "Hat 2", Hat2ImageName, Hat2ImageName)
+            ],
             [WardrobeCategory.Top] =
             [
                 new WardrobeItem(WardrobeCategory.Top, "\u041A\u043E\u043C\u0431\u0438\u043D\u0435\u0437\u043E\u043D", OverallsImageName, OverallsImageName),
@@ -301,6 +329,10 @@ public partial class userPage : ContentPage
     private void OnTShirtClicked(object? sender, EventArgs e) => ToggleItem(TShirtImageName, WardrobeCategory.Top);
 
     private void OnOverallsAndBeltClicked(object? sender, EventArgs e) => ToggleItem(OverallsAndBeltImageName, WardrobeCategory.Top);
+
+    private void OnHat1Clicked(object? sender, EventArgs e) => ToggleItem(Hat1ImageName, WardrobeCategory.Hat);
+
+    private void OnHat2Clicked(object? sender, EventArgs e) => ToggleItem(Hat2ImageName, WardrobeCategory.Hat);
 
     private void OnPaletteVariantClicked(object? sender, EventArgs e) => ToggleItem(DefaultPaletteImageName, WardrobeCategory.Palette);
 
@@ -659,11 +691,31 @@ public partial class userPage : ContentPage
     {
         UpdateActionButtons();
 
+        OnPropertyChanged(nameof(Hat1ActionText));
+        OnPropertyChanged(nameof(Hat2ActionText));
         OnPropertyChanged(nameof(OverallsActionText));
         OnPropertyChanged(nameof(TShirtActionText));
         OnPropertyChanged(nameof(OverallsAndBeltActionText));
         OnPropertyChanged(nameof(PaletteActionText));
         OnPropertyChanged(nameof(WhitePaletteActionText));
+
+        OnPropertyChanged(nameof(Hat1CardBackgroundColor));
+        OnPropertyChanged(nameof(Hat1CardBorderColor));
+        OnPropertyChanged(nameof(Hat1CardBorderWidth));
+        OnPropertyChanged(nameof(Hat1ImageBackgroundColor));
+        OnPropertyChanged(nameof(Hat1ImageBorderColor));
+        OnPropertyChanged(nameof(Hat1ButtonBackgroundColor));
+        OnPropertyChanged(nameof(Hat1ButtonBorderColor));
+        OnPropertyChanged(nameof(Hat1ButtonTextColor));
+
+        OnPropertyChanged(nameof(Hat2CardBackgroundColor));
+        OnPropertyChanged(nameof(Hat2CardBorderColor));
+        OnPropertyChanged(nameof(Hat2CardBorderWidth));
+        OnPropertyChanged(nameof(Hat2ImageBackgroundColor));
+        OnPropertyChanged(nameof(Hat2ImageBorderColor));
+        OnPropertyChanged(nameof(Hat2ButtonBackgroundColor));
+        OnPropertyChanged(nameof(Hat2ButtonBorderColor));
+        OnPropertyChanged(nameof(Hat2ButtonTextColor));
 
         OnPropertyChanged(nameof(OverallsCardBackgroundColor));
         OnPropertyChanged(nameof(OverallsCardBorderColor));
@@ -713,6 +765,20 @@ public partial class userPage : ContentPage
 
     private void UpdateActionButtons()
     {
+        ApplyActionButtonState(
+            Hat1ActionButton,
+            Hat1ActionText,
+            Hat1ButtonBackgroundColor,
+            Hat1ButtonBorderColor,
+            Hat1ButtonTextColor);
+
+        ApplyActionButtonState(
+            Hat2ActionButton,
+            Hat2ActionText,
+            Hat2ButtonBackgroundColor,
+            Hat2ButtonBorderColor,
+            Hat2ButtonTextColor);
+
         ApplyActionButtonState(
             OverallsActionButton,
             OverallsActionText,

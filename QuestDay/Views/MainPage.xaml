@@ -26,14 +26,6 @@
                    Aspect="AspectFit"
                    WidthRequest="400"
                    HeightRequest="400" />
-            <Image Source="{Binding HatImage}"
-                   VerticalOptions="Start"
-                   HorizontalOptions="Center"
-                   Aspect="AspectFit"
-                   WidthRequest="230"
-                   HeightRequest="230"
-                   Margin="0,48,0,0"
-                   IsVisible="{Binding HasHatImage}" />
         </Grid>
     </Grid>
 
