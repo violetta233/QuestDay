@@ -9,17 +9,21 @@ namespace QuestDay
     public partial class App : Application
     {
         private readonly IHabitService _habitService;
+        private readonly IHouseStateService _houseStateService;
+
         public static AvatarAppearanceService AvatarAppearance { get; } = new AvatarAppearanceService();
         public static IAudioPlayer? BackgroundMusic { get; private set; }
         private const string SoundEnabledKey = "SoundEnabled";
 
-        public App(IHabitService habitService)
+        public App(IHabitService habitService, IHouseStateService houseStateService)
         {
             InitializeComponent();
             _habitService = habitService;
+            _houseStateService = houseStateService;
             LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
 
             Task.Run(async () => await LoadBackgroundMusicAsync()).Wait();
+            Task.Run(async () => await _houseStateService.UpdateStateAsync()).Wait();
 
             MainPage = new AppShell();
         }
@@ -78,6 +82,7 @@ namespace QuestDay
             try
             {
                 await _habitService.InitializeAsync();
+                await _houseStateService.UpdateStateAsync();
 
                 bool isSoundEnabled = Preferences.Default.Get(SoundEnabledKey, true);
                 if (isSoundEnabled && BackgroundMusic != null && !BackgroundMusic.IsPlaying)
@@ -88,10 +93,9 @@ namespace QuestDay
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка инициализации БД: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Ошибка инициализации: {ex.Message}");
             }
         }
-
         protected override void OnSleep()
         {
             base.OnSleep();
@@ -111,6 +115,8 @@ namespace QuestDay
                 BackgroundMusic.Play();
                 System.Diagnostics.Debug.WriteLine("Музыка возобновлена");
             }
+
+            Task.Run(async () => await _houseStateService.UpdateStateAsync());
         }
 
         private void OnNotificationTapped(NotificationActionEventArgs e)

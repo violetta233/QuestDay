@@ -19,19 +19,24 @@ namespace QuestDay.ViewModels
         public ObservableCollection<Habit> Habits { get; } = new ObservableCollection<Habit>();
 
         private readonly IHabitService _habitService;
+        private readonly IHouseStateService _houseStateService;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(LoadHabitsCommand))]
         private bool isBusy;
 
-        public HabitListViewModel(IHabitService habitService)
+        public int HabitsCount => Habits.Count;
+
+        public HabitListViewModel(IHabitService habitService, IHouseStateService houseStateService)
         {
             _habitService = habitService;
+            _houseStateService = houseStateService;
             WeakReferenceMessenger.Default.Register<NewHabitMessage>(this);
 
             Habits.CollectionChanged += (s, e) =>
             {
                 Debug.WriteLine($"Коллекция Habits изменилась. Новое количество: {Habits.Count}");
+                OnPropertyChanged(nameof(HabitsCount));
             };
         }
 
@@ -51,6 +56,8 @@ namespace QuestDay.ViewModels
                 {
                     Habits.Add(message.Value);
                     Debug.WriteLine($"Привычка добавлена в коллекцию. Всего привычек: {Habits.Count}");
+                    OnPropertyChanged(nameof(HabitsCount));
+                    await _houseStateService.UpdateStateAsync();
                 }
                 else
                 {
@@ -83,6 +90,9 @@ namespace QuestDay.ViewModels
                 Debug.WriteLine($"После добавления в ObservableCollection: {Habits.Count} привычек");
 
                 OnPropertyChanged(nameof(Habits));
+                OnPropertyChanged(nameof(HabitsCount));
+
+                await _houseStateService.UpdateStateAsync();
             }
             catch (Exception ex)
             {
@@ -110,6 +120,8 @@ namespace QuestDay.ViewModels
                     await _habitService.DeleteHabitAsync(habitToDelete);
                     Habits.Remove(habitToDelete);
                     Debug.WriteLine($"Привычка '{habitToDelete.Name}' удалена");
+                    OnPropertyChanged(nameof(HabitsCount));
+                    await _houseStateService.UpdateStateAsync();
                 }
                 catch (Exception ex)
                 {
@@ -123,14 +135,19 @@ namespace QuestDay.ViewModels
         private async Task ToggleHabitIsActiveStatus(Habit habitToToggle)
         {
             if (habitToToggle == null) return;
-            habitToToggle.IsActive = !habitToToggle.IsActive;
+
+            bool previousState = habitToToggle.IsActive;
+            habitToToggle.IsActive = !previousState;
+
             try
             {
                 await _habitService.UpdateHabitAsync(habitToToggle);
                 Debug.WriteLine($"Статус активности привычки '{habitToToggle.Name}' изменен на: {habitToToggle.IsActive}");
+                await _houseStateService.UpdateStateAsync();
             }
             catch (Exception ex)
             {
+                habitToToggle.IsActive = previousState;
                 Debug.WriteLine($"Ошибка обновления статуса: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось обновить статус активности привычки: {ex.Message}", "ОК");
             }
@@ -146,7 +163,9 @@ namespace QuestDay.ViewModels
         private async Task ToggleHabitCompletion(Habit habitToToggleCompletion)
         {
             if (habitToToggleCompletion == null) return;
-            habitToToggleCompletion.IsCompletedForToday = !habitToToggleCompletion.IsCompletedForToday;
+
+            bool previousState = habitToToggleCompletion.IsCompletedForToday;
+            habitToToggleCompletion.IsCompletedForToday = !previousState;
 
             try
             {
@@ -156,13 +175,43 @@ namespace QuestDay.ViewModels
                     habitToToggleCompletion.IsCompletedForToday
                 );
                 Debug.WriteLine($"Статус выполнения привычки '{habitToToggleCompletion.Name}' изменен на: {habitToToggleCompletion.IsCompletedForToday}");
+
+                var allHabits = await _habitService.GetHabitsAsync();
+                var activeHabits = allHabits.Where(h => h.IsActive).ToList();
+
+                bool allCompleted = true;
+                foreach (var habit in activeHabits)
+                {
+                    bool isCompleted = await _habitService.GetHabitCompletionStatusAsync(habit.Id, DateTime.Today);
+                    if (!isCompleted)
+                    {
+                        allCompleted = false;
+                        break;
+                    }
+                }
+
+                if (allCompleted && activeHabits.Count > 0)
+                {
+                    await _houseStateService.CleanHouseAsync();
+                    await Shell.Current.DisplayAlert("Отлично! 🎉",
+                        "Все привычки выполнены! Домик стал чище!", "OK");
+                }
+                else
+                {
+                    await _houseStateService.UpdateStateAsync();
+                }
             }
             catch (Exception ex)
             {
-                habitToToggleCompletion.IsCompletedForToday = !habitToToggleCompletion.IsCompletedForToday;
+                habitToToggleCompletion.IsCompletedForToday = previousState;
                 Debug.WriteLine($"Ошибка обновления выполнения: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось обновить статус выполнения привычки: {ex.Message}", "ОК");
             }
+        }
+
+        public async Task RefreshHabitsAsync()
+        {
+            await LoadHabitsCommand.ExecuteAsync(null);
         }
     }
 }

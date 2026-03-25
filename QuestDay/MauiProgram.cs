@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using Plugin.LocalNotification;
 using Plugin.Maui.Audio;
 using QuestDay.Converters;
-using QuestDay.Converters;
-using QuestDay.Models;
 using QuestDay.Services;
 using QuestDay.ViewModels;
 using QuestDay.Views;
@@ -19,7 +17,7 @@ namespace QuestDay
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
-                .UseLocalNotification() // Регистрация сервиса для локальных уведомлений
+                .UseLocalNotification()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -32,13 +30,11 @@ namespace QuestDay
             builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<IHabitService, HabitService>();
-            builder.Services.AddSingleton<AvatarAppearanceService>();
-
             // Регистрация сервисов
-            builder.Services.AddSingleton<IAudioManager>(AudioManager.Current);
-            builder.Services.AddSingleton<IBackgroundMusicService, BackgroundMusicService>();
             builder.Services.AddSingleton<IHabitService, HabitService>();
+            builder.Services.AddSingleton<IHouseStateService, HouseStateService>();
+            builder.Services.AddSingleton<AvatarAppearanceService>();
+            builder.Services.AddSingleton<IAudioManager>(AudioManager.Current);
 
             // Регистрация конвертеров
             builder.Services.AddSingleton<InverseBoolConverter>();
