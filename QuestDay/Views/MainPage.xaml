@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-              x:Class="QuestDay.Views.MainPage">
+             xmlns:views="clr-namespace:QuestDay.Views" 
+             x:Class="QuestDay.Views.MainPage">
 
     <Grid
         VerticalOptions="FillAndExpand" 
@@ -35,6 +36,9 @@
                    Margin="0,48,0,0"
                    IsVisible="{Binding HasHatImage}" />
         </Grid>
+        <views:QuoteView 
+            VerticalOptions="Start" 
+            Margin="0,80,0,0" />
     </Grid>
 
 </ContentPage>

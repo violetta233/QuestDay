@@ -102,6 +102,9 @@
 	  <MauiXaml Update="Resources\AppResources.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\QuoteView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\SettingPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -113,6 +116,13 @@
 
 	<ItemGroup>
 		<MauiAsset Include="Resources\Audio\background_music.mp3" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Compile Update="Views\QuoteView.xaml.cs">
+	    <DependentUpon>QuoteView.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 </Project>
