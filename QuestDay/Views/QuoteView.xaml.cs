@@ -1,25 +1,35 @@
 using QuestDay.Services;
+using Microsoft.Maui.Storage;
 
 namespace QuestDay.Views
 {
     public partial class QuoteView : ContentView
     {
         private readonly IQuoteService _quoteService = new QuoteService();
+        private const string QuotesEnabledKey = "QuotesEnabled";
 
         public QuoteView()
         {
             InitializeComponent();
-            ShowRandomQuote();
+            CheckAndShowQuote();
         }
 
-        private async void ShowRandomQuote()
+        private async void CheckAndShowQuote()
         {
-            var quote = await _quoteService.GetRandomQuoteAsync();
+            bool isQuotesEnabled = Preferences.Default.Get(QuotesEnabledKey, true);
 
-            if (quote != null)
+            if (isQuotesEnabled)
             {
-                QuoteLabel.Text = quote.Text;
-                QuoteContainer.IsVisible = true;
+                var quote = await _quoteService.GetRandomQuoteAsync();
+                if (quote != null)
+                {
+                    QuoteLabel.Text = quote.Text;
+                    QuoteContainer.IsVisible = true;
+                }
+            }
+            else
+            {
+                QuoteContainer.IsVisible = false;
             }
         }
 

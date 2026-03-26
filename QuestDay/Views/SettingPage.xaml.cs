@@ -21,17 +21,15 @@ public partial class SettingPage : ContentPage
     private void LoadAllSettings()
     {
         NameEntry.Text = Preferences.Default.Get(UserNameKey, "");
-
         TimeEntry.Text = Preferences.Default.Get(ReminderTimeKey, "14:00");
-
         ReminderTextEntry.Text = Preferences.Default.Get(ReminderTextKey, "");
-
         ReminderSwitch.IsToggled = Preferences.Default.Get(ReminderEnabledKey, true);
 
         bool soundEnabled = Preferences.Default.Get(SoundEnabledKey, true);
         SoundSwitch.IsToggled = soundEnabled;
 
-        QuoteSwitch.IsToggled = Preferences.Default.Get(QuotesEnabledKey, true);
+        bool quotesEnabled = Preferences.Default.Get(QuotesEnabledKey, true);
+        QuoteSwitch.IsToggled = quotesEnabled;
 
         UpdateReminderFieldsState();
     }
@@ -49,7 +47,6 @@ public partial class SettingPage : ContentPage
     private void OnNameTextChanged(object sender, TextChangedEventArgs e)
     {
         var text = NameEntry.Text?.Trim() ?? "";
-
         if (!string.IsNullOrEmpty(text))
         {
             Preferences.Default.Set(UserNameKey, text);
@@ -69,7 +66,6 @@ public partial class SettingPage : ContentPage
     private void OnTimeEntryTextChanged(object sender, TextChangedEventArgs e)
     {
         var text = TimeEntry.Text?.Trim() ?? "";
-
         if (!string.IsNullOrEmpty(text))
         {
             Preferences.Default.Set(ReminderTimeKey, text);
@@ -83,7 +79,6 @@ public partial class SettingPage : ContentPage
     private void OnReminderTextEntryTextChanged(object sender, TextChangedEventArgs e)
     {
         var text = ReminderTextEntry.Text?.Trim() ?? "";
-
         if (!string.IsNullOrEmpty(text))
         {
             Preferences.Default.Set(ReminderTextKey, text);
@@ -103,19 +98,20 @@ public partial class SettingPage : ContentPage
             if (e.Value)
             {
                 App.BackgroundMusic.Play();
-                System.Diagnostics.Debug.WriteLine("������ ��������");
+                System.Diagnostics.Debug.WriteLine("Музыка включена");
             }
             else
             {
                 App.BackgroundMusic.Pause();
-                System.Diagnostics.Debug.WriteLine("������ ���������");
+                System.Diagnostics.Debug.WriteLine("Музыка выключена");
             }
         }
     }
-
+   
     private void OnQuoteSwitchToggled(object sender, ToggledEventArgs e)
     {
         Preferences.Default.Set(QuotesEnabledKey, e.Value);
+        System.Diagnostics.Debug.WriteLine($"Цитаты {(e.Value ? "включены" : "выключены")}");
     }
 
     private async void OnNavClicked(object sender, EventArgs e)
@@ -131,7 +127,7 @@ public partial class SettingPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("������", $"�� ������� ������� ��������: {ex.Message}", "��");
+            await DisplayAlert("Ошибка", $"Не удалось открыть страницу: {ex.Message}", "ОК");
         }
     }
 
@@ -145,6 +141,12 @@ public partial class SettingPage : ContentPage
         if (soundEnabled && App.BackgroundMusic != null && !isMusicPlaying)
         {
             App.BackgroundMusic.Play();
+        }
+
+        bool quotesEnabled = Preferences.Default.Get(QuotesEnabledKey, true);
+        if (QuoteSwitch.IsToggled != quotesEnabled)
+        {
+            QuoteSwitch.IsToggled = quotesEnabled;
         }
     }
 }
