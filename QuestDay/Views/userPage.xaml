@@ -86,10 +86,24 @@
     </ContentPage.Resources>
 
     <Grid>
-        <Image Source="habit_home_base.png"
-               Aspect="AspectFill"
-               HorizontalOptions="Fill"
-               VerticalOptions="Fill" />
+        <Image x:Name="HouseBackgroundImage" 
+               Aspect="AspectFill" />
+        <Frame BackgroundColor="#FFFFFFCC"
+           CornerRadius="20"
+           Padding="12,8"
+           Margin="20,20,20,0"
+           VerticalOptions="Start"
+           HorizontalOptions="End"
+           HasShadow="False">
+            <VerticalStackLayout Spacing="4">
+                <Label x:Name="DirtyLevelLabel"
+                   FontSize="12"
+                   FontFamily="Montserrat-SemiBold"
+                   TextColor="#666666"
+                   HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Frame>
+
 
         <Grid Padding="16,22,16,108"
               ColumnDefinitions="148,*"
