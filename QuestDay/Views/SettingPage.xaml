@@ -71,6 +71,8 @@
                             <Switch x:Name="ReminderSwitch" 
                                     Grid.Column="2"
                                     IsToggled="True"
+                                    OnColor="#E0E0E0"
+                                    ThumbColor="#A7DFAF"
                                     Toggled="OnReminderSwitchToggled" />
                         </Grid>
 
@@ -105,6 +107,8 @@
                         <Switch x:Name="SoundSwitch" 
                                 Grid.Column="1"
                                 IsToggled="True"
+                                OnColor="#E0E0E0"
+                                ThumbColor="#A7DFAF"
                                 Toggled="OnSoundSwitchToggled" />
                     </Grid>
                 </Frame>
@@ -123,6 +127,8 @@
                         <Switch x:Name="QuoteSwitch" 
                                 Grid.Column="1"
                                 IsToggled="True"
+                                OnColor="#E0E0E0"
+                                ThumbColor="#A7DFAF"
                                 Toggled="OnQuoteSwitchToggled" />
                     </Grid>
                 </Frame>
