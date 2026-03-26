@@ -25,6 +25,7 @@ public partial class userPage : ContentPage
     private readonly Dictionary<WardrobeCategory, List<WardrobeItem>> _itemsByCategory;
     private readonly Dictionary<WardrobeCategory, WardrobeItem?> _equippedItems = [];
     private readonly AvatarAppearanceService _avatarAppearance;
+    private readonly IHouseStateService _houseStateService;
 
     private WardrobeCategory _activeCategory = WardrobeCategory.Hat;
     private string? _activeRabbitVariantImage;
@@ -167,17 +168,113 @@ public partial class userPage : ContentPage
     public Color WhitePaletteButtonBorderColor => GetButtonBorderColor(WhitePaletteImageName, WardrobeCategory.Palette);
     public Color WhitePaletteButtonTextColor => GetButtonTextColor(WhitePaletteImageName, WardrobeCategory.Palette);
 
-    public userPage()
+    public userPage(IHouseStateService houseStateService)
     {
         InitializeComponent();
         BindingContext = this;
+
+        _houseStateService = houseStateService;
+
+        _houseStateService.BackgroundChanged += OnBackgroundChanged;
 
         _avatarAppearance = App.AvatarAppearance;
         _avatarAppearance.PropertyChanged += OnAvatarAppearanceChanged;
         _itemsByCategory = CreateWardrobeItems();
         InitializeWardrobeState();
     }
+    private void OnBackgroundChanged(object sender, string imageName)
+    {
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            var state = await _houseStateService.GetCurrentStateAsync();
+            string userPageBackground = GetUserPageBackground(state.DirtyLevel);
 
+            if (HouseBackgroundImage != null)
+            {
+                HouseBackgroundImage.Source = userPageBackground;
+            }
+        });
+    }
+    private void OnDirtLevelChanged(object sender, int dirtyLevel)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            
+            string userPageBackground = GetUserPageBackground(dirtyLevel);
+            if (HouseBackgroundImage != null)
+            {
+                HouseBackgroundImage.Source = userPageBackground;
+            }
+
+            
+            if (DirtyLevelLabel != null)
+            {
+                int cleanliness = 100 - dirtyLevel;
+                string statusText = "";
+
+                if (dirtyLevel <= 30)
+                    statusText = "Чистый";
+                else if (dirtyLevel <= 70)
+                    statusText = "Грязный";
+                else
+                    statusText = "Очень грязный!";
+
+                DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
+
+                if (dirtyLevel > 70)
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
+                else if (dirtyLevel > 30)
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
+                else
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
+            }
+        });
+    }
+    private string GetUserPageBackground(int dirtyLevel)
+    {
+        if (dirtyLevel <= 30)
+            return "background_normal.png";  
+        else if (dirtyLevel <= 70)
+            return "background_bad.png"; 
+        else
+            return "background_very_bad.png";
+    }
+    private async void LoadHouseState()
+    {
+        var state = await _houseStateService.GetCurrentStateAsync();
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+           
+            string userPageBackground = GetUserPageBackground(state.DirtyLevel);
+            if (HouseBackgroundImage != null)
+            {
+                HouseBackgroundImage.Source = userPageBackground;
+            }
+
+            if (DirtyLevelLabel != null)
+            {
+                int cleanliness = 100 - state.DirtyLevel;
+                string statusText = "";
+
+                if (state.DirtyLevel <= 30)
+                    statusText = "Чистый";
+                else if (state.DirtyLevel <= 70)
+                    statusText = "Грязный";
+                else
+                    statusText = "Очень грязный!";
+
+                DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
+
+                if (state.DirtyLevel > 70)
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
+                else if (state.DirtyLevel > 30)
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
+                else
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
+            }
+        });
+    }
     protected override void OnSizeAllocated(double width, double height)
     {
         base.OnSizeAllocated(width, height);
@@ -196,13 +293,21 @@ public partial class userPage : ContentPage
         RabbitPreview.Scale = isCompact ? 0.93 : 1.0;
     }
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
+        await _houseStateService.UpdateStateAsync();
+        LoadHouseState();
         SyncAvatarStateFromService();
-        EnsurePaletteIsEquipped();
+        //EnsurePaletteIsEquipped();
         RefreshSlots();
         NotifyItemStateChanged();
+    }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        _houseStateService.BackgroundChanged -= OnBackgroundChanged;
     }
 
     private Dictionary<WardrobeCategory, List<WardrobeItem>> CreateWardrobeItems()
