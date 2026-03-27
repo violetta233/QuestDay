@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using QuestDay.ViewModels;
+using System.Diagnostics;
 
 namespace QuestDay.Views
 {
@@ -17,7 +18,25 @@ namespace QuestDay.Views
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await _viewModel.LoadHabitsCommand.ExecuteAsync(null);
+            Debug.WriteLine("ListPage OnAppearing - загрузка привычек");
+            await _viewModel.InitializeAsync();
+        }
+
+        private async void OnNavClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var button = sender as ImageButton;
+                string route = button?.CommandParameter?.ToString();
+                if (!string.IsNullOrEmpty(route))
+                {
+                    await Shell.Current.GoToAsync($"//{route}");
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", $"Не удалось открыть страницу: {ex.Message}", "ОК");
+            }
         }
     }
 }

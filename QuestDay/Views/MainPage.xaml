@@ -1,19 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-              x:Class="QuestDay.Views.MainPage">
+             xmlns:views="clr-namespace:QuestDay.Views"
+             xmlns:app="clr-namespace:QuestDay"
+             x:Class="QuestDay.Views.MainPage"
+             BackgroundColor="#FFFBF6">
 
-    <Grid
-        VerticalOptions="FillAndExpand" 
-        HorizontalOptions="FillAndExpand">
-        <Image Source="habit_home.png"
+    <Grid>
+        <Image x:Name="HouseBackgroundImage"
+               Source="background_normal.png"
                Aspect="AspectFill" />
-        <Image Source="rabbit_warm.png"  
-               VerticalOptions="Center"
-               HorizontalOptions="Center"
-               Aspect="AspectFit"
-               WidthRequest="400"
-               HeightRequest="400" />
-    </Grid>
 
+        <Grid VerticalOptions="Center"
+              HorizontalOptions="Center"
+              WidthRequest="400"
+              HeightRequest="400"
+              InputTransparent="True">
+
+            <Image Source="rabbit_warm.png"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit"
+                   WidthRequest="400"
+                   HeightRequest="400" />
+
+            <Image x:Name="MainRabbitImage"
+                   Source="{Binding Source={x:Static app:App.AvatarAppearance}, Path=CurrentRabbitImage}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   Aspect="AspectFit"
+                   WidthRequest="400"
+                   HeightRequest="400" />
+        </Grid>
+
+        <views:QuoteView 
+            VerticalOptions="Start" 
+            Margin="0,50,0,0" />
+
+        <Frame BackgroundColor="#FFFFFFCC"
+               CornerRadius="20"
+               Padding="12,8"
+               Margin="20,20,20,0"
+               VerticalOptions="Start"
+               HorizontalOptions="End"
+               HasShadow="False">
+            <VerticalStackLayout Spacing="4">
+                <Label x:Name="DirtyLevelLabel"
+                       FontSize="12"
+                       FontFamily="Montserrat-SemiBold"
+                       TextColor="#666666"
+                       Text="✨ Чистый ✨" />
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 </ContentPage>

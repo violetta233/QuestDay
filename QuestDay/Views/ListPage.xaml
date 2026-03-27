@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -6,9 +7,13 @@
     xmlns:models="clr-namespace:QuestDay.Models"       
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:converters="clr-namespace:QuestDay.Converters"
-    BackgroundColor="#FFFBF6">
+    BackgroundColor="#FFFBF6"
+    ControlTemplate="{x:Null}">
+
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <converters:HabitIsActiveToBackgroundColorConverter x:Key="HabitIsActiveToBackgroundColorConverter" />
+        <converters:HabitIsActiveToTextStyleConverter x:Key="HabitIsActiveToTextStyleConverter" />
         <toolkit:ListToStringConverter x:Key="ListToStringConverter" />
         <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
         <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
@@ -21,13 +26,19 @@
             <Setter Property="TextColor" Value="Gray" />
             <Setter Property="TextDecorations" Value="Strikethrough" />
         </Style>
+
+        <Style TargetType="SwipeItem">
+            <Setter Property="BackgroundColor" Value="#FF5252" />
+        </Style>
     </ContentPage.Resources>
+
     <Grid RowDefinitions="Auto, *, Auto">
         <HorizontalStackLayout Grid.Row="0" Margin="30, 20, 0, 0" Spacing="10">
             <Label Text="Список привычек"
                    HorizontalOptions="Start"
                    FontFamily="Montserrat-SemiBold"
-                   FontSize="22" />
+                   FontSize="22"
+                   TextColor="Black" />
             <ActivityIndicator IsRunning="{Binding IsBusy}" 
                                IsVisible="{Binding IsBusy}" 
                                Color="#A7DFAF"
@@ -38,7 +49,7 @@
             <VerticalStackLayout Spacing="10">
                 <CollectionView ItemsSource="{Binding Habits}"
                                 SelectionMode="None"
-                                                                    Margin="10">
+                                Margin="10">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:Habit">
                             <SwipeView>
@@ -50,15 +61,22 @@
                                                    CommandParameter="{Binding .}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-                                <Frame Margin="5" Padding="15" CornerRadius="10" HasShadow="True"
-                                       BackgroundColor="{Binding IsActive, Converter={StaticResource HabitIsActiveToBackgroundColorConverter}}">
-                                    <VerticalStackLayout Spacing="5">
+
+                                <Border Margin="5" 
+                                        Padding="15" 
+                                        StrokeThickness="1"
+                                        Stroke="#E0E0E0"
+                                        BackgroundColor="White"
+                                        StrokeShape="RoundRectangle 10">
+                                    <VerticalStackLayout Spacing="8">
+
                                         <Grid ColumnDefinitions="*, Auto">
                                             <Label Grid.Column="0"
                                                    Text="{Binding Name}"
                                                    FontSize="18"
                                                    FontAttributes="Bold"
                                                    VerticalOptions="Center"
+                                                   TextColor="Black"
                                                    Style="{Binding IsActive, Converter={StaticResource HabitIsActiveToTextStyleConverter}}" />
                                             <CheckBox Grid.Column="1"
                                                       IsChecked="{Binding IsCompletedForToday}"
@@ -68,36 +86,148 @@
                                                 <CheckBox.GestureRecognizers>
                                                     <TapGestureRecognizer 
                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=ToggleHabitCompletionCommand}"
-            CommandParameter="{Binding .}" />
+                                                        CommandParameter="{Binding .}" />
                                                 </CheckBox.GestureRecognizers>
                                             </CheckBox>
                                         </Grid>
+
                                         <Label Text="{Binding Description}"
                                                FontSize="14"
                                                TextColor="#666666"
                                                IsVisible="{Binding Description, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
+
                                         <Label Text="{Binding SelectedDays, Converter={toolkit:ListToStringConverter}, ConverterParameter=', '}"
                                                FontSize="12"
                                                TextColor="#888888"
                                                IsVisible="{Binding SelectedDays, Converter={toolkit:IsListNotNullOrEmptyConverter}}" />
+
                                         <Label Text="{Binding StartDate, StringFormat='Начало: {0:dd.MM.yyyy}'}"
                                                FontSize="12"
                                                TextColor="#888888" />
                                     </VerticalStackLayout>
-                                </Frame>
+                                </Border>
                             </SwipeView>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <StackLayout IsVisible="{Binding Habits.Count, Converter={StaticResource InverseBoolConverter}}"
+                             Spacing="20"
+                             Padding="20">
+                    <Label Text="📝"
+                           FontSize="60"
+                           HorizontalOptions="Center"
+                           TextColor="#CCCCCC" />
+                    <Label Text="Нет привычек"
+                           HorizontalOptions="Center"
+                           FontFamily="Montserrat-SemiBold"
+                           FontSize="18"
+                           TextColor="#666666" />
+                    <Label Text="Добавьте свою первую привычку!"
+                           HorizontalOptions="Center"
+                           FontFamily="Montserrat-SemiBold"
+                           FontSize="14"
+                           TextColor="#999999" />
+                    <Button Text="+ Добавить привычку"
+                            Command="{Binding NavigateToAddHabitCommand}"
+                            BackgroundColor="#A7DFAF"
+                            TextColor="White"
+                            FontFamily="Montserrat-SemiBold"
+                            CornerRadius="10"
+                            WidthRequest="200"
+                            HorizontalOptions="Center"
+                            Margin="0,10,0,0" />
+                </StackLayout>
             </VerticalStackLayout>
         </ScrollView>
+        <Grid Grid.Row="2" IgnoreSafeArea="True" VerticalOptions="End">
+            <Border 
+                Margin="10,0,10,25"
+                HeightRequest="65"
+                HorizontalOptions="Fill"
+                BackgroundColor="White"
+                Stroke="#FFCD72" 
+                StrokeThickness="2">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
+                <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="home.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="MainPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
 
-        <Button Grid.Row="2"
-                Text="Добавить новую привычку" 
-                Margin="20"
-                BackgroundColor="#A7DFAF"
-                TextColor="White"
-                CornerRadius="10"
-                Command="{Binding NavigateToAddHabitCommand}" />
+                    <Border Padding="10"
+                            BackgroundColor="#FFF3DC"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="file.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="ListPage"
+                                     HeightRequest="30"
+                                     Opacity="1" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="plus.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="AddPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="setting.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="SettingPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+
+                    <Border Padding="10"
+                            BackgroundColor="Transparent"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <ImageButton Source="profile.png" 
+                                     BackgroundColor="Transparent"
+                                     Clicked="OnNavClicked" 
+                                     CommandParameter="userPage"
+                                     HeightRequest="30"
+                                     Opacity="0.55" 
+                                     WidthRequest="30"/>
+                    </Border>
+                </FlexLayout>
+            </Border>
+        </Grid>
     </Grid>
 </ContentPage>

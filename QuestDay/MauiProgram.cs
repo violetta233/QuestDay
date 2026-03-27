@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Maui;
-using Microsoft.Extensions.DependencyInjection; 
 using Microsoft.Extensions.Logging;
+using Plugin.LocalNotification;
+using Plugin.Maui.Audio;
 using QuestDay.Converters;
-using QuestDay.Models;
 using QuestDay.Services;
 using QuestDay.ViewModels;
 using QuestDay.Views;
@@ -17,6 +17,7 @@ namespace QuestDay
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                .UseLocalNotification()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -28,21 +29,35 @@ namespace QuestDay
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
-            builder.Services.AddSingleton<IHabitService, HabitService>();
-            builder.Services.AddSingleton<InverseBoolConverter>();
 
+            // Регистрация сервисов
+            builder.Services.AddSingleton<IHabitService, HabitService>();
+            builder.Services.AddSingleton<IHouseStateService, HouseStateService>();
+            builder.Services.AddSingleton<AvatarAppearanceService>();
+            builder.Services.AddSingleton<IAudioManager>(AudioManager.Current);
+
+            // Регистрация конвертеров
+            builder.Services.AddSingleton<InverseBoolConverter>();
+            builder.Services.AddSingleton<DaySelectedToColorConverter>();
+            builder.Services.AddSingleton<DaySelectedToTextColorConverter>();
+            builder.Services.AddSingleton<EnabledToColorConverter>();
+            builder.Services.AddSingleton<StringNotNullOrEmptyConverter>();
+            builder.Services.AddSingleton<HabitIsActiveToBackgroundColorConverter>();
+            builder.Services.AddSingleton<HabitIsActiveToTextStyleConverter>();
+
+            // Регистрация ViewModels
             builder.Services.AddTransient<HabitListViewModel>();
             builder.Services.AddTransient<AddHabitViewModel>();
             builder.Services.AddTransient<DaysViewModel>();
 
+            // Регистрация страниц
+            builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<ListPage>();
             builder.Services.AddTransient<AddPage>();
-            builder.Services.AddSingleton<DaySelectedToColorConverter>();
-            builder.Services.AddSingleton<DaySelectedToTextColorConverter>();
+            builder.Services.AddTransient<SettingPage>();
+            builder.Services.AddTransient<userPage>();
 
             return builder.Build();
         }
     }
 }
-
-

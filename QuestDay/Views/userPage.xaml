@@ -1,85 +1,606 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="QuestDay.Views.userPage">
+             xmlns:local="clr-namespace:QuestDay.Views"
+             x:Class="QuestDay.Views.userPage"
+             x:DataType="local:userPage"
+             BackgroundColor="#F5ECE4">
 
-    <Grid RowDefinitions="Auto, *" ColumnDefinitions="Auto, *, Auto">
-        <Image Source="habit_home_base.png"
-               Aspect="AspectFill"
-               Grid.Row="0" Grid.Column="0" 
-               Grid.RowSpan="2"                
-               Grid.ColumnSpan="3" />
+    <ContentPage.Resources>
+        <Style x:Key="CategoryButtonStyle" TargetType="Button">
+            <Setter Property="BackgroundColor">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="1,1">
+                        <GradientStop Color="#FFFDF9"
+                                      Offset="0.0" />
+                        <GradientStop Color="#F7EBDD"
+                                      Offset="1.0" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="TextColor" Value="#4C382F" />
+            <Setter Property="BorderColor" Value="#D9BFAE" />
+            <Setter Property="BorderWidth" Value="2" />
+            <Setter Property="CornerRadius" Value="22" />
+            <Setter Property="FontFamily" Value="Montserrat-SemiBold" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Padding" Value="18,14" />
+            <Setter Property="HeightRequest" Value="72" />
+        </Style>
 
-        <!-- Левая колонка: кнопки -->
-        <VerticalStackLayout Grid.Row="1" Grid.Column="0"
-                             VerticalOptions="Center"
-                             HorizontalOptions="Center"
-                             Spacing="20"
-                             Margin="10,0,10,0">
+        <Style x:Key="PanelButtonStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#D8B39B" />
+            <Setter Property="TextColor" Value="#4B3429" />
+            <Setter Property="BorderColor" Value="#BF9277" />
+            <Setter Property="BorderWidth" Value="2" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="FontFamily" Value="Montserrat-SemiBold" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="Shadow">
+                <Setter.Value>
+                    <Shadow Brush="#3A8E6049"
+                            Offset="0,3"
+                            Radius="10"
+                            Opacity="0.28" />
+                </Setter.Value>
+            </Setter>
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#D8B39B" />
+                                <Setter Property="BorderColor" Value="#BF9277" />
+                                <Setter Property="TextColor" Value="#4B3429" />
+                                <Setter Property="Scale" Value="1" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="PointerOver">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#E5C5B0" />
+                                <Setter Property="BorderColor" Value="#C7997D" />
+                                <Setter Property="TextColor" Value="#422B21" />
+                                <Setter Property="Scale" Value="1.03" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#C79E84" />
+                                <Setter Property="BorderColor" Value="#AD7F66" />
+                                <Setter Property="Scale" Value="0.98" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#E7DBD2" />
+                                <Setter Property="BorderColor" Value="#D8C4B7" />
+                                <Setter Property="TextColor" Value="#9C877A" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
 
-            <!-- Кнопка шляп -->
-            <Frame WidthRequest="130" HeightRequest="130"
-                   CornerRadius="10"
-                   Padding="5"
-                   HasShadow="False"
-                   BackgroundColor="Transparent"
-                   HorizontalOptions="Center">
-                <Grid>
-                    <ImageButton Source="headdress.png"
-                                 Aspect="AspectFill"
-                                 BackgroundColor="Transparent"
-                                 Clicked="OnHatButtonClicked"
+    <Grid>
+        <Image x:Name="HouseBackgroundImage" 
+               Aspect="AspectFill" />
+        <Frame BackgroundColor="#FFFFFFCC"
+           CornerRadius="20"
+           Padding="12,8"
+           Margin="20,20,20,0"
+           VerticalOptions="Start"
+           HorizontalOptions="End"
+           HasShadow="False">
+            <VerticalStackLayout Spacing="4">
+                <Label x:Name="DirtyLevelLabel"
+                   FontSize="12"
+                   FontFamily="Montserrat-SemiBold"
+                   TextColor="#666666"
+                   HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Frame>
+
+
+        <Grid Padding="16,22,16,108"
+              ColumnDefinitions="148,*"
+              ColumnSpacing="20">
+
+            <VerticalStackLayout Grid.Column="0"
+                                 Spacing="14"
                                  VerticalOptions="Center"
-                                 HorizontalOptions="Center" />
+                                 ZIndex="2">
+                <Border x:Name="HatCategoryButton"
+                        Stroke="#D9BFAE"
+                        StrokeThickness="2"
+                        BackgroundColor="#FDF8F2"
+                        ClassId="category"
+                        Padding="10"
+                        HeightRequest="126">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="1,1">
+                            <GradientStop Color="#FFFDF9" Offset="0.0" />
+                            <GradientStop Color="#F7EBDD" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="22" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnHatButtonTapped" />
+                        <PointerGestureRecognizer PointerEntered="OnCategoryPointerEntered"
+                                                 PointerExited="OnCategoryPointerExited" />
+                    </Border.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,Auto"
+                          RowSpacing="6">
+                        <Image Source="headdress.png"
+                               HeightRequest="62"
+                               WidthRequest="62"
+                               Aspect="AspectFit"
+                               HorizontalOptions="Center" />
+                        <Label Grid.Row="1"
+                               Text="Головные уборы"
+                               FontFamily="Montserrat-SemiBold"
+                               FontSize="13"
+                               TextColor="#4C382F"
+                               HorizontalTextAlignment="Center"
+                               LineBreakMode="WordWrap"
+                               MaxLines="2" />
+                    </Grid>
+                </Border>
+
+                <Border x:Name="TopCategoryButton"
+                        Stroke="#D9BFAE"
+                        StrokeThickness="2"
+                        BackgroundColor="#FDF8F2"
+                        ClassId="category"
+                        Padding="10"
+                        HeightRequest="126">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="1,1">
+                            <GradientStop Color="#FFFDF9" Offset="0.0" />
+                            <GradientStop Color="#F7EBDD" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="22" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTopButtonTapped" />
+                        <PointerGestureRecognizer PointerEntered="OnCategoryPointerEntered"
+                                                 PointerExited="OnCategoryPointerExited" />
+                    </Border.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,Auto"
+                          RowSpacing="6">
+                        <Image Source="shirt.png"
+                               HeightRequest="62"
+                               WidthRequest="62"
+                               Aspect="AspectFit"
+                               HorizontalOptions="Center" />
+                        <Label Grid.Row="1"
+                               Text="Одежда"
+                               FontFamily="Montserrat-SemiBold"
+                               FontSize="13"
+                               TextColor="#4C382F"
+                               HorizontalTextAlignment="Center" />
+                    </Grid>
+                </Border>
+
+                <Border x:Name="PaletteCategoryButton"
+                        Stroke="#D9BFAE"
+                        StrokeThickness="2"
+                        BackgroundColor="#FDF8F2"
+                        ClassId="category"
+                        Padding="10"
+                        HeightRequest="126">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="1,1">
+                            <GradientStop Color="#FFFDF9" Offset="0.0" />
+                            <GradientStop Color="#F7EBDD" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="22" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPaletteButtonTapped" />
+                        <PointerGestureRecognizer PointerEntered="OnCategoryPointerEntered"
+                                                 PointerExited="OnCategoryPointerExited" />
+                    </Border.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,Auto"
+                          RowSpacing="6">
+                        <Image Source="palette.png"
+                               HeightRequest="62"
+                               WidthRequest="62"
+                               Aspect="AspectFit"
+                               HorizontalOptions="Center" />
+                        <Label Grid.Row="1"
+                               Text="Окраска"
+                               FontFamily="Montserrat-SemiBold"
+                               FontSize="13"
+                               TextColor="#4C382F"
+                               HorizontalTextAlignment="Center" />
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+
+            <Grid Grid.Column="1">
+                <Grid x:Name="RabbitPreview"
+                      HorizontalOptions="Center"
+                      VerticalOptions="Center"
+                      WidthRequest="400"
+                      HeightRequest="530"
+                      InputTransparent="True">
+                    <Image Source="rabbit_warm.png"
+                           Aspect="AspectFit"
+                           WidthRequest="385"
+                           HeightRequest="485"
+                           HorizontalOptions="Center"
+                           VerticalOptions="End" />
+                    <Image x:Name="PreviewRabbitImage"
+                           Source="{Binding ActiveRabbitCompositeImage}"
+                           Aspect="AspectFit"
+                           WidthRequest="385"
+                           HeightRequest="485"
+                           HorizontalOptions="Center"
+                           VerticalOptions="End" />
+
                 </Grid>
-            </Frame>
 
-            <!-- Кнопка одежды -->
-            <Frame WidthRequest="150" HeightRequest="150"
-                   CornerRadius="10"
-                   Padding="5"
-                   HasShadow="False"
-                   BackgroundColor="Transparent"
-                   HorizontalOptions="Center">
-                <Grid>
-                    <ImageButton Source="shirt.png"
-                                 Aspect="AspectFill"
-                                 BackgroundColor="Transparent"
-                                 Clicked="OnTopButtonClicked"
-                                 VerticalOptions="Center"
-                                 HorizontalOptions="Center" />
-                </Grid>
-            </Frame>
+                <Border x:Name="SelectionPanel"
+                        WidthRequest="320"
+                        Padding="18"
+                        Stroke="#D9BFAE"
+                        StrokeThickness="1.5"
+                        HorizontalOptions="End"
+                        VerticalOptions="Fill"
+                        Margin="6,0,0,0"
+                        IsVisible="False"
+                        TranslationX="360"
+                        ZIndex="3">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="1,1">
+                            <GradientStop Color="#FAF2EA"
+                                          Offset="0.0" />
+                            <GradientStop Color="#F1E2D4"
+                                          Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="30" />
+                    </Border.StrokeShape>
 
-            <!-- Кнопка палитры -->
-            <Frame WidthRequest="130" HeightRequest="130"
-                   CornerRadius="10"
-                   Padding="5"
-                   HasShadow="False"
-                   BackgroundColor="Transparent"
-                   HorizontalOptions="Center">
-                <Grid>
-                    <ImageButton Source="palette.png"
-                                 Aspect="AspectFill"
-                                 BackgroundColor="Transparent"
-                                 Clicked="OnBottomButtonClicked"
-                                 VerticalOptions="Center"
-                                 HorizontalOptions="Center" />
-                </Grid>
-            </Frame>
-        </VerticalStackLayout>
+                    <Grid RowDefinitions="Auto,Auto,*"
+                          RowSpacing="10">
+                        <Grid ColumnDefinitions="Auto,*"
+                              ColumnSpacing="12">
+                            <Button x:Name="BackButton"
+                                    Text="Назад"
+                                    Style="{StaticResource PanelButtonStyle}"
+                                    Clicked="OnBackToPreviewClicked">
+                                <Button.GestureRecognizers>
+                                    <PointerGestureRecognizer PointerEntered="OnPanelButtonPointerEntered"
+                                                             PointerExited="OnPanelButtonPointerExited" />
+                                </Button.GestureRecognizers>
+                            </Button>
 
-        <!-- Кролик -->
+                            <Label Grid.Column="1"
+                                   Text="{Binding ActiveCategoryTitle}"
+                                   VerticalTextAlignment="Center"
+                                   FontFamily="Montserrat-SemiBold"
+                                   FontSize="20"
+                                   TextColor="#3D2B24" />
+                        </Grid>
 
-        <Image Source="rabbit_warm.png"
-               Grid.Row="1" Grid.Column="1"
-               VerticalOptions="Center"
-               HorizontalOptions="Center"
-               Aspect="AspectFit"
-               WidthRequest="400"
-               HeightRequest="400"
-               Margin="20,0,0,0" />
+                        <Grid Grid.Row="1"
+                              HorizontalOptions="Center"
+                              VerticalOptions="Start"
+                              WidthRequest="226"
+                              HeightRequest="280"
+                              InputTransparent="True">
+                            <Image Source="rabbit_warm.png"
+                                   Aspect="AspectFit"
+                                   WidthRequest="224"
+                                   HeightRequest="272"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End" />
+                            <Image x:Name="PanelRabbitImage"
+                                   Source="{Binding ActiveRabbitCompositeImage}"
+                                   Aspect="AspectFit"
+                                   WidthRequest="224"
+                                   HeightRequest="272"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End" />
 
+                        </Grid>
+
+                        <ScrollView Grid.Row="2"
+                                    Margin="0,6,0,0"
+                                    VerticalScrollBarVisibility="Never">
+                            <VerticalStackLayout Spacing="16">
+                                <Grid  x:Name="HatCardsSection"
+                                      ColumnDefinitions="*,*"
+                                      ColumnSpacing="12"
+                                      RowSpacing="12">
+                                    <Border BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding Hat1CardBorderColor}"
+                                            StrokeThickness="{Binding Hat1CardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding Hat1CardBackgroundColor}" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="hat_one.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="Hat1ActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnHat1Clicked" />
+                                        </Grid>
+                                    </Border>
+                                    <Border Grid.Column="1"
+                                            BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding Hat2CardBorderColor}"
+                                            StrokeThickness="{Binding Hat2CardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding Hat2CardBackgroundColor}" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="hat_two.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="Hat2ActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnHat2Clicked" />
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+
+                                <Grid x:Name="TopCardsSection"
+                                      ColumnDefinitions="*,*"
+                                      RowDefinitions="Auto,Auto"
+                                      ColumnSpacing="12"
+                                      RowSpacing="12">
+                                    <Border BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding OverallsAndBeltCardBorderColor}"
+                                            StrokeThickness="{Binding OverallsAndBeltCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="overalls_and_balt.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="OverallsAndBeltActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnOverallsAndBeltClicked" />
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Grid.Column="1"
+                                            BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding TShirtCardBorderColor}"
+                                            StrokeThickness="{Binding TShirtCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="t_shirt_mechmat.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="TShirtActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnTShirtClicked" />
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Grid.Row="1"
+                                            Grid.Column="0"
+                                            BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding OverallsCardBorderColor}"
+                                            StrokeThickness="{Binding OverallsCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="overalls_skin1_blue.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="108"
+                                                       WidthRequest="108" />
+                                            </Border>
+                                            <Button x:Name="OverallsActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnOverallsClicked" />
+                                        </Grid>
+                                    </Border>
+
+                                </Grid>
+
+                                <Grid x:Name="PaletteCardsSection"
+                                      ColumnDefinitions="*,*"
+                                      ColumnSpacing="12"
+                                      RowSpacing="12">
+                                    <Border BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding PaletteCardBorderColor}"
+                                            StrokeThickness="{Binding PaletteCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="rabbit_1_warm_bg_skintone.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="112"
+                                                       WidthRequest="112" />
+                                            </Border>
+                                            <Button x:Name="PaletteActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnPaletteVariantClicked" />
+                                        </Grid>
+                                    </Border>
+                                    <Border Grid.Column="1"
+                                            BackgroundColor="#E8CCB8"
+                                            Stroke="{Binding WhitePaletteCardBorderColor}"
+                                            StrokeThickness="{Binding WhitePaletteCardBorderWidth}"
+                                            Padding="10"
+                                            StrokeShape="RoundRectangle 20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="#E8CCB8" />
+                                        </Border.Background>
+                                        <Grid RowDefinitions="*,Auto"
+                                              RowSpacing="10"
+                                              HeightRequest="182">
+                                            <Border BackgroundColor="#E7E7E7"
+                                                    Stroke="#B9B1AA"
+                                                    StrokeThickness="1.4"
+                                                    StrokeShape="RoundRectangle 18">
+                                                <Image Source="rabbit_3_white_bg_skintone.png"
+                                                       Aspect="AspectFit"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       HeightRequest="112"
+                                                       WidthRequest="112" />
+                                            </Border>
+                                            <Button x:Name="WhitePaletteActionButton"
+                                                    Grid.Row="1"
+                                                    Text="Надеть"
+                                                    FontSize="11"
+                                                    HeightRequest="42"
+                                                    Padding="6,4"
+                                                    CornerRadius="18"
+                                                    BorderWidth="2"
+                                                    FontFamily="Montserrat-SemiBold"
+                                                    TextTransform="None"
+                                                    Clicked="OnWhitePaletteVariantClicked" />
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
-
 </ContentPage>

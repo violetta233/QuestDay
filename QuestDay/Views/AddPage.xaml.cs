@@ -5,19 +5,34 @@ namespace QuestDay.Views
 {
     public partial class AddPage : ContentPage
     {
+        private readonly AddHabitViewModel _viewModel;
+
         public AddPage(AddHabitViewModel viewModel)
         {
             InitializeComponent();
-            BindingContext = viewModel;
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
         }
-         protected override void OnAppearing()
+
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-            if (BindingContext is AddHabitViewModel viewModel)
+            _viewModel.Name = string.Empty;
+            _viewModel.Description = string.Empty;
+            _viewModel.DaysOfWeekSelection.Reset();
+        }
+
+        private async void OnNavClicked(object sender, EventArgs e)
+        {
+            try
             {
-                viewModel.Name = string.Empty;
-                viewModel.Description = string.Empty;
-                viewModel.DaysOfWeekSelection.Reset();
+                var button = sender as ImageButton;
+                string route = button.CommandParameter.ToString();
+                await Shell.Current.GoToAsync($"//{route}");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", $"Не удалось открыть страницу: {ex.Message}", "ОК");
             }
         }
     }

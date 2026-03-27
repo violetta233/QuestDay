@@ -1,14 +1,131 @@
-п»їusing System.Diagnostics;
-using QuestDay.ViewModels;
+using QuestDay.Services;
+using System.ComponentModel;
+using System.Diagnostics;
 
-namespace QuestDay.Views
+namespace QuestDay.Views;
+
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    private readonly IHouseStateService _houseStateService;
+    private readonly IHabitService _habitService;
+
+    public MainPage(IHouseStateService houseStateService, IHabitService habitService)
     {
-        public MainPage()
+        InitializeComponent();
+        _houseStateService = houseStateService;
+        _habitService = habitService;
+
+        _houseStateService.BackgroundChanged += OnBackgroundChanged;
+        _houseStateService.DirtLevelChanged += OnDirtLevelChanged;
+        App.AvatarAppearance.PropertyChanged += OnAvatarAppearanceChanged;
+
+        UpdateRabbitImage();
+        LoadHouseState();
+
+        Debug.WriteLine("MainPage инициализирована");
+    }
+
+    private void OnBackgroundChanged(object sender, string imageName)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
         {
-            InitializeComponent();
+            if (HouseBackgroundImage != null)
+            {
+                HouseBackgroundImage.Source = imageName;
+            }
+        });
+    }
+
+    private void OnDirtLevelChanged(object sender, int dirtyLevel)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (DirtyLevelLabel != null)
+            {
+                int cleanliness = 100 - dirtyLevel;
+                string statusText = "";
+
+                if (dirtyLevel <= 30)
+                    statusText = "Чистый";
+                else if (dirtyLevel <= 70)
+                    statusText = "Грязный";
+                else
+                    statusText = "Очень грязный!";
+
+                DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
+
+                if (dirtyLevel > 70)
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
+                else if (dirtyLevel > 30)
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
+                else
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
+            }
+        });
+    }
+
+    private async void LoadHouseState()
+    {
+        var state = await _houseStateService.GetCurrentStateAsync();
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (HouseBackgroundImage != null)
+            {
+                HouseBackgroundImage.Source = state.CurrentBackgroundImage;
+            }
+
+            if (DirtyLevelLabel != null)
+            {
+                int cleanliness = 100 - state.DirtyLevel;
+                string statusText = "";
+
+                if (state.DirtyLevel <= 30)
+                    statusText = "Чистый";
+                else if (state.DirtyLevel <= 70)
+                    statusText = "Грязный";
+                else
+                    statusText = "Очень грязный!";
+
+                DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
+
+                if (state.DirtyLevel > 70)
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
+                else if (state.DirtyLevel > 30)
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
+                else
+                    DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
+            }
+        });
+    }
+
+    private void OnAvatarAppearanceChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(AvatarAppearanceService.CurrentRabbitImage))
+        {
+            MainThread.BeginInvokeOnMainThread(UpdateRabbitImage);
         }
     }
-}
 
+    private void UpdateRabbitImage()
+    {
+        if (MainRabbitImage != null)
+        {
+            MainRabbitImage.Source = App.AvatarAppearance.CurrentRabbitImage;
+        }
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await _houseStateService.UpdateStateAsync();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _houseStateService.BackgroundChanged -= OnBackgroundChanged;
+        _houseStateService.DirtLevelChanged -= OnDirtLevelChanged;
+        App.AvatarAppearance.PropertyChanged -= OnAvatarAppearanceChanged;
+    }
+}
