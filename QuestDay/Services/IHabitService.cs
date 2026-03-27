@@ -6,7 +6,7 @@ namespace QuestDay.Services
     public interface IHabitService
     {
         Task InitializeAsync();
-        Task AddHabitAsync(Habit habit);
+        Task<Habit> AddHabitAsync(Habit habit);
         Task<List<Habit>> GetHabitsAsync();
         Task UpdateHabitAsync(Habit habit);
         Task DeleteHabitAsync(Habit habit);

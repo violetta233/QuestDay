@@ -92,12 +92,6 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <Button Grid.Row="2"
-                Text="Добавить новую привычку" 
-                Margin="20"
-                BackgroundColor="#A7DFAF"
-                TextColor="White"
-                CornerRadius="10"
-                Command="{Binding NavigateToAddHabitCommand}" />
+       
     </Grid>
 </ContentPage>

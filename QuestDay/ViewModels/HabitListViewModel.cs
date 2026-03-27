@@ -44,7 +44,7 @@ namespace QuestDay.ViewModels
                 {
                     Habits.Add(message.Value);
                 }
-                message.Value.IsCompletedForToday = await _habitService.GetHabitCompletionStatusAsync(message.Value.Id, DateTime.Today);
+                //message.Value.IsCompletedForToday = await _habitService.GetHabitCompletionStatusAsync(message.Value.Id, DateTime.Today);
             });
         }
 

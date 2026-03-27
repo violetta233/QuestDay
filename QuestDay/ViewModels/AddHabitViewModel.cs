@@ -74,7 +74,7 @@ namespace QuestDay.ViewModels
                     IsActive = false
                 };
 
-                await _habitService.AddHabitAsync(habit);
+                habit = await _habitService.AddHabitAsync(habit);
 
                 WeakReferenceMessenger.Default.Send(new NewHabitMessage(habit));
 
@@ -86,7 +86,7 @@ namespace QuestDay.ViewModels
                 Description = string.Empty;
                 DaysOfWeekSelection.Reset();
 
-                await Shell.Current.GoToAsync("..");
+                await Shell.Current.GoToAsync("//ListPage");
             }
             catch (Exception ex)
             {

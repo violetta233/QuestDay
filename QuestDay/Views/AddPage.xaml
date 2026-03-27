@@ -4,15 +4,17 @@
              x:Class="QuestDay.Views.AddPage"
              xmlns:viewmodels="clr-namespace:QuestDay.ViewModels"
              xmlns:converters="clr-namespace:QuestDay.Converters"
-             BackgroundColor="#FFFBF6">
+             BackgroundColor="#FFFBF6"
+             ControlTemplate="{x:Null}">
 
     <ContentPage.Resources>
         <converters:DaySelectedToColorConverter x:Key="DaySelectedToColorConverter" />
         <converters:DaySelectedToTextColorConverter x:Key="DaySelectedToTextColorConverter" />
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
     </ContentPage.Resources>
+    <Grid>
     <ScrollView>
-        <VerticalStackLayout Spacing="20" Padding="20">
+        <VerticalStackLayout Spacing="20" Padding="20,20,20,100">
 
             <Label Text="Название привычки"
                    FontSize="20"
@@ -73,4 +75,49 @@
 
         </VerticalStackLayout>
     </ScrollView>
+    <Grid IgnoreSafeArea="True" VerticalOptions="End">
+        <Border 
+                Margin="10,0,10,25"
+                HeightRequest="65"
+                HorizontalOptions="Fill"
+                BackgroundColor="White"
+                Stroke="#FFCD72" 
+                StrokeThickness="2">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="18" />
+            </Border.StrokeShape>
+            <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
+                <ImageButton Source="home.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="MainPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+
+                <ImageButton Source="file.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="ListPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+
+                <ImageButton Source="plus.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="AddPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+
+                <ImageButton Source="setting.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="SettingPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+
+                <ImageButton Source="profile.png" 
+                                 Clicked="OnNavClicked" 
+                                 CommandParameter="userPage"
+                                 HeightRequest="30" 
+                                 WidthRequest="30"/>
+            </FlexLayout>
+        </Border>
+    </Grid>
+    </Grid>
 </ContentPage>
