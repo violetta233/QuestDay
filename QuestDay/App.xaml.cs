@@ -20,6 +20,8 @@ namespace QuestDay
             InitializeComponent();
             _habitService = habitService;
             _houseStateService = houseStateService;
+
+            UserAppTheme = AppTheme.Light;
             LocalNotificationCenter.Current.NotificationActionTapped += OnNotificationTapped;
 
             Task.Run(async () => await LoadBackgroundMusicAsync()).Wait();
