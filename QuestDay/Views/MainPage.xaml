@@ -31,15 +31,6 @@
                    Aspect="AspectFit"
                    WidthRequest="400"
                    HeightRequest="400" />
-
-            <Image Source="{Binding Source={x:Static app:App.AvatarAppearance}, Path=HatImage}"
-                   VerticalOptions="Start"
-                   HorizontalOptions="Center"
-                   Aspect="AspectFit"
-                   WidthRequest="230"
-                   HeightRequest="230"
-                   Margin="0,48,0,0"
-                   IsVisible="{Binding Source={x:Static app:App.AvatarAppearance}, Path=HasHatImage}" />
         </Grid>
 
         <views:QuoteView 
