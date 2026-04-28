@@ -17,6 +17,7 @@
         <toolkit:ListToStringConverter x:Key="ListToStringConverter" />
         <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
         <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
+        <converters:RussianListToStringConverter x:Key="RussianListToStringConverter" />
 
         <Style x:Key="ActiveHabitTextStyle" TargetType="Label">
             <Setter Property="TextColor" Value="Black" />
@@ -96,7 +97,7 @@
                                                TextColor="#666666"
                                                IsVisible="{Binding Description, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
 
-                                        <Label Text="{Binding SelectedDays, Converter={toolkit:ListToStringConverter}, ConverterParameter=', '}"
+                                        <Label Text="{Binding SelectedDays, Converter={StaticResource RussianListToStringConverter}, ConverterParameter=', '}"
                                                FontSize="12"
                                                TextColor="#888888"
                                                IsVisible="{Binding SelectedDays, Converter={toolkit:IsListNotNullOrEmptyConverter}}" />
