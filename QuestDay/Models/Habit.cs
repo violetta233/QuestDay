@@ -17,6 +17,8 @@ namespace QuestDay.Models
 
         public string SelectedDaysJson { get; set; }
 
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
         [Ignore]
         public List<DayOfWeek> SelectedDays
         {

@@ -54,7 +54,8 @@ namespace QuestDay.ViewModels
             {
                 if (!Habits.Any(h => h.Id == message.Value.Id))
                 {
-                    Habits.Add(message.Value);
+                    Habits.Insert(0, message.Value);
+                    SortHabits();
                     Debug.WriteLine($"Привычка добавлена в коллекцию. Всего привычек: {Habits.Count}");
                     OnPropertyChanged(nameof(HabitsCount));
                     await _houseStateService.UpdateStateAsync();
@@ -86,6 +87,8 @@ namespace QuestDay.ViewModels
                     habit.IsCompletedForToday = await _habitService.GetHabitCompletionStatusAsync(habit.Id, DateTime.Today);
                     Habits.Add(habit);
                 }
+
+                SortHabits();
 
                 Debug.WriteLine($"После добавления в ObservableCollection: {Habits.Count} привычек");
 
@@ -144,6 +147,7 @@ namespace QuestDay.ViewModels
                 await _habitService.UpdateHabitAsync(habitToToggle);
                 Debug.WriteLine($"Статус активности привычки '{habitToToggle.Name}' изменен на: {habitToToggle.IsActive}");
                 await _houseStateService.UpdateStateAsync();
+                SortHabits();
             }
             catch (Exception ex)
             {
@@ -174,6 +178,9 @@ namespace QuestDay.ViewModels
                     DateTime.Today,
                     habitToToggleCompletion.IsCompletedForToday
                 );
+
+                SortHabits();
+
                 Debug.WriteLine($"Статус выполнения привычки '{habitToToggleCompletion.Name}' изменен на: {habitToToggleCompletion.IsCompletedForToday}");
 
                 var allHabits = await _habitService.GetHabitsAsync();
@@ -212,6 +219,25 @@ namespace QuestDay.ViewModels
         public async Task RefreshHabitsAsync()
         {
             await LoadHabitsCommand.ExecuteAsync(null);
+        }
+
+        private void SortHabits()
+        {
+            if (Habits == null || Habits.Count <= 1) return;
+
+            var sorted = Habits
+                .OrderBy(h => h.IsCompletedForToday)
+                .ThenByDescending(h => h.CreatedAt)
+                .ToList();
+
+            for (int i = 0; i < sorted.Count; i++)
+            {
+                var oldIndex = Habits.IndexOf(sorted[i]);
+                if (oldIndex != i && oldIndex != -1)
+                {
+                    Habits.Move(oldIndex, i);
+                }
+            }
         }
     }
 }

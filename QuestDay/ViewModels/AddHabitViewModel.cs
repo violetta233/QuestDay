@@ -114,6 +114,7 @@ namespace QuestDay.ViewModels
                     Description = Description,
                     SelectedDays = DaysOfWeekSelection.SelectedDays.ToList(),
                     StartDate = DateTime.Now,
+                    CreatedAt = DateTime.Now,
                     IsActive = true
                 };
 
