@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using QuestDay.ViewModels;
+using QuestDay.Models;
 using System.Diagnostics;
 
 namespace QuestDay.Views
@@ -20,6 +21,34 @@ namespace QuestDay.Views
             base.OnAppearing();
             Debug.WriteLine("ListPage OnAppearing - загрузка привычек");
             await _viewModel.InitializeAsync();
+        }
+
+        private async void OnHistoryClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var button = sender as Button;
+                var habit = button?.CommandParameter as Habit;
+
+                if (habit != null)
+                {
+                    Debug.WriteLine($"Нажата кнопка истории для привычки: {habit.Name}, Id: {habit.Id}");
+
+                    if (_viewModel is HabitListViewModel vm)
+                    {
+                        await vm.ShowCalendarCommand.ExecuteAsync(habit);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("Ошибка: привычка не найдена");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка при открытии календаря: {ex.Message}");
+                await DisplayAlert("Ошибка", $"Не удалось открыть календарь: {ex.Message}", "OK");
+            }
         }
 
         private async void OnNavClicked(object sender, EventArgs e)

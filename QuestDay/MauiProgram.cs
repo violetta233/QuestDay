@@ -44,6 +44,8 @@ namespace QuestDay
             builder.Services.AddSingleton<StringNotNullOrEmptyConverter>();
             builder.Services.AddSingleton<HabitIsActiveToBackgroundColorConverter>();
             builder.Services.AddSingleton<HabitIsActiveToTextStyleConverter>();
+            builder.Services.AddSingleton<BoolToFontAttributesConverter>();
+            builder.Services.AddSingleton<IsPositiveConverter>();
 
             // Регистрация ViewModels
             builder.Services.AddTransient<HabitListViewModel>();

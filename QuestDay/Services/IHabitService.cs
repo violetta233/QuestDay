@@ -11,8 +11,7 @@ namespace QuestDay.Services
         Task UpdateHabitAsync(Habit habit);
         Task DeleteHabitAsync(Habit habit);
         Task<Habit> GetHabitByIdAsync(int id);
-
-
+        Task<List<HabitCompletion>> GetCompletionsByHabitIdAsync(int habitId);
         Task SaveHabitCompletionAsync(int habitId, DateTime date, bool isCompleted);
         Task<bool> GetHabitCompletionStatusAsync(int habitId, DateTime date);
     }
