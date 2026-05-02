@@ -55,6 +55,18 @@ namespace QuestDay.ViewModels
             }
         }
 
+        public string CompletionsCountText
+        {
+            get
+            {
+                int count = CompletionsForSelectedHabit.Count;
+                if (count == 0) return "0 дней";
+                if (count == 1) return "1 день";
+                if (count >= 2 && count <= 4) return $"{count} дня";
+                return $"{count} дней";
+            }
+        }
+
         public string CurrentCalendarMonthRussian
         {
             get
@@ -288,13 +300,27 @@ namespace QuestDay.ViewModels
         private async Task ShowCalendar(Habit habit)
         {
             if (habit == null) return;
+            if (IsBusy) return;
 
             Debug.WriteLine($"Открываем календарь для привычки: {habit.Name}, Id: {habit.Id}");
 
-            SelectedHabitForCalendar = habit;
-            await LoadCompletionsForHabit(habit.Id);
-            IsCalendarVisible = true;
-            OnPropertyChanged(nameof(IsCalendarVisible));
+            IsBusy = true;
+            try
+            {
+                SelectedHabitForCalendar = habit;
+                await LoadCompletionsForHabit(habit.Id);
+                IsCalendarVisible = true;
+                OnPropertyChanged(nameof(IsCalendarVisible));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка при открытии календаря: {ex.Message}");
+                await Shell.Current.DisplayAlert("Ошибка", $"Не удалось открыть календарь: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
@@ -328,6 +354,7 @@ namespace QuestDay.ViewModels
                     CompletionsForSelectedHabit.Add(completion);
                 }
 
+                OnPropertyChanged(nameof(CompletionsCountText));
                 Debug.WriteLine($"Загружено {CompletionsForSelectedHabit.Count} записей о выполнении");
 
                 UpdateCalendarDays();
@@ -344,6 +371,7 @@ namespace QuestDay.ViewModels
         {
             CurrentCalendarMonth = CurrentCalendarMonth.AddMonths(1);
             Debug.WriteLine($"Переход на следующий месяц: {CurrentCalendarMonth:yyyy-MM}");
+            OnPropertyChanged(nameof(CompletionsCountText));
         }
 
         [RelayCommand]
@@ -351,6 +379,7 @@ namespace QuestDay.ViewModels
         {
             CurrentCalendarMonth = CurrentCalendarMonth.AddMonths(-1);
             Debug.WriteLine($"Переход на предыдущий месяц: {CurrentCalendarMonth:yyyy-MM}");
+            OnPropertyChanged(nameof(CompletionsCountText));
         }
 
         private bool IsCompletedOnDate(DateTime date)
