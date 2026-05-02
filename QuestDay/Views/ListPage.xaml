@@ -18,6 +18,7 @@
         <converters:IsPositiveConverter x:Key="IsPositiveConverter" />
         <converters:DaySelectedToTextColorConverter x:Key="DaySelectedToTextColorConverter" />
         <converters:BoolToFontAttributesConverter x:Key="BoolToFontAttributesConverter" />
+        <converters:RussianListToStringConverter x:Key="RussianListToStringConverter" />
         <toolkit:ListToStringConverter x:Key="ListToStringConverter" />
         <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
         <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
@@ -100,7 +101,7 @@
                                                    TextColor="#666666"
                                                    IsVisible="{Binding Description, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
 
-                                            <Label Text="{Binding SelectedDays, Converter={toolkit:ListToStringConverter}, ConverterParameter=', '}"
+                                            <Label Text="{Binding SelectedDays, Converter={StaticResource RussianListToStringConverter}, ConverterParameter=', '}"
                                                    FontSize="12"
                                                    TextColor="#888888"
                                                    IsVisible="{Binding SelectedDays, Converter={toolkit:IsListNotNullOrEmptyConverter}}" />
@@ -245,54 +246,54 @@
                 </Border>
             </Grid>
         </Grid>
-
+        
         <Grid IsVisible="{Binding IsCalendarVisible}"
-              BackgroundColor="#CC000000"
-              HorizontalOptions="Fill"
-              VerticalOptions="Fill"
-              InputTransparent="False">
+      BackgroundColor="#CC000000"
+      HorizontalOptions="Fill"
+      VerticalOptions="Fill"
+      InputTransparent="False">
 
             <Frame BackgroundColor="White"
-                   CornerRadius="20"
-                   Padding="15"
-                   Margin="20"
-                   VerticalOptions="Center"
-                   HasShadow="True">
+               CornerRadius="20"
+               Padding="15"
+               Margin="20"
+               VerticalOptions="Center"
+               HasShadow="True">
                 <VerticalStackLayout Spacing="15">
 
                     <Label Text="{Binding SelectedHabitForCalendar.Name, StringFormat='📅 История: {0}'}"
-                           FontSize="16"
-                           FontAttributes="Bold"
-                           TextColor="#F68063"
-                           HorizontalOptions="Center"
-                           FontFamily="Montserrat-SemiBold"/>
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="#F68063"
+                       HorizontalOptions="Center"
+                       FontFamily="Montserrat-SemiBold"/>
 
                     <Grid ColumnDefinitions="*, Auto, *">
                         <Button Grid.Column="0"
-                                Text="◀"
-                                BackgroundColor="Transparent"
-                                TextColor="#F68063"
-                                Command="{Binding PreviousMonthCommand}"
-                                HorizontalOptions="Start"/>
+                            Text="◀"
+                            BackgroundColor="Transparent"
+                            TextColor="#F68063"
+                            Command="{Binding PreviousMonthCommand}"
+                            HorizontalOptions="Start"/>
                         <Label Grid.Column="1"
-                               Text="{Binding CurrentCalendarMonthRussian}"
-                               FontSize="16"
-                               FontAttributes="Bold"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               FontFamily="Montserrat-SemiBold"
-                               TextColor="#F68063"/>
+                            Text="{Binding CurrentCalendarMonthRussian}"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            FontFamily="Montserrat-SemiBold"
+                            TextColor="#F68063"/>
                         <Button Grid.Column="2"
-                                Text="▶"
-                                BackgroundColor="Transparent"
-                                TextColor="#F68063"
-                                Command="{Binding NextMonthCommand}"
-                                HorizontalOptions="End"/>
+                            Text="▶"
+                            BackgroundColor="Transparent"
+                            TextColor="#F68063"
+                            Command="{Binding NextMonthCommand}"
+                            HorizontalOptions="End"/>
                     </Grid>
 
                     <Grid ColumnDefinitions="1*,1*,1*,1*,1*,1*,1*" 
-                          Margin="0,5,0,5"
-                          HorizontalOptions="Fill">
+                        Margin="0,5,0,5"
+                        HorizontalOptions="Fill"> 
                         <Label Grid.Column="0" Text="ПН" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                         <Label Grid.Column="1" Text="ВТ" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                         <Label Grid.Column="2" Text="СР" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
@@ -301,46 +302,43 @@
                         <Label Grid.Column="5" Text="СБ" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                         <Label Grid.Column="6" Text="ВС" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                     </Grid>
-
+                    
                     <CollectionView ItemsSource="{Binding CalendarDays}" 
-                                    HorizontalOptions="Fill">
+                            HorizontalOptions="Fill">
                         <CollectionView.ItemsLayout>
                             <GridItemsLayout Orientation="Horizontal"
-                                              HorizontalItemSpacing="4"
-                                              VerticalItemSpacing="6"
-                                              Span="7"/>
+                                      HorizontalItemSpacing="4"
+                                      VerticalItemSpacing="5"
+                                      Span="7"/>
                         </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:CalendarDay">
-                                <Grid>
+                                <Grid WidthRequest="44">
                                     <Border IsVisible="{Binding IsEmpty, Converter={StaticResource InverseBoolConverter}}"
-                                            BackgroundColor="{Binding IsCompleted, Converter={StaticResource DaySelectedToColorConverter}}"
-                                            StrokeThickness="0"
-                                            CornerRadius="25">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="25" />
-                                        </Border.StrokeShape>
+                                        BackgroundColor="{Binding IsCompleted, Converter={StaticResource DaySelectedToColorConverter}}"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 22"
+                                        HeightRequest="42"
+                                        WidthRequest="42"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center">
                                         <Label Text="{Binding DayNumber}"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center"
-                                               HorizontalTextAlignment="Center"
-                                               IsVisible="{Binding DayNumber, Converter={StaticResource IsPositiveConverter}}"
-                                               TextColor="{Binding IsCompleted, Converter={StaticResource DaySelectedToTextColorConverter}}"
-                                               FontAttributes="{Binding IsToday, Converter={StaticResource BoolToFontAttributesConverter}}"
-                                               FontSize="14"
-                                               FontFamily="Montserrat-SemiBold"
-                                               Padding="0"
-                                               HeightRequest="40"
-                                               WidthRequest="40"/>
-                                    </Border>
-
-                                    <Border IsVisible="{Binding IsEmpty}"
-                                            BackgroundColor="Transparent"
-                                            StrokeThickness="0"
-                                            HeightRequest="40"
-                                            WidthRequest="40"
                                             HorizontalOptions="Center"
-                                            VerticalOptions="Center"/>
+                                            VerticalOptions="Center"
+                                            HorizontalTextAlignment="Center"
+                                            IsVisible="{Binding DayNumber, Converter={StaticResource IsPositiveConverter}}"
+                                            TextColor="{Binding IsCompleted, Converter={StaticResource DaySelectedToTextColorConverter}}"
+                                            FontAttributes="{Binding IsToday, Converter={StaticResource BoolToFontAttributesConverter}}"
+                                            FontSize="14"
+                                            FontFamily="Montserrat-SemiBold"/>
+                                    </Border>
+                                    <Border IsVisible="{Binding IsEmpty}"
+                                        BackgroundColor="Transparent"
+                                        StrokeThickness="0"
+                                        HeightRequest="42"
+                                        WidthRequest="42"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"/>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
@@ -348,25 +346,25 @@
 
                     <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
                         <Label Text="✅ Выполнено:"
-                               FontSize="12"
-                               TextColor="#666"
-                               FontFamily="Montserrat-SemiBold"
-                               HorizontalOptions="Start"/>
+                       FontSize="12"
+                       TextColor="#666"
+                       FontFamily="Montserrat-SemiBold"
+                       HorizontalOptions="Start"/>
                         <Label Grid.Column="1"
-                               Text="{Binding CompletionsForSelectedHabit.Count, StringFormat='{0} дней'}"
-                               FontSize="12"
-                               TextColor="#F68063"
-                               FontAttributes="Bold"
-                               FontFamily="Montserrat-SemiBold"
-                               HorizontalOptions="End"/>
+                       Text="{Binding CompletionsForSelectedHabit.Count, StringFormat='{0} дней'}"
+                       FontSize="12"
+                       TextColor="#F68063"
+                       FontAttributes="Bold"
+                       FontFamily="Montserrat-SemiBold"
+                       HorizontalOptions="End"/>
                     </Grid>
 
                     <Button Text="Закрыть"
-                            Command="{Binding CloseCalendarCommand}"
-                            BackgroundColor="#F68063"
-                            TextColor="White"
-                            CornerRadius="10"
-                            FontFamily="Montserrat-SemiBold"/>
+                    Command="{Binding CloseCalendarCommand}"
+                    BackgroundColor="#F68063"
+                    TextColor="White"
+                    CornerRadius="10"
+                    FontFamily="Montserrat-SemiBold"/>
                 </VerticalStackLayout>
             </Frame>
         </Grid>

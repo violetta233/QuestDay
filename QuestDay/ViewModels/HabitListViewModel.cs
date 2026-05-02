@@ -366,7 +366,7 @@ namespace QuestDay.ViewModels
             var daysInMonth = DateTime.DaysInMonth(CurrentCalendarMonth.Year, CurrentCalendarMonth.Month);
 
             int startOffset = ((int)firstDayOfMonth.DayOfWeek + 6) % 7;
-]
+
             for (int i = 0; i < startOffset; i++)
             {
                 days.Add(new CalendarDay { IsEmpty = true, DayNumber = -1 });
