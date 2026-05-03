@@ -5,21 +5,23 @@ namespace QuestDay.Views
 {
     public partial class AddPage : ContentPage
     {
+        private readonly AddHabitViewModel _viewModel;
+
         public AddPage(AddHabitViewModel viewModel)
         {
             InitializeComponent();
-            BindingContext = viewModel;
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
         }
-         protected override void OnAppearing()
+
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-            if (BindingContext is AddHabitViewModel viewModel)
-            {
-                viewModel.Name = string.Empty;
-                viewModel.Description = string.Empty;
-                viewModel.DaysOfWeekSelection.Reset();
-            }
+            _viewModel.Name = string.Empty;
+            _viewModel.Description = string.Empty;
+            _viewModel.DaysOfWeekSelection.Reset();
         }
+
         private async void OnNavClicked(object sender, EventArgs e)
         {
             try

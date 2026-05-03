@@ -1,29 +1,42 @@
 using Microsoft.Maui.Controls;
 using QuestDay.ViewModels;
-using QuestDay.Services;
+using System.Diagnostics;
+
 namespace QuestDay.Views
 {
     public partial class ListPage : ContentPage
     {
+        private readonly HabitListViewModel _viewModel;
 
-        public ListPage()
+        public ListPage(HabitListViewModel viewModel)
         {
             InitializeComponent();
-       
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            var habitService = new HabitService();
-            await habitService.InitializeAsync();
+            Debug.WriteLine("ListPage OnAppearing - загрузка привычек");
+            await _viewModel.InitializeAsync();
+        }
 
-            var viewModel = new HabitListViewModel(habitService);
-            await viewModel.InitializeAsync();
-
-            await viewModel.LoadHabitsCommand.ExecuteAsync(null);
-
-            BindingContext = viewModel;
+        private async void OnNavClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                var button = sender as ImageButton;
+                string route = button?.CommandParameter?.ToString();
+                if (!string.IsNullOrEmpty(route))
+                {
+                    await Shell.Current.GoToAsync($"//{route}");
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", $"Не удалось открыть страницу: {ex.Message}", "ОК");
+            }
         }
     }
 }

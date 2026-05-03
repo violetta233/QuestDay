@@ -9,10 +9,10 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
 using Plugin.LocalNotification;
-using QuestDay.Extensions;
 using QuestDay.Messages;
 using QuestDay.Models;
 using QuestDay.Services;
+using QuestDay.Extensions;
 
 namespace QuestDay.ViewModels
 {
@@ -185,7 +185,7 @@ namespace QuestDay.ViewModels
             // Проверим, что напоминания включены в настройках, если нет - выходим
             bool remindersEnabled = Preferences.Default.Get("ReminderEnabled", true);
             if (!remindersEnabled) return;
-
+            
             if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
             {
                 await LocalNotificationCenter.Current.RequestNotificationPermission();
@@ -203,11 +203,11 @@ namespace QuestDay.ViewModels
 
             // Получаем текст напоминания из настроек приложения, если не указано - используем стандартный текст
             string reminderText = Preferences.Default.Get("ReminderText", "Время для вашей привычки!");
-
+            
             foreach (var day in habit.SelectedDays)
-            {
+            {   
                 DateTime notifyTime = GetNextOccurrence(day, reminderTime.Hours, reminderTime.Minutes);
-
+            
                 var request = new NotificationRequest
                 {
                     NotificationId = habit.GetNotificationId(day),
@@ -215,22 +215,22 @@ namespace QuestDay.ViewModels
                     Description = habit.Description,
                     Subtitle = habit.Name,
                     BadgeNumber = 1,
-
+                    
                     Schedule = new NotificationRequestSchedule
                     {
                         NotifyTime = notifyTime,
-                        NotifyRepeatInterval = TimeSpan.FromDays(7)
+                        NotifyRepeatInterval = TimeSpan.FromDays(7) 
                     },
 
                     Image = new NotificationImage
                     {
-                        ResourceName = "appicon.png"
+                        ResourceName = "appicon.png" 
                     },
 
                     ReturningData = "page_to_open=Details&id=" + habit.Id
                 };
 
-                await LocalNotificationCenter.Current.Show(request);
+                await LocalNotificationCenter.Current.Show(request);        
             }
         }
 
@@ -244,6 +244,6 @@ namespace QuestDay.ViewModels
                 start = start.AddDays(1);
             }
             return start;
-        }
+        }    
     }
 }

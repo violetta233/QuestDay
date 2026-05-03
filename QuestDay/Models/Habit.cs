@@ -32,6 +32,11 @@ namespace QuestDay.Models
             get => _isCompletedForToday;
             set => SetProperty(ref _isCompletedForToday, value);
         }
+
+        public int GetNotificationId(DayOfWeek day)
+        {
+            return (Id * 10) + (int)day + 1;
+        }
     }
 }
 
