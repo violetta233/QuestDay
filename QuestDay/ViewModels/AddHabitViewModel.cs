@@ -20,6 +20,10 @@ namespace QuestDay.ViewModels
         private readonly IHabitService _habitService;
         private Habit _editingHabit;
 
+        private string _originalName;
+        private string _originalDescription;
+        private List<DayOfWeek> _originalSelectedDays;
+
         [ObservableProperty]
         private string name;
 
@@ -38,9 +42,16 @@ namespace QuestDay.ViewModels
 
         public DaysViewModel DaysOfWeekSelection { get; }
 
+        public bool IsEditingMode => _editingHabit != null;
+
         partial void OnNameChanged(string value)
         {
             ValidateName();
+            SaveHabitCommand.NotifyCanExecuteChanged();
+        }
+
+        partial void OnDescriptionChanged(string value)
+        {
             SaveHabitCommand.NotifyCanExecuteChanged();
         }
 
@@ -72,6 +83,17 @@ namespace QuestDay.ViewModels
             }
         }
 
+        private bool HasChanges()
+        {
+            if (_editingHabit == null) return true;
+
+            bool hasChanges = Name != _originalName ||
+                             Description != _originalDescription ||
+                             !DaysOfWeekSelection.SelectedDays.SequenceEqual(_originalSelectedDays);
+
+            return hasChanges;
+        }
+
         public AddHabitViewModel(IHabitService habitService)
         {
             _habitService = habitService;
@@ -95,6 +117,10 @@ namespace QuestDay.ViewModels
             if (habit == null) return;
 
             _editingHabit = habit;
+            _originalName = habit.Name;
+            _originalDescription = habit.Description ?? "";
+            _originalSelectedDays = habit.SelectedDays.ToList();
+
             Name = habit.Name;
             Description = habit.Description;
             DaysOfWeekSelection.SetSelectedDays(habit.SelectedDays);
@@ -125,7 +151,6 @@ namespace QuestDay.ViewModels
 
                 if (_editingHabit != null)
                 {
-                    // Обновляем существующую привычку
                     _editingHabit.Name = Name;
                     _editingHabit.Description = Description;
                     _editingHabit.SelectedDays = DaysOfWeekSelection.SelectedDays.ToList();
@@ -140,7 +165,6 @@ namespace QuestDay.ViewModels
                 }
                 else
                 {
-                    // Создаём новую привычку
                     habit = new Habit
                     {
                         Name = Name,
@@ -186,7 +210,8 @@ namespace QuestDay.ViewModels
             !IsBusy &&
             !string.IsNullOrWhiteSpace(Name) &&
             Name.Length >= 3 &&
-            DaysOfWeekSelection.SelectedDays.Any();
+            DaysOfWeekSelection.SelectedDays.Any() &&
+            HasChanges();
 
         [RelayCommand]
         private async Task ShowValidationTooltip()
@@ -205,6 +230,10 @@ namespace QuestDay.ViewModels
                 else if (!DaysOfWeekSelection.SelectedDays.Any())
                 {
                     message = "Выберите хотя бы один день выполнения";
+                }
+                else if (_editingHabit != null && !HasChanges())
+                {
+                    message = "Внесите изменения перед сохранением";
                 }
                 else
                 {
