@@ -47,6 +47,7 @@ namespace QuestDay.ViewModels
                 {
                     OnPropertyChanged(nameof(CurrentCalendarMonth));
                     OnPropertyChanged(nameof(CurrentCalendarMonthRussian));
+                    OnPropertyChanged(nameof(CompletionsCountText));
                     if (selectedHabitForCalendar != null)
                     {
                         Task.Run(async () => await LoadCompletionsForHabit(selectedHabitForCalendar.Id));
@@ -59,7 +60,13 @@ namespace QuestDay.ViewModels
         {
             get
             {
-                int count = CompletionsForSelectedHabit.Count;
+                var startDate = new DateTime(CurrentCalendarMonth.Year, CurrentCalendarMonth.Month, 1);
+                var endDate = startDate.AddMonths(1).AddDays(-1);
+
+                var count = CompletionsForSelectedHabit
+                    .Where(c => c.CompletionDate >= startDate && c.CompletionDate <= endDate && c.IsCompleted)
+                    .Count();
+
                 if (count == 0) return "0 дней";
                 if (count == 1) return "1 день";
                 if (count >= 2 && count <= 4) return $"{count} дня";
@@ -89,7 +96,6 @@ namespace QuestDay.ViewModels
 
             Habits.CollectionChanged += (s, e) =>
             {
-                Debug.WriteLine($"Коллекция Habits изменилась. Новое количество: {Habits.Count}");
                 OnPropertyChanged(nameof(HabitsCount));
             };
         }
@@ -102,21 +108,14 @@ namespace QuestDay.ViewModels
 
         public void Receive(NewHabitMessage message)
         {
-            Debug.WriteLine($"Получено сообщение о новой привычке: {message.Value.Name}, Id: {message.Value.Id}");
-
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 if (!Habits.Any(h => h.Id == message.Value.Id))
                 {
                     Habits.Insert(0, message.Value);
                     SortHabits();
-                    Debug.WriteLine($"Привычка добавлена в коллекцию. Всего привычек: {Habits.Count}");
                     OnPropertyChanged(nameof(HabitsCount));
                     await _houseStateService.UpdateStateAsync();
-                }
-                else
-                {
-                    Debug.WriteLine($"Привычка с Id {message.Value.Id} уже существует в коллекции");
                 }
             });
         }
@@ -129,22 +128,16 @@ namespace QuestDay.ViewModels
             IsBusy = true;
             try
             {
-                Debug.WriteLine("Начало загрузки привычек");
                 Habits.Clear();
                 var habitsFromDb = await _habitService.GetHabitsAsync();
 
-                Debug.WriteLine($"Загружено из БД: {habitsFromDb.Count} привычек");
-
                 foreach (var habit in habitsFromDb)
                 {
-                    Debug.WriteLine($"Добавляем привычку: {habit.Name}, Id: {habit.Id}, IsActive: {habit.IsActive}");
                     habit.IsCompletedForToday = await _habitService.GetHabitCompletionStatusAsync(habit.Id, DateTime.Today);
                     Habits.Add(habit);
                 }
 
                 SortHabits();
-
-                Debug.WriteLine($"После добавления в ObservableCollection: {Habits.Count} привычек");
 
                 OnPropertyChanged(nameof(Habits));
                 OnPropertyChanged(nameof(HabitsCount));
@@ -153,7 +146,6 @@ namespace QuestDay.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка загрузки: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось загрузить привычки: {ex.Message}", "ОК");
             }
             finally
@@ -176,7 +168,6 @@ namespace QuestDay.ViewModels
                 {
                     await _habitService.DeleteHabitAsync(habitToDelete);
                     Habits.Remove(habitToDelete);
-                    Debug.WriteLine($"Привычка '{habitToDelete.Name}' удалена");
                     OnPropertyChanged(nameof(HabitsCount));
                     await _houseStateService.UpdateStateAsync();
 
@@ -187,7 +178,6 @@ namespace QuestDay.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Ошибка удаления: {ex}");
                     await Shell.Current.DisplayAlert("Ошибка", $"Не удалось удалить привычку: {ex.Message}", "ОК");
                 }
             }
@@ -204,14 +194,12 @@ namespace QuestDay.ViewModels
             try
             {
                 await _habitService.UpdateHabitAsync(habitToToggle);
-                Debug.WriteLine($"Статус активности привычки '{habitToToggle.Name}' изменен на: {habitToToggle.IsActive}");
                 await _houseStateService.UpdateStateAsync();
                 SortHabits();
             }
             catch (Exception ex)
             {
                 habitToToggle.IsActive = previousState;
-                Debug.WriteLine($"Ошибка обновления статуса: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось обновить статус активности привычки: {ex.Message}", "ОК");
             }
         }
@@ -239,8 +227,6 @@ namespace QuestDay.ViewModels
                 );
 
                 SortHabits();
-
-                Debug.WriteLine($"Статус выполнения привычки '{habitToToggleCompletion.Name}' изменен на: {habitToToggleCompletion.IsCompletedForToday}");
 
                 var allHabits = await _habitService.GetHabitsAsync();
                 var activeHabits = allHabits.Where(h => h.IsActive).ToList();
@@ -270,7 +256,6 @@ namespace QuestDay.ViewModels
             catch (Exception ex)
             {
                 habitToToggleCompletion.IsCompletedForToday = previousState;
-                Debug.WriteLine($"Ошибка обновления выполнения: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось обновить статус выполнения привычки: {ex.Message}", "ОК");
             }
         }
@@ -304,8 +289,6 @@ namespace QuestDay.ViewModels
             if (habit == null) return;
             if (IsBusy) return;
 
-            Debug.WriteLine($"Открываем календарь для привычки: {habit.Name}, Id: {habit.Id}");
-
             IsBusy = true;
             try
             {
@@ -316,7 +299,6 @@ namespace QuestDay.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка при открытии календаря: {ex.Message}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось открыть календарь: {ex.Message}", "OK");
             }
             finally
@@ -328,7 +310,6 @@ namespace QuestDay.ViewModels
         [RelayCommand]
         private void CloseCalendar()
         {
-            Debug.WriteLine("Закрываем календарь");
             IsCalendarVisible = false;
             SelectedHabitForCalendar = null;
             CompletionsForSelectedHabit.Clear();
@@ -340,30 +321,19 @@ namespace QuestDay.ViewModels
         {
             try
             {
-                Debug.WriteLine($"Загружаем выполнения для привычки Id: {habitId}, месяц: {CurrentCalendarMonth:yyyy-MM}");
-
                 var allCompletions = await _habitService.GetCompletionsByHabitIdAsync(habitId);
 
-                var startDate = new DateTime(CurrentCalendarMonth.Year, CurrentCalendarMonth.Month, 1);
-                var endDate = startDate.AddMonths(1).AddDays(-1);
-
-                var filtered = allCompletions.Where(c => c.CompletionDate >= startDate && c.CompletionDate <= endDate)
-                                              .ToList();
-
                 CompletionsForSelectedHabit.Clear();
-                foreach (var completion in filtered)
+                foreach (var completion in allCompletions)
                 {
                     CompletionsForSelectedHabit.Add(completion);
                 }
 
                 OnPropertyChanged(nameof(CompletionsCountText));
-                Debug.WriteLine($"Загружено {CompletionsForSelectedHabit.Count} записей о выполнении");
-
                 UpdateCalendarDays();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка загрузки истории: {ex}");
                 await Shell.Current.DisplayAlert("Ошибка", $"Не удалось загрузить историю: {ex.Message}", "ОК");
             }
         }
@@ -372,16 +342,12 @@ namespace QuestDay.ViewModels
         private async Task NextMonth()
         {
             CurrentCalendarMonth = CurrentCalendarMonth.AddMonths(1);
-            Debug.WriteLine($"Переход на следующий месяц: {CurrentCalendarMonth:yyyy-MM}");
-            OnPropertyChanged(nameof(CompletionsCountText));
         }
 
         [RelayCommand]
         private async Task PreviousMonth()
         {
             CurrentCalendarMonth = CurrentCalendarMonth.AddMonths(-1);
-            Debug.WriteLine($"Переход на предыдущий месяц: {CurrentCalendarMonth:yyyy-MM}");
-            OnPropertyChanged(nameof(CompletionsCountText));
         }
 
         [RelayCommand]
@@ -409,10 +375,7 @@ namespace QuestDay.ViewModels
 
                 var isCompleted = newStatus;
 
-                // Сохраняем в БД
                 await _habitService.SaveHabitCompletionAsync(SelectedHabitForCalendar.Id, date, isCompleted);
-
-                // Обновляем UI
                 day.IsCompleted = isCompleted;
 
                 var existing = CompletionsForSelectedHabit.FirstOrDefault(c => c.CompletionDate.Date == date.Date);
@@ -432,7 +395,6 @@ namespace QuestDay.ViewModels
                 }
 
                 OnPropertyChanged(nameof(CompletionsCountText));
-                OnPropertyChanged(nameof(CompletionsForSelectedHabit));
                 UpdateCalendarDays();
 
                 if (date.Date == DateTime.Today.Date)
@@ -458,7 +420,6 @@ namespace QuestDay.ViewModels
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка при отметке выполнения: {ex}");
                 await BeautyPopup.ShowAsync("Ошибка", ex.Message, "OK", "", "⚠️");
             }
         }
@@ -480,7 +441,8 @@ namespace QuestDay.ViewModels
             for (int day = 1; day <= daysInMonth; day++)
             {
                 var date = new DateTime(CurrentCalendarMonth.Year, CurrentCalendarMonth.Month, day);
-                var isCompleted = CompletionsForSelectedHabit.Any(c => c.CompletionDate.Date == date.Date && c.IsCompleted);
+                var completion = CompletionsForSelectedHabit.FirstOrDefault(c => c.CompletionDate.Date == date.Date);
+                var isCompleted = completion != null && completion.IsCompleted;
 
                 days.Add(new CalendarDay
                 {
@@ -494,7 +456,7 @@ namespace QuestDay.ViewModels
 
             CalendarDays = days;
             OnPropertyChanged(nameof(CalendarDays));
-            Debug.WriteLine($"Обновлен календарь: {days.Count} дней, из них выполненных: {days.Count(d => d.IsCompleted)}");
+            OnPropertyChanged(nameof(CompletionsCountText));
         }
     }
 
