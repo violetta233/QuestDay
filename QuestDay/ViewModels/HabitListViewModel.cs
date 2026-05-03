@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace QuestDay.ViewModels
 {
-    public partial class HabitListViewModel : ObservableObject, IRecipient<NewHabitMessage>
+    public partial class HabitListViewModel : ObservableObject, IRecipient<NewHabitMessage>, IRecipient<HabitUpdatedMessage>
     {
         private readonly IHabitService _habitService;
         private readonly IHouseStateService _houseStateService;
@@ -93,6 +93,7 @@ namespace QuestDay.ViewModels
             _habitService = habitService;
             _houseStateService = houseStateService;
             WeakReferenceMessenger.Default.Register<NewHabitMessage>(this);
+            WeakReferenceMessenger.Default.Register<HabitUpdatedMessage>(this);
 
             Habits.CollectionChanged += (s, e) =>
             {
@@ -116,6 +117,21 @@ namespace QuestDay.ViewModels
                     SortHabits();
                     OnPropertyChanged(nameof(HabitsCount));
                     await _houseStateService.UpdateStateAsync();
+                }
+            });
+        }
+
+        public void Receive(HabitUpdatedMessage message)
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                var index = Habits.IndexOf(message.Value);
+                if (index != -1)
+                {
+                    Habits[index] = message.Value;
+                    SortHabits();
+                    OnPropertyChanged(nameof(Habits));
+                    OnPropertyChanged(nameof(HabitsCount));
                 }
             });
         }
@@ -181,6 +197,30 @@ namespace QuestDay.ViewModels
                     await Shell.Current.DisplayAlert("Ошибка", $"Не удалось удалить привычку: {ex.Message}", "ОК");
                 }
             }
+        }
+
+        [RelayCommand]
+        private async Task EditHabit(Habit habit)
+        {
+            if (habit == null) return;
+
+            var editHabit = new Habit
+            {
+                Id = habit.Id,
+                Name = habit.Name,
+                Description = habit.Description,
+                SelectedDays = habit.SelectedDays.ToList(),
+                StartDate = habit.StartDate,
+                IsActive = habit.IsActive,
+                SelectedDaysJson = habit.SelectedDaysJson
+            };
+
+            var navigationParameter = new Dictionary<string, object>
+            {
+                { "HabitToEdit", editHabit }
+            };
+
+            await Shell.Current.GoToAsync(nameof(AddPage), navigationParameter);
         }
 
         [RelayCommand]

@@ -32,10 +32,6 @@
             <Setter Property="TextColor" Value="Gray" />
             <Setter Property="TextDecorations" Value="Strikethrough" />
         </Style>
-
-        <Style TargetType="SwipeItem">
-            <Setter Property="BackgroundColor" Value="#FF5252" />
-        </Style>
     </ContentPage.Resources>
 
     <Grid>
@@ -60,15 +56,24 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:Habit">
                                 <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems Mode="Reveal">
+                                            <SwipeItem Text="✏️ Изменить"
+                                                       BackgroundColor="#4CAF50"
+                                                       Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=EditHabitCommand}"
+                                                       CommandParameter="{Binding .}" />
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
+
                                     <SwipeView.RightItems>
                                         <SwipeItems Mode="Reveal">
-                                            <SwipeItem Text="Удалить"
+                                            <SwipeItem Text="🗑️ Удалить"
                                                        BackgroundColor="#FF5252"
                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=DeleteHabitCommand}"
                                                        CommandParameter="{Binding .}" />
                                         </SwipeItems>
                                     </SwipeView.RightItems>
-
+                                    
                                     <Border Margin="5" 
                                             Padding="15" 
                                             StrokeThickness="1"

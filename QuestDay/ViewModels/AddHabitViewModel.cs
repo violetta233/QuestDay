@@ -18,6 +18,7 @@ namespace QuestDay.ViewModels
     public partial class AddHabitViewModel : ObservableObject
     {
         private readonly IHabitService _habitService;
+        private Habit _editingHabit;
 
         [ObservableProperty]
         private string name;
@@ -89,6 +90,16 @@ namespace QuestDay.ViewModels
             ValidateDays();
         }
 
+        public void LoadHabitForEditing(Habit habit)
+        {
+            if (habit == null) return;
+
+            _editingHabit = habit;
+            Name = habit.Name;
+            Description = habit.Description;
+            DaysOfWeekSelection.SetSelectedDays(habit.SelectedDays);
+        }
+
         [RelayCommand(CanExecute = nameof(CanSaveHabit))]
         private async Task SaveHabit()
         {
@@ -97,6 +108,8 @@ namespace QuestDay.ViewModels
             IsBusy = true;
             try
             {
+                await _habitService.InitializeAsync();
+
                 if (string.IsNullOrEmpty(Name))
                 {
                     await Shell.Current.DisplayAlert("Ошибка", "Пожалуйста, введите название привычки", "Закрыть");
@@ -108,28 +121,50 @@ namespace QuestDay.ViewModels
                     return;
                 }
 
-                var habit = new Habit
+                Habit habit;
+
+                if (_editingHabit != null)
                 {
-                    Name = Name,
-                    Description = Description,
-                    SelectedDays = DaysOfWeekSelection.SelectedDays.ToList(),
-                    StartDate = DateTime.Now,
-                    CreatedAt = DateTime.Now,
-                    IsActive = true
-                };
+                    // Обновляем существующую привычку
+                    _editingHabit.Name = Name;
+                    _editingHabit.Description = Description;
+                    _editingHabit.SelectedDays = DaysOfWeekSelection.SelectedDays.ToList();
 
-                habit = await _habitService.AddHabitAsync(habit);
+                    await _habitService.UpdateHabitAsync(_editingHabit);
+                    habit = _editingHabit;
 
-                Debug.WriteLine($"Отправка сообщения о новой привычке: {habit.Name}, Id: {habit.Id}");
-                WeakReferenceMessenger.Default.Send(new NewHabitMessage(habit));
+                    Debug.WriteLine($"Отправка сообщения об обновлении привычки: {habit.Name}, Id: {habit.Id}");
+                    WeakReferenceMessenger.Default.Send(new HabitUpdatedMessage(habit));
 
-                // Планируем уведомление для новой привычки
-                await ScheduleHabitNotification(habit);
+                    await Shell.Current.DisplayAlert("Успех", $"Привычка '{habit.Name}' обновлена!", "OK");
+                }
+                else
+                {
+                    // Создаём новую привычку
+                    habit = new Habit
+                    {
+                        Name = Name,
+                        Description = Description,
+                        SelectedDays = DaysOfWeekSelection.SelectedDays.ToList(),
+                        StartDate = DateTime.Now,
+                        CreatedAt = DateTime.Now,
+                        IsActive = true
+                    };
 
-                await Shell.Current.DisplayAlert("Успех", $"Привычка '{habit.Name}' добавлена!", "OK");
+                    habit = await _habitService.AddHabitAsync(habit);
+
+                    Debug.WriteLine($"Отправка сообщения о новой привычке: {habit.Name}, Id: {habit.Id}");
+                    WeakReferenceMessenger.Default.Send(new NewHabitMessage(habit));
+
+                    await ScheduleHabitNotification(habit);
+
+                    await Shell.Current.DisplayAlert("Успех", $"Привычка '{habit.Name}' добавлена!", "OK");
+                }
+
                 Name = string.Empty;
                 Description = string.Empty;
                 DaysOfWeekSelection.Reset();
+                _editingHabit = null;
 
                 ValidateName();
                 ValidateDays();
@@ -188,9 +223,9 @@ namespace QuestDay.ViewModels
             }
 
             foreach (var day in habit.SelectedDays)
-            {   
+            {
                 DateTime notifyTime = GetNextOccurrence(day, 18, 0);
-            
+
                 var request = new NotificationRequest
                 {
                     NotificationId = habit.GetNotificationId(day),
@@ -198,22 +233,22 @@ namespace QuestDay.ViewModels
                     Description = habit.Description,
                     Subtitle = habit.Name,
                     BadgeNumber = 1,
-                    
+
                     Schedule = new NotificationRequestSchedule
                     {
                         NotifyTime = notifyTime,
-                        NotifyRepeatInterval = TimeSpan.FromDays(7) 
+                        NotifyRepeatInterval = TimeSpan.FromDays(7)
                     },
 
                     Image = new NotificationImage
                     {
-                        ResourceName = "appicon.png" 
+                        ResourceName = "appicon.png"
                     },
 
                     ReturningData = "page_to_open=Details&id=" + habit.Id
                 };
 
-                await LocalNotificationCenter.Current.Show(request);        
+                await LocalNotificationCenter.Current.Show(request);
             }
         }
 
@@ -227,6 +262,6 @@ namespace QuestDay.ViewModels
                 start = start.AddDays(1);
             }
             return start;
-        }    
+        }
     }
 }

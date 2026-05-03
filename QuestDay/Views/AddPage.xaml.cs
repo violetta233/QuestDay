@@ -1,11 +1,27 @@
 using Microsoft.Maui.Controls;
+using QuestDay.Models;
 using QuestDay.ViewModels;
 
 namespace QuestDay.Views
 {
+    [QueryProperty(nameof(HabitToEdit), "HabitToEdit")]
     public partial class AddPage : ContentPage
     {
         private readonly AddHabitViewModel _viewModel;
+        private Habit _habitToEdit;
+
+        public Habit HabitToEdit
+        {
+            get => _habitToEdit;
+            set
+            {
+                _habitToEdit = value;
+                if (_habitToEdit != null)
+                {
+                    _viewModel.LoadHabitForEditing(_habitToEdit);
+                }
+            }
+        }
 
         public AddPage(AddHabitViewModel viewModel)
         {
@@ -17,9 +33,13 @@ namespace QuestDay.Views
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            _viewModel.Name = string.Empty;
-            _viewModel.Description = string.Empty;
-            _viewModel.DaysOfWeekSelection.Reset();
+
+            if (HabitToEdit == null)
+            {
+                _viewModel.Name = string.Empty;
+                _viewModel.Description = string.Empty;
+                _viewModel.DaysOfWeekSelection.Reset();
+            }
         }
 
         private async void OnNavClicked(object sender, EventArgs e)
