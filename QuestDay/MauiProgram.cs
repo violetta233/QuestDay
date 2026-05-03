@@ -59,6 +59,7 @@ namespace QuestDay
             builder.Services.AddTransient<AddPage>();
             builder.Services.AddTransient<SettingPage>();
             builder.Services.AddTransient<userPage>();
+            builder.Services.AddTransient<BeautyPopup>();
 
             return builder.Build();
         }
