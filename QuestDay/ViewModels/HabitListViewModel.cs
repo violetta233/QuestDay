@@ -79,6 +79,8 @@ namespace QuestDay.ViewModels
         [ObservableProperty]
         private ObservableCollection<CalendarDay> calendarDays = new();
 
+        public BeautyPopup BeautyPopup { get; set; }
+
         public HabitListViewModel(IHabitService habitService, IHouseStateService houseStateService)
         {
             _habitService = habitService;
@@ -382,9 +384,83 @@ namespace QuestDay.ViewModels
             OnPropertyChanged(nameof(CompletionsCountText));
         }
 
-        private bool IsCompletedOnDate(DateTime date)
+        [RelayCommand]
+        private async Task ToggleDayCompletion(CalendarDay day)
         {
-            return CompletionsForSelectedHabit.Any(c => c.CompletionDate.Date == date.Date && c.IsCompleted);
+            if (day == null || day.IsEmpty || day.DayNumber <= 0) return;
+            if (SelectedHabitForCalendar == null) return;
+            if (BeautyPopup == null) return;
+
+            try
+            {
+                var date = day.Date;
+                var newStatus = !day.IsCompleted;
+                var statusText = newStatus ? "выполненный" : "невыполненный";
+
+                var confirm = await BeautyPopup.ShowAsync(
+                    "Подтверждение",
+                    $"Отметить {date:dd.MM.yyyy} как {statusText}?",
+                    "Да",
+                    "Нет",
+                    newStatus ? "✅" : "❌"
+                );
+
+                if (!confirm) return;
+
+                var isCompleted = newStatus;
+
+                // Сохраняем в БД
+                await _habitService.SaveHabitCompletionAsync(SelectedHabitForCalendar.Id, date, isCompleted);
+
+                // Обновляем UI
+                day.IsCompleted = isCompleted;
+
+                var existing = CompletionsForSelectedHabit.FirstOrDefault(c => c.CompletionDate.Date == date.Date);
+                if (existing != null)
+                {
+                    if (isCompleted) existing.IsCompleted = true;
+                    else CompletionsForSelectedHabit.Remove(existing);
+                }
+                else if (isCompleted)
+                {
+                    CompletionsForSelectedHabit.Add(new HabitCompletion
+                    {
+                        HabitId = SelectedHabitForCalendar.Id,
+                        CompletionDate = date,
+                        IsCompleted = true
+                    });
+                }
+
+                OnPropertyChanged(nameof(CompletionsCountText));
+                OnPropertyChanged(nameof(CompletionsForSelectedHabit));
+                UpdateCalendarDays();
+
+                if (date.Date == DateTime.Today.Date)
+                {
+                    var habit = Habits.FirstOrDefault(h => h.Id == SelectedHabitForCalendar.Id);
+                    if (habit != null)
+                    {
+                        habit.IsCompletedForToday = isCompleted;
+                        SortHabits();
+                        OnPropertyChanged(nameof(Habits));
+                    }
+                }
+
+                await _houseStateService.UpdateStateAsync();
+
+                await BeautyPopup.ShowAsync(
+                    isCompleted ? "Выполнено!" : "Статус изменён",
+                    isCompleted ? $"✅ За {date:dd.MM.yyyy} отмечено!" : $"❌ За {date:dd.MM.yyyy} отметка снята",
+                    "OK",
+                    "",
+                    isCompleted ? "✅" : "❌"
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка при отметке выполнения: {ex}");
+                await BeautyPopup.ShowAsync("Ошибка", ex.Message, "OK", "", "⚠️");
+            }
         }
 
         private void UpdateCalendarDays()
@@ -404,11 +480,13 @@ namespace QuestDay.ViewModels
             for (int day = 1; day <= daysInMonth; day++)
             {
                 var date = new DateTime(CurrentCalendarMonth.Year, CurrentCalendarMonth.Month, day);
+                var isCompleted = CompletionsForSelectedHabit.Any(c => c.CompletionDate.Date == date.Date && c.IsCompleted);
+
                 days.Add(new CalendarDay
                 {
                     Date = date,
                     DayNumber = day,
-                    IsCompleted = IsCompletedOnDate(date),
+                    IsCompleted = isCompleted,
                     IsToday = date.Date == DateTime.Today.Date,
                     IsEmpty = false
                 });

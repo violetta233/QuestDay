@@ -14,6 +14,7 @@ namespace QuestDay.Views
             InitializeComponent();
             _viewModel = viewModel;
             BindingContext = _viewModel;
+            _viewModel.BeautyPopup = BeautyPopupView;
         }
 
         protected override async void OnAppearing()

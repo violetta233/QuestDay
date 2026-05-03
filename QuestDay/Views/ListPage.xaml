@@ -7,6 +7,7 @@
     xmlns:models="clr-namespace:QuestDay.Models"       
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:converters="clr-namespace:QuestDay.Converters"
+    xmlns:views="clr-namespace:QuestDay.Views"
     BackgroundColor="#FFFBF6"
     ControlTemplate="{x:Null}">
 
@@ -305,6 +306,13 @@
                             <Label Grid.Column="6" Text="ВС" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                         </Grid>
 
+                        <Label Text="👆 Нажмите на день, чтобы отметить выполнение"
+                               FontSize="10"
+                               TextColor="#999999"
+                               FontFamily="Montserrat-SemiBold"
+                               HorizontalOptions="Center"
+                               Margin="0,-5,0,0"/>
+
                         <CollectionView ItemsSource="{Binding CalendarDays}" 
                                         HorizontalOptions="Fill">
                             <CollectionView.ItemsLayout>
@@ -324,6 +332,12 @@
                                                 WidthRequest="42"
                                                 HorizontalOptions="Center"
                                                 VerticalOptions="Center">
+
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=ToggleDayCompletionCommand}"
+                                                                      CommandParameter="{Binding .}"/>
+                                            </Border.GestureRecognizers>
+
                                             <Label Text="{Binding DayNumber}"
                                                    HorizontalOptions="Center"
                                                    VerticalOptions="Center"
@@ -334,6 +348,7 @@
                                                    FontSize="14"
                                                    FontFamily="Montserrat-SemiBold"/>
                                         </Border>
+
                                         <Border IsVisible="{Binding IsEmpty}"
                                                 BackgroundColor="Transparent"
                                                 StrokeThickness="0"
@@ -379,5 +394,7 @@
                 </Grid>
             </Frame>
         </Grid>
+
+        <views:BeautyPopup x:Name="BeautyPopupView" IsVisible="False"/>
     </Grid>
 </ContentPage>
