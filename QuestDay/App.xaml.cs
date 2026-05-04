@@ -11,6 +11,7 @@ namespace QuestDay
         private readonly IHabitService _habitService;
         private readonly IHouseStateService _houseStateService;
         private static bool _isFirstStart = true;
+        private static bool _isFromNotification = false;
 
         public static AvatarAppearanceService AvatarAppearance { get; } = new AvatarAppearanceService();
         public static IAudioPlayer? BackgroundMusic { get; private set; }
@@ -113,7 +114,14 @@ namespace QuestDay
 
             if (_isFirstStart)
             {
-                System.Diagnostics.Debug.WriteLine("OnResume: Приложение не запущено");
+                System.Diagnostics.Debug.WriteLine("OnResume: Игнорируем (приложение не запущено)");
+                return;
+            }
+
+            if (_isFromNotification)
+            {
+                System.Diagnostics.Debug.WriteLine("OnResume: Игнорируем (вызов из уведомления)");
+                _isFromNotification = false;
                 return;
             }
 
@@ -128,6 +136,9 @@ namespace QuestDay
         private void OnNotificationTapped(NotificationActionEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"Уведомление нажато: {e.Request.NotificationId}");
+            _isFromNotification = true;
+
+            Task.Delay(1000).ContinueWith(_ => _isFromNotification = false);
         }
     }
 }
