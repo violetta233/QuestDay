@@ -256,14 +256,15 @@ namespace QuestDay.ViewModels
             if (habitToToggleCompletion == null) return;
 
             bool previousState = habitToToggleCompletion.IsCompletedForToday;
-            habitToToggleCompletion.IsCompletedForToday = !previousState;
+            bool newState = !previousState;
+            habitToToggleCompletion.IsCompletedForToday = newState;
 
             try
             {
                 await _habitService.SaveHabitCompletionAsync(
                     habitToToggleCompletion.Id,
                     DateTime.Today,
-                    habitToToggleCompletion.IsCompletedForToday
+                    newState
                 );
 
                 SortHabits();
@@ -282,7 +283,7 @@ namespace QuestDay.ViewModels
                     }
                 }
 
-                if (allCompleted && activeHabits.Count > 0)
+                if (allCompleted && activeHabits.Count > 0 && newState == true)
                 {
                     await _houseStateService.CleanHouseAsync();
                     await Shell.Current.DisplayAlert("Отлично! 🎉",
