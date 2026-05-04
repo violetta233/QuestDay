@@ -16,13 +16,22 @@ public partial class SettingPage : ContentPage
     {
         InitializeComponent();
         LoadAllSettings();
+        TimePicker.PropertyChanged += OnTimePickerPropertyChanged;
     }
 
     private void LoadAllSettings()
     {
         NameEntry.Text = Preferences.Default.Get(UserNameKey, "");
 
-        TimeEntry.Text = Preferences.Default.Get(ReminderTimeKey, "14:00");
+        string savedTime = Preferences.Default.Get(ReminderTimeKey, "14:00");
+        if (TimeSpan.TryParse(savedTime, out TimeSpan time))
+        {
+            TimePicker.Time = time;
+        }
+        else
+        {
+            TimePicker.Time = new TimeSpan(14, 0, 0);
+        }
 
         ReminderTextEntry.Text = "";
         Preferences.Default.Remove(ReminderTextKey);
@@ -38,10 +47,10 @@ public partial class SettingPage : ContentPage
     private void UpdateReminderFieldsState()
     {
         bool isEnabled = ReminderSwitch.IsToggled;
-        TimeEntry.IsEnabled = isEnabled;
+        TimePicker.IsEnabled = isEnabled;
         ReminderTextEntry.IsEnabled = isEnabled;
 
-        TimeEntry.Opacity = isEnabled ? 1 : 0.5;
+        TimePicker.Opacity = isEnabled ? 1 : 0.5;
         ReminderTextEntry.Opacity = isEnabled ? 1 : 0.5;
     }
 
@@ -65,11 +74,13 @@ public partial class SettingPage : ContentPage
         UpdateReminderFieldsState();
     }
 
-    private void OnTimeEntryTextChanged(object sender, TextChangedEventArgs e)
+    private void OnTimePickerPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (!string.IsNullOrEmpty(TimeEntry.Text))
+        if (e.PropertyName == "Time")
         {
-            Preferences.Default.Set(ReminderTimeKey, TimeEntry.Text);
+            string timeString = TimePicker.Time.ToString(@"hh\:mm");
+            Preferences.Default.Set(ReminderTimeKey, timeString);
+            System.Diagnostics.Debug.WriteLine($"Время сохранено: {timeString}");
         }
     }
 
