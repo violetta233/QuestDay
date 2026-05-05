@@ -22,10 +22,23 @@ namespace QuestDay.ViewModels
 
         public ObservableCollection<Habit> Habits { get; } = new ObservableCollection<Habit>();
 
+        private List<Habit> _allHabitsFromDb = new List<Habit>();
+
         [ObservableProperty]
         private bool isBusy;
 
         public int HabitsCount => Habits.Count;
+
+        public List<string> FilterOptions { get; } = new List<string> { "Задачи на сегодня", "Все привычки" };
+
+        [ObservableProperty]
+        private string _selectedFilter = "Все привычки";
+
+        partial void OnSelectedFilterChanged(string value)
+        {
+            ApplyFilterAndSort();
+        }
+        
 
         [ObservableProperty]
         private Habit selectedHabitForCalendar;
@@ -107,15 +120,43 @@ namespace QuestDay.ViewModels
             await LoadHabitsCommand.ExecuteAsync(null);
         }
 
+        private void ApplyFilterAndSort()
+        {
+            if (_allHabitsFromDb == null) return;
+
+            IEnumerable<Habit> filtered;
+
+            if (SelectedFilter == "Задачи на сегодня")
+            {
+                var today = DateTime.Today.DayOfWeek;
+                filtered = _allHabitsFromDb.Where(h => h.SelectedDays != null && h.SelectedDays.Contains(today));
+            }
+            else
+            {
+                filtered = _allHabitsFromDb;
+            }
+
+            var sorted = filtered
+                .OrderBy(h => h.IsCompletedForToday)
+                .ThenByDescending(h => h.CreatedAt)
+                .ToList();
+
+            Habits.Clear();
+            foreach (var habit in sorted)
+            {
+                Habits.Add(habit);
+            }
+            OnPropertyChanged(nameof(HabitsCount));
+        }
+        
         public void Receive(NewHabitMessage message)
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 if (!Habits.Any(h => h.Id == message.Value.Id))
                 {
-                    Habits.Insert(0, message.Value);
-                    SortHabits();
-                    OnPropertyChanged(nameof(HabitsCount));
+                    _allHabitsFromDb.Insert(0, message.Value);
+                    ApplyFilterAndSort();
                     await _houseStateService.UpdateStateAsync();
                 }
             });
@@ -125,13 +166,12 @@ namespace QuestDay.ViewModels
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                var index = Habits.IndexOf(message.Value);
-                if (index != -1)
+                var existing = _allHabitsFromDb.FirstOrDefault(h => h.Id == message.Value.Id);
+                if (existing != null)
                 {
-                    Habits[index] = message.Value;
-                    SortHabits();
-                    OnPropertyChanged(nameof(Habits));
-                    OnPropertyChanged(nameof(HabitsCount));
+                    var index = _allHabitsFromDb.IndexOf(existing);
+                    _allHabitsFromDb[index] = message.Value;
+                    ApplyFilterAndSort();
                 }
             });
         }
@@ -150,13 +190,10 @@ namespace QuestDay.ViewModels
                 foreach (var habit in habitsFromDb)
                 {
                     habit.IsCompletedForToday = await _habitService.GetHabitCompletionStatusAsync(habit.Id, DateTime.Today);
-                    Habits.Add(habit);
                 }
 
-                SortHabits();
-
-                OnPropertyChanged(nameof(Habits));
-                OnPropertyChanged(nameof(HabitsCount));
+                _allHabitsFromDb = habitsFromDb.ToList();
+                ApplyFilterAndSort();
 
                 await _houseStateService.UpdateStateAsync();
             }
@@ -183,8 +220,8 @@ namespace QuestDay.ViewModels
                 try
                 {
                     await _habitService.DeleteHabitAsync(habitToDelete);
-                    Habits.Remove(habitToDelete);
-                    OnPropertyChanged(nameof(HabitsCount));
+                    _allHabitsFromDb.Remove(habitToDelete);
+                    ApplyFilterAndSort();
                     await _houseStateService.UpdateStateAsync();
 
                     if (selectedHabitForCalendar?.Id == habitToDelete.Id)
@@ -211,6 +248,7 @@ namespace QuestDay.ViewModels
                 Description = habit.Description,
                 SelectedDays = habit.SelectedDays.ToList(),
                 StartDate = habit.StartDate,
+                CreatedAt = habit.CreatedAt,
                 IsActive = habit.IsActive,
                 SelectedDaysJson = habit.SelectedDaysJson
             };
@@ -235,7 +273,7 @@ namespace QuestDay.ViewModels
             {
                 await _habitService.UpdateHabitAsync(habitToToggle);
                 await _houseStateService.UpdateStateAsync();
-                SortHabits();
+                ApplyFilterAndSort();
             }
             catch (Exception ex)
             {
@@ -267,7 +305,7 @@ namespace QuestDay.ViewModels
                     newState
                 );
 
-                SortHabits();
+                ApplyFilterAndSort();
 
                 var allHabits = await _habitService.GetHabitsAsync();
                 var activeHabits = allHabits.Where(h => h.IsActive).ToList();
@@ -444,8 +482,7 @@ namespace QuestDay.ViewModels
                     if (habit != null)
                     {
                         habit.IsCompletedForToday = isCompleted;
-                        SortHabits();
-                        OnPropertyChanged(nameof(Habits));
+                        ApplyFilterAndSort();
                     }
                 }
 
