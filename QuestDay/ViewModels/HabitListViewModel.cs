@@ -324,8 +324,7 @@ namespace QuestDay.ViewModels
                 if (allCompleted && activeHabits.Count > 0 && newState == true)
                 {
                     await _houseStateService.CleanHouseAsync();
-                    await Shell.Current.DisplayAlert("Отлично! 🎉",
-                        "Все привычки выполнены! Домик стал чище!", "OK");
+                    await SuccessPopup.ShowAllHabitsCompleted("Отлично! 🧹\n\nВсе привычки выполнены! Домик стал чище.");
                 }
                 else
                 {
@@ -442,13 +441,12 @@ namespace QuestDay.ViewModels
                 var newStatus = !day.IsCompleted;
                 var statusText = newStatus ? "выполненный" : "невыполненный";
 
-                var confirm = await BeautyPopup.ShowAsync(
-                    "Подтверждение",
-                    $"Отметить {date:dd.MM.yyyy} как {statusText}?",
-                    "Да",
-                    "Нет",
-                    newStatus ? "✅" : "❌"
-                );
+                var confirm = await SuccessPopup.ShowConfirmation(
+    "Подтверждение",
+    $"Отметить {date:dd.MM.yyyy} как {statusText}?",
+    "Да",
+    "Нет"
+);
 
                 if (!confirm) return;
 
@@ -487,14 +485,15 @@ namespace QuestDay.ViewModels
                 }
 
                 await _houseStateService.UpdateStateAsync();
-
-                await BeautyPopup.ShowAsync(
-                    isCompleted ? "Выполнено!" : "Статус изменён",
-                    isCompleted ? $"✅ За {date:dd.MM.yyyy} отмечено!" : $"❌ За {date:dd.MM.yyyy} отметка снята",
-                    "OK",
-                    "",
-                    isCompleted ? "✅" : "❌"
-                );
+               
+                if (isCompleted)
+                {
+                    await SuccessPopup.Show($"✅ За {date:dd.MM.yyyy} отмечено!", navigateToList: false);
+                }
+                else
+                {
+                    await SuccessPopup.Show($"❌ За {date:dd.MM.yyyy} отметка снята", navigateToList: false);
+                }
             }
             catch (Exception ex)
             {

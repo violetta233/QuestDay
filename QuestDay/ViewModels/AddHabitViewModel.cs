@@ -12,7 +12,7 @@ using QuestDay.Messages;
 using QuestDay.Models;
 using QuestDay.Services;
 using QuestDay.Extensions;
-
+using QuestDay.Views;
 namespace QuestDay.ViewModels
 {
     public partial class AddHabitViewModel : ObservableObject
@@ -161,7 +161,7 @@ namespace QuestDay.ViewModels
                     Debug.WriteLine($"Отправка сообщения об обновлении привычки: {habit.Name}, Id: {habit.Id}");
                     WeakReferenceMessenger.Default.Send(new HabitUpdatedMessage(habit));
 
-                    await Shell.Current.DisplayAlert("Успех", $"Привычка '{habit.Name}' обновлена!", "OK");
+                    await SuccessPopup.Show($"Привычка '{habit.Name}' обновлена!", navigateToList: true);
                 }
                 else
                 {
@@ -181,8 +181,8 @@ namespace QuestDay.ViewModels
                     WeakReferenceMessenger.Default.Send(new NewHabitMessage(habit));
 
                     await ScheduleHabitNotification(habit);
+                    await SuccessPopup.Show($"Привычка '{habit.Name}' добавлена!", navigateToList: true);
 
-                    await Shell.Current.DisplayAlert("Успех", $"Привычка '{habit.Name}' добавлена!", "OK");
                 }
 
                 Name = string.Empty;
@@ -193,7 +193,7 @@ namespace QuestDay.ViewModels
                 ValidateName();
                 ValidateDays();
 
-                await Shell.Current.GoToAsync("//ListPage");
+               
             }
             catch (Exception ex)
             {
