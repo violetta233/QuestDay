@@ -212,7 +212,7 @@ namespace QuestDay.ViewModels
                 {
                     NotificationId = habit.GetNotificationId(day),
                     Title = $"{userName}, {reminderText}",
-                    Description = habit.Description,
+                    //Description = habit.Description, //описание уведомления
                     Subtitle = habit.Name,
                     BadgeNumber = 1,
                     
