@@ -22,10 +22,23 @@ namespace QuestDay.ViewModels
 
         public ObservableCollection<Habit> Habits { get; } = new ObservableCollection<Habit>();
 
+        private List<Habit> _allHabitsFromDb = new List<Habit>();
+
         [ObservableProperty]
         private bool isBusy;
 
         public int HabitsCount => Habits.Count;
+
+        public List<string> FilterOptions { get; } = new List<string> { "Задачи на сегодня", "Все привычки" };
+
+        [ObservableProperty]
+        private string _selectedFilter = "Все привычки";
+
+        partial void OnSelectedFilterChanged(string value)
+        {
+            ApplyFilterAndSort();
+        }
+
 
         [ObservableProperty]
         private Habit selectedHabitForCalendar;
@@ -106,6 +119,43 @@ namespace QuestDay.ViewModels
             await _habitService.InitializeAsync();
             await LoadHabitsCommand.ExecuteAsync(null);
         }
+        [RelayCommand]
+        private async Task OpenFilter()
+        {
+            var result = await SuccessPopup.ShowFilterDialog();
+            if (!string.IsNullOrEmpty(result))
+            {
+                SelectedFilter = result;
+            }
+        }
+        private void ApplyFilterAndSort()
+        {
+            if (_allHabitsFromDb == null) return;
+
+            IEnumerable<Habit> filtered;
+
+            if (SelectedFilter == "Задачи на сегодня")
+            {
+                var today = DateTime.Today.DayOfWeek;
+                filtered = _allHabitsFromDb.Where(h => h.SelectedDays != null && h.SelectedDays.Contains(today));
+            }
+            else
+            {
+                filtered = _allHabitsFromDb;
+            }
+
+            var sorted = filtered
+                .OrderBy(h => h.IsCompletedForToday)
+                .ThenByDescending(h => h.CreatedAt)
+                .ToList();
+
+            Habits.Clear();
+            foreach (var habit in sorted)
+            {
+                Habits.Add(habit);
+            }
+            OnPropertyChanged(nameof(HabitsCount));
+        }
 
         public void Receive(NewHabitMessage message)
         {
@@ -113,9 +163,8 @@ namespace QuestDay.ViewModels
             {
                 if (!Habits.Any(h => h.Id == message.Value.Id))
                 {
-                    Habits.Insert(0, message.Value);
-                    SortHabits();
-                    OnPropertyChanged(nameof(HabitsCount));
+                    _allHabitsFromDb.Insert(0, message.Value);
+                    ApplyFilterAndSort();
                     await _houseStateService.UpdateStateAsync();
                 }
             });
@@ -125,13 +174,12 @@ namespace QuestDay.ViewModels
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                var index = Habits.IndexOf(message.Value);
-                if (index != -1)
+                var existing = _allHabitsFromDb.FirstOrDefault(h => h.Id == message.Value.Id);
+                if (existing != null)
                 {
-                    Habits[index] = message.Value;
-                    SortHabits();
-                    OnPropertyChanged(nameof(Habits));
-                    OnPropertyChanged(nameof(HabitsCount));
+                    var index = _allHabitsFromDb.IndexOf(existing);
+                    _allHabitsFromDb[index] = message.Value;
+                    ApplyFilterAndSort();
                 }
             });
         }
@@ -150,13 +198,10 @@ namespace QuestDay.ViewModels
                 foreach (var habit in habitsFromDb)
                 {
                     habit.IsCompletedForToday = await _habitService.GetHabitCompletionStatusAsync(habit.Id, DateTime.Today);
-                    Habits.Add(habit);
                 }
 
-                SortHabits();
-
-                OnPropertyChanged(nameof(Habits));
-                OnPropertyChanged(nameof(HabitsCount));
+                _allHabitsFromDb = habitsFromDb.ToList();
+                ApplyFilterAndSort();
 
                 await _houseStateService.UpdateStateAsync();
             }
@@ -176,26 +221,35 @@ namespace QuestDay.ViewModels
         private async Task DeleteHabit(Habit habitToDelete)
         {
             if (habitToDelete == null) return;
+            if (IsBusy) return;
+            IsBusy = true;
 
-            bool confirm = await Shell.Current.DisplayAlert("Удалить привычку", $"Вы уверены, что хотите удалить '{habitToDelete.Name}'?", "Да", "Нет");
-            if (confirm)
+            try
             {
-                try
+                bool confirm = await SuccessPopup.ShowDeleteConfirmation(habitToDelete.Name);
+                if (confirm)
                 {
-                    await _habitService.DeleteHabitAsync(habitToDelete);
-                    Habits.Remove(habitToDelete);
-                    OnPropertyChanged(nameof(HabitsCount));
-                    await _houseStateService.UpdateStateAsync();
-
-                    if (selectedHabitForCalendar?.Id == habitToDelete.Id)
+                    try
                     {
-                        CloseCalendar();
+                        await _habitService.DeleteHabitAsync(habitToDelete);
+                        _allHabitsFromDb.Remove(habitToDelete);
+                        ApplyFilterAndSort();
+                        await _houseStateService.UpdateStateAsync();
+
+                        if (selectedHabitForCalendar?.Id == habitToDelete.Id)
+                        {
+                            CloseCalendar();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await SuccessPopup.Show($"Не удалось удалить привычку: {ex.Message}", false);
                     }
                 }
-                catch (Exception ex)
-                {
-                    await Shell.Current.DisplayAlert("Ошибка", $"Не удалось удалить привычку: {ex.Message}", "ОК");
-                }
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 
@@ -211,6 +265,7 @@ namespace QuestDay.ViewModels
                 Description = habit.Description,
                 SelectedDays = habit.SelectedDays.ToList(),
                 StartDate = habit.StartDate,
+                CreatedAt = habit.CreatedAt,
                 IsActive = habit.IsActive,
                 SelectedDaysJson = habit.SelectedDaysJson
             };
@@ -235,7 +290,7 @@ namespace QuestDay.ViewModels
             {
                 await _habitService.UpdateHabitAsync(habitToToggle);
                 await _houseStateService.UpdateStateAsync();
-                SortHabits();
+                ApplyFilterAndSort();
             }
             catch (Exception ex)
             {
@@ -255,8 +310,9 @@ namespace QuestDay.ViewModels
         {
             if (habitToToggleCompletion == null) return;
 
-
-            bool newState = !habitToToggleCompletion.IsCompletedForToday;
+            bool previousState = habitToToggleCompletion.IsCompletedForToday;
+            bool newState = !previousState;
+            habitToToggleCompletion.IsCompletedForToday = newState;
             var actionText = newState ? "выполненной" : "невыполненной";
             var icon = newState ? "✓" : "✕";
 
@@ -269,10 +325,6 @@ namespace QuestDay.ViewModels
             ) ?? Task.FromResult(true));
 
             if (!confirm) return;
-
-            bool previousState = habitToToggleCompletion.IsCompletedForToday;
-            habitToToggleCompletion.IsCompletedForToday = newState;
-
             try
             {
                 await _habitService.SaveHabitCompletionAsync(
@@ -281,7 +333,7 @@ namespace QuestDay.ViewModels
                     newState
                 );
 
-                SortHabits();
+                ApplyFilterAndSort();
 
                 var allHabits = await _habitService.GetHabitsAsync();
                 var activeHabits = allHabits.Where(h => h.IsActive).ToList();
@@ -297,12 +349,10 @@ namespace QuestDay.ViewModels
                     }
                 }
 
-                if (allCompleted && activeHabits.Count > 0 && newState)
+                if (allCompleted && activeHabits.Count > 0 && newState == true)
                 {
                     await _houseStateService.CleanHouseAsync();
-
-                    // ✅ Используем SuccessPopup.ShowAllHabitsCompleted
-                    await SuccessPopup.ShowAllHabitsCompleted("Отлично! 🎉\n\nВсе привычки выполнены! Домик стал чище.");
+                    await SuccessPopup.ShowAllHabitsCompleted("Отлично! 🧹\n\nВсе привычки выполнены! Домик стал чище.");
                 }
                 else
                 {
@@ -411,6 +461,7 @@ namespace QuestDay.ViewModels
         {
             if (day == null || day.IsEmpty || day.DayNumber <= 0) return;
             if (SelectedHabitForCalendar == null) return;
+            if (BeautyPopup == null) return;
 
             try
             {
@@ -418,13 +469,12 @@ namespace QuestDay.ViewModels
                 var newStatus = !day.IsCompleted;
                 var statusText = newStatus ? "выполненный" : "невыполненный";
 
-                // ✅ Используем SuccessPopup.ShowConfirmation (как на скриншоте)
                 var confirm = await SuccessPopup.ShowConfirmation(
-                    "Подтверждение",
-                    $"Отметить {date:dd.MM.yyyy} как {statusText}?",
-                    "Да",
-                    "Нет"
-                );
+    "Подтверждение",
+    $"Отметить {date:dd.MM.yyyy} как {statusText}?",
+    "Да",
+    "Нет"
+);
 
                 if (!confirm) return;
 
@@ -458,14 +508,12 @@ namespace QuestDay.ViewModels
                     if (habit != null)
                     {
                         habit.IsCompletedForToday = isCompleted;
-                        SortHabits();
-                        OnPropertyChanged(nameof(Habits));
+                        ApplyFilterAndSort();
                     }
                 }
 
                 await _houseStateService.UpdateStateAsync();
 
-                // ✅ Используем SuccessPopup.Show (как на скриншоте)
                 if (isCompleted)
                 {
                     await SuccessPopup.Show($"✅ За {date:dd.MM.yyyy} отмечено!", navigateToList: false);
@@ -477,7 +525,7 @@ namespace QuestDay.ViewModels
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Ошибка", ex.Message, "OK");
+                await BeautyPopup.ShowAsync("Ошибка", ex.Message, "OK", "", "⚠️");
             }
         }
 

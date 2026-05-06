@@ -68,8 +68,10 @@
                             Stroke="#A7DFAF"
                             StrokeThickness="2"
                             Padding="18, 8"
-                            StrokeShape="RoundRectangle 15"
-                            InputTransparent="True">
+                            StrokeShape="RoundRectangle 15">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenFilterCommand}"/>
+                        </Border.GestureRecognizers>
 
                         <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                             <Label Text="{Binding SelectedFilter}"
@@ -86,12 +88,12 @@
                         </HorizontalStackLayout>
                     </Border>
 
-                    <Picker ItemsSource="{Binding FilterOptions}"
+                    <!--<Picker ItemsSource="{Binding FilterOptions}"
                 SelectedItem="{Binding SelectedFilter}"
                 Opacity="0.01"
                 BackgroundColor="Transparent"
                 VerticalOptions="Fill"
-                HorizontalOptions="Fill" />
+                HorizontalOptions="Fill" />-->
                 </Grid>
             </Grid>
 
