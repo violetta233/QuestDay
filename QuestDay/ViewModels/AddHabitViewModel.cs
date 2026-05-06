@@ -159,9 +159,7 @@ namespace QuestDay.ViewModels
                     habit = _editingHabit;
 
                     Debug.WriteLine($"Отправка сообщения об обновлении привычки: {habit.Name}, Id: {habit.Id}");
-                    WeakReferenceMessenger.Default.Send(new HabitUpdatedMessage(habit));
-
-                    await SuccessPopup.Show($"Привычка '{habit.Name}' обновлена!", navigateToList: true);
+                    
                 }
                 else
                 {
