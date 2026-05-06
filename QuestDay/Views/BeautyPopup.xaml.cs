@@ -33,7 +33,7 @@ namespace QuestDay.Views
             await HideAsync();
         }
 
-        public async Task<bool> ShowAsync(string title, string message, string confirmText = "Да", string cancelText = "Нет", string icon = "✅")
+        public async Task<bool> ShowAsync(string title, string message, string confirmText = "Да", string cancelText = "Нет", string icon = "✓")
         {
             ContentLayout.IsVisible = true;
             LoadingLayout.IsVisible = false;
@@ -44,11 +44,17 @@ namespace QuestDay.Views
             CancelBtn.Text = cancelText;
             IconLabel.Text = icon;
 
-            if (icon == "✅") IconLabel.TextColor = Color.FromArgb("#27AE60");
-            else if (icon == "❌") IconLabel.TextColor = Color.FromArgb("#E74C3C");
-            else if (icon == "📅") IconLabel.TextColor = Color.FromArgb("#F68063");
-            else if (icon == "⚠️") IconLabel.TextColor = Color.FromArgb("#F39C12");
-            else IconLabel.TextColor = Color.FromArgb("#F68063");
+            // Цвет иконки
+            if (icon == "✓" || icon == "✅")
+                IconLabel.TextColor = Color.FromArgb("#A7DFAF");
+            else if (icon == "❌" || icon == "✕")
+                IconLabel.TextColor = Color.FromArgb("#FF5252");
+            else if (icon == "📅")
+                IconLabel.TextColor = Color.FromArgb("#F68063");
+            else if (icon == "⚠️")
+                IconLabel.TextColor = Color.FromArgb("#F39C12");
+            else
+                IconLabel.TextColor = Color.FromArgb("#A7DFAF");
 
             if (string.IsNullOrEmpty(cancelText))
             {

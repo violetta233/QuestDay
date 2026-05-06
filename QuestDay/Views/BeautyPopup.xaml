@@ -19,11 +19,12 @@
             <Grid>
                 <VerticalStackLayout x:Name="ContentLayout" Spacing="15" IsVisible="True">
                     <Label x:Name="IconLabel"
-                           Text="✅"
+                           Text="✓"
                            FontSize="55"
                            HorizontalOptions="Center"
                            VerticalOptions="Center"
-                           FontFamily="Montserrat-SemiBold"/>
+                           FontFamily="Montserrat-SemiBold"
+                           TextColor="#A7DFAF"/>
 
                     <Label x:Name="TitleLabel"
                            Text="Подтверждение"
@@ -60,7 +61,7 @@
                                 VerticalOptions="Center"/>
                         <Button x:Name="ConfirmBtn"
                                 Text="Да"
-                                BackgroundColor="#F68063"
+                                BackgroundColor="#A7DFAF"
                                 TextColor="White"
                                 CornerRadius="15"
                                 FontFamily="Montserrat-SemiBold"
@@ -78,7 +79,7 @@
                                      VerticalOptions="Center">
                     <ActivityIndicator x:Name="LoadingIndicator"
                                        IsRunning="True"
-                                       Color="#F68063"
+                                       Color="#A7DFAF"
                                        HeightRequest="50"
                                        WidthRequest="50"/>
                     <Label Text="Сохранение..."
