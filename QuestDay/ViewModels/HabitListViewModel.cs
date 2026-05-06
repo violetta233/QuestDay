@@ -255,10 +255,10 @@ namespace QuestDay.ViewModels
         {
             if (habitToToggleCompletion == null) return;
 
-            //Подтверждение для защиты от случайного нажатия
+
             bool newState = !habitToToggleCompletion.IsCompletedForToday;
             var actionText = newState ? "выполненной" : "невыполненной";
-            var icon = newState ? "✅" : "❌";
+            var icon = newState ? "✓" : "✕";
 
             var confirm = await (BeautyPopup?.ShowAsync(
                 "Подтверждение",
@@ -266,13 +266,9 @@ namespace QuestDay.ViewModels
                 "Да",
                 "Нет",
                 icon
-            ) ?? Task.FromResult(true)); // Если BeautyPopup не инициализирован — пропускаем подтверждение
+            ) ?? Task.FromResult(true));
 
-            if (!confirm)
-            {
-                // Пользователь отменил — ничего не делаем
-                return;
-            }
+            if (!confirm) return;
 
             bool previousState = habitToToggleCompletion.IsCompletedForToday;
             habitToToggleCompletion.IsCompletedForToday = newState;
@@ -301,10 +297,12 @@ namespace QuestDay.ViewModels
                     }
                 }
 
-                if (allCompleted && activeHabits.Count > 0 && newState == true)
+                if (allCompleted && activeHabits.Count > 0 && newState)
                 {
                     await _houseStateService.CleanHouseAsync();
-                    await Shell.Current.DisplayAlert("Отлично! 🎉", "Все привычки выполнены! Домик стал чище!", "OK");
+
+                    // ✅ Используем SuccessPopup.ShowAllHabitsCompleted
+                    await SuccessPopup.ShowAllHabitsCompleted("Отлично! 🎉\n\nВсе привычки выполнены! Домик стал чище.");
                 }
                 else
                 {
@@ -413,7 +411,6 @@ namespace QuestDay.ViewModels
         {
             if (day == null || day.IsEmpty || day.DayNumber <= 0) return;
             if (SelectedHabitForCalendar == null) return;
-            if (BeautyPopup == null) return;
 
             try
             {
@@ -421,12 +418,12 @@ namespace QuestDay.ViewModels
                 var newStatus = !day.IsCompleted;
                 var statusText = newStatus ? "выполненный" : "невыполненный";
 
-                var confirm = await BeautyPopup.ShowAsync(
+                // ✅ Используем SuccessPopup.ShowConfirmation (как на скриншоте)
+                var confirm = await SuccessPopup.ShowConfirmation(
                     "Подтверждение",
                     $"Отметить {date:dd.MM.yyyy} как {statusText}?",
                     "Да",
-                    "Нет",
-                    newStatus ? "✅" : "❌"
+                    "Нет"
                 );
 
                 if (!confirm) return;
@@ -468,17 +465,19 @@ namespace QuestDay.ViewModels
 
                 await _houseStateService.UpdateStateAsync();
 
-                await BeautyPopup.ShowAsync(
-                    isCompleted ? "Выполнено!" : "Статус изменён",
-                    isCompleted ? $"✅ За {date:dd.MM.yyyy} отмечено!" : $"❌ За {date:dd.MM.yyyy} отметка снята",
-                    "OK",
-                    "",
-                    isCompleted ? "✅" : "❌"
-                );
+                // ✅ Используем SuccessPopup.Show (как на скриншоте)
+                if (isCompleted)
+                {
+                    await SuccessPopup.Show($"✅ За {date:dd.MM.yyyy} отмечено!", navigateToList: false);
+                }
+                else
+                {
+                    await SuccessPopup.Show($"❌ За {date:dd.MM.yyyy} отметка снята", navigateToList: false);
+                }
             }
             catch (Exception ex)
             {
-                await BeautyPopup.ShowAsync("Ошибка", ex.Message, "OK", "", "⚠️");
+                await Shell.Current.DisplayAlert("Ошибка", ex.Message, "OK");
             }
         }
 

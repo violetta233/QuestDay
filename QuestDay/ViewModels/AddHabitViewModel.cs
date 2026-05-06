@@ -11,15 +11,14 @@ using Plugin.LocalNotification;
 using QuestDay.Messages;
 using QuestDay.Models;
 using QuestDay.Services;
-using QuestDay.Extensions;
 using QuestDay.Views;
+
 namespace QuestDay.ViewModels
 {
     public partial class AddHabitViewModel : ObservableObject
     {
         private readonly IHabitService _habitService;
         private Habit _editingHabit;
-
         private string _originalName;
         private string _originalDescription;
         private List<DayOfWeek> _originalSelectedDays;
@@ -159,7 +158,10 @@ namespace QuestDay.ViewModels
                     habit = _editingHabit;
 
                     Debug.WriteLine($"Отправка сообщения об обновлении привычки: {habit.Name}, Id: {habit.Id}");
-                    
+                    WeakReferenceMessenger.Default.Send(new HabitUpdatedMessage(habit));
+
+                    // ✅ Используем SuccessPopup
+                    await SuccessPopup.Show($"Привычка '{habit.Name}' обновлена!", navigateToList: true);
                 }
                 else
                 {
@@ -179,8 +181,9 @@ namespace QuestDay.ViewModels
                     WeakReferenceMessenger.Default.Send(new NewHabitMessage(habit));
 
                     await ScheduleHabitNotification(habit);
-                    await SuccessPopup.Show($"Привычка '{habit.Name}' добавлена!", navigateToList: true);
 
+                    // ✅ Используем SuccessPopup
+                    await SuccessPopup.Show($"Привычка '{habit.Name}' добавлена!", navigateToList: true);
                 }
 
                 Name = string.Empty;
@@ -191,7 +194,7 @@ namespace QuestDay.ViewModels
                 ValidateName();
                 ValidateDays();
 
-               
+                // ✅ Убрали GoToAsync, так как SuccessPopup сам обрабатывает навигацию
             }
             catch (Exception ex)
             {
