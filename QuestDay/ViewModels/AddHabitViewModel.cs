@@ -163,6 +163,7 @@ namespace QuestDay.ViewModels
                     WeakReferenceMessenger.Default.Send(new HabitUpdatedMessage(habit));
 
                     await SuccessPopup.Show($"Привычка '{habit.Name}' обновлена!", navigateToList: true);
+                    await Shell.Current.GoToAsync("//ListPage");
                 }
                 else
                 {
@@ -180,7 +181,6 @@ namespace QuestDay.ViewModels
 
                     Debug.WriteLine($"Отправка сообщения о новой привычке: {habit.Name}, Id: {habit.Id}");
                     WeakReferenceMessenger.Default.Send(new NewHabitMessage(habit));
-
                     await ScheduleHabitNotification(habit);
 
                     await SuccessPopup.Show($"Привычка '{habit.Name}' добавлена!", navigateToList: true);

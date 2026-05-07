@@ -920,10 +920,6 @@ public partial class userPage : ContentPage
         }
     }
 
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
-    }
 }
 
 public sealed class WardrobeItem
