@@ -232,11 +232,11 @@ public partial class userPage : ContentPage
     private string GetUserPageBackground(int dirtyLevel)
     {
         if (dirtyLevel <= 30)
-            return "background_normal.png";
+            return "background2.png";
         else if (dirtyLevel <= 70)
-            return "background_bad.png";
+            return "background2_1.png";
         else
-            return "background_very_bad.png";
+            return "background2_2.png";
     }
 
     private async void LoadHouseState()
