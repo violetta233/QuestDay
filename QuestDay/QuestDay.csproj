@@ -65,9 +65,6 @@
 		<MauiXaml Update="Views\AddPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
-		<MauiXaml Update="Views\BeautyPopup.xaml">
-		  <Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
 		<MauiXaml Update="Views\ListPage.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

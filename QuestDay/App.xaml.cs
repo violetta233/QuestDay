@@ -55,6 +55,7 @@ namespace QuestDay
                             BackgroundMusic.Loop = true;
                             BackgroundMusic.Volume = 0.5;
 
+                            // Не запускаем музыку здесь, только загружаем
                             System.Diagnostics.Debug.WriteLine($"Музыка загружена! Путь: {path}");
                             return;
                         }

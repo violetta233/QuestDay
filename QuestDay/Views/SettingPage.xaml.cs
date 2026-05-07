@@ -59,6 +59,7 @@ public partial class SettingPage : ContentPage
     private void OnNameTextChanged(object sender, TextChangedEventArgs e)
     {
         var text = NameEntry.Text?.Trim() ?? "";
+
         if (!string.IsNullOrEmpty(text))
         {
             Preferences.Default.Set(UserNameKey, text);
@@ -88,6 +89,7 @@ public partial class SettingPage : ContentPage
     private void OnReminderTextEntryTextChanged(object sender, TextChangedEventArgs e)
     {
         var text = ReminderTextEntry.Text?.Trim() ?? "";
+
         if (!string.IsNullOrEmpty(text))
         {
             Preferences.Default.Set(ReminderTextKey, text);

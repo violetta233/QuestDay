@@ -7,10 +7,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Storage;
 using Plugin.LocalNotification;
 using QuestDay.Messages;
 using QuestDay.Models;
 using QuestDay.Services;
+using QuestDay.Extensions;
 using QuestDay.Views;
 
 namespace QuestDay.ViewModels
@@ -160,7 +162,6 @@ namespace QuestDay.ViewModels
                     Debug.WriteLine($"Отправка сообщения об обновлении привычки: {habit.Name}, Id: {habit.Id}");
                     WeakReferenceMessenger.Default.Send(new HabitUpdatedMessage(habit));
 
-                    // ✅ Используем SuccessPopup
                     await SuccessPopup.Show($"Привычка '{habit.Name}' обновлена!", navigateToList: true);
                 }
                 else
@@ -182,10 +183,10 @@ namespace QuestDay.ViewModels
 
                     await ScheduleHabitNotification(habit);
 
-                    // ✅ Используем SuccessPopup
                     await SuccessPopup.Show($"Привычка '{habit.Name}' добавлена!", navigateToList: true);
                 }
 
+                // Очистка формы происходит после успешного сохранения
                 Name = string.Empty;
                 Description = string.Empty;
                 DaysOfWeekSelection.Reset();
@@ -193,8 +194,6 @@ namespace QuestDay.ViewModels
 
                 ValidateName();
                 ValidateDays();
-
-                // ✅ Убрали GoToAsync, так как SuccessPopup сам обрабатывает навигацию
             }
             catch (Exception ex)
             {
@@ -247,32 +246,48 @@ namespace QuestDay.ViewModels
 
         private async Task ScheduleHabitNotification(Habit habit)
         {
+            // Проверим, что напоминания включены в настройках, если нет - выходим
+            bool remindersEnabled = Preferences.Default.Get("ReminderEnabled", true);
+            if (!remindersEnabled) return;
+            
             if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
             {
                 await LocalNotificationCenter.Current.RequestNotificationPermission();
             }
 
-            foreach (var day in habit.SelectedDays)
-            {
-                DateTime notifyTime = GetNextOccurrence(day, 18, 0);
+            // Получим имя пользователя из настроек приложения
+            string userName = Preferences.Default.Get("UserName", "QuestDay");
 
+            // Получим время уведомления из настроек приложения, если не указано - используем 18:00
+            string reminderTimeStr = Preferences.Default.Get("ReminderTime", "18:00");
+            if (!TimeSpan.TryParse(reminderTimeStr, out TimeSpan reminderTime))
+            {
+                reminderTime = new TimeSpan(18, 0, 0);
+            }
+
+            // Получаем текст напоминания из настроек приложения, если не указано - используем стандартный текст
+            string reminderText = Preferences.Default.Get("ReminderText", "Время для вашей привычки!");
+            
+            foreach (var day in habit.SelectedDays)
+            {   
+                DateTime notifyTime = GetNextOccurrence(day, reminderTime.Hours, reminderTime.Minutes);
+            
                 var request = new NotificationRequest
                 {
                     NotificationId = habit.GetNotificationId(day),
-                    Title = "QuestDay: Время для вашей привычки!",
-                    Description = habit.Description,
+                    Title = $"{userName}, {reminderText}",
                     Subtitle = habit.Name,
                     BadgeNumber = 1,
-
+                    
                     Schedule = new NotificationRequestSchedule
                     {
                         NotifyTime = notifyTime,
-                        NotifyRepeatInterval = TimeSpan.FromDays(7)
+                        NotifyRepeatInterval = TimeSpan.FromDays(7) 
                     },
 
                     Image = new NotificationImage
                     {
-                        ResourceName = "appicon.png"
+                        ResourceName = "appicon.png" 
                     },
 
                     ReturningData = "page_to_open=Details&id=" + habit.Id

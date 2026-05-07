@@ -22,7 +22,7 @@ public partial class MainPage : ContentPage
         UpdateRabbitImage();
         LoadHouseState();
 
-        Debug.WriteLine("MainPage инициализирована");
+        Debug.WriteLine("MainPage РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅР°");
     }
 
     private void OnBackgroundChanged(object sender, string imageName)
@@ -46,13 +46,13 @@ public partial class MainPage : ContentPage
                 string statusText = "";
 
                 if (dirtyLevel <= 30)
-                    statusText = "Чистый";
+                    statusText = "Р§РёСЃС‚С‹Р№";
                 else if (dirtyLevel <= 70)
-                    statusText = "Грязный";
+                    statusText = "Р“СЂСЏР·РЅС‹Р№";
                 else
-                    statusText = "Очень грязный!";
+                    statusText = "РћС‡РµРЅСЊ РіСЂСЏР·РЅС‹Р№!";
 
-                DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
+                DirtyLevelLabel.Text = $"{statusText}\nР§РёСЃС‚РѕС‚Р°: {cleanliness}%";
 
                 if (dirtyLevel > 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
@@ -81,13 +81,13 @@ public partial class MainPage : ContentPage
                 string statusText = "";
 
                 if (state.DirtyLevel <= 30)
-                    statusText = "Чистый";
+                    statusText = "Р§РёСЃС‚С‹Р№";
                 else if (state.DirtyLevel <= 70)
-                    statusText = "Грязный";
+                    statusText = "Р“СЂСЏР·РЅС‹Р№";
                 else
-                    statusText = "Очень грязный!";
+                    statusText = "РћС‡РµРЅСЊ РіСЂСЏР·РЅС‹Р№!";
 
-                DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
+                DirtyLevelLabel.Text = $"{statusText}\nР§РёСЃС‚РѕС‚Р°: {cleanliness}%";
 
                 if (state.DirtyLevel > 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");

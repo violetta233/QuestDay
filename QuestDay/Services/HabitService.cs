@@ -163,8 +163,8 @@ namespace QuestDay.Services
 
         public async Task<List<HabitCompletion>> GetCompletionsByHabitIdAsync(int habitId)
         {
-            await InitializeAsync();
-            return await _database.Table<HabitCompletion>()
+            var database = await EnsureInitializedAsync();
+            return await database.Table<HabitCompletion>()
                                   .Where(c => c.HabitId == habitId)
                                   .OrderByDescending(c => c.CompletionDate)
                                   .ToListAsync();

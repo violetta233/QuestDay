@@ -52,7 +52,7 @@ namespace QuestDay.Views
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось открыть страницу: {ex.Message}", "ОК");
+                await DisplayAlert("РћС€РёР±РєР°", $"РќРµ СѓРґР°Р»РѕСЃСЊ РІС‹РїРѕР»РЅРёС‚СЊ РЅР°РІРёРіР°С†РёСЋ: {ex.Message}", "РћРљ");
             }
         }
     }

@@ -44,9 +44,6 @@ namespace QuestDay
             builder.Services.AddSingleton<StringNotNullOrEmptyConverter>();
             builder.Services.AddSingleton<HabitIsActiveToBackgroundColorConverter>();
             builder.Services.AddSingleton<HabitIsActiveToTextStyleConverter>();
-            builder.Services.AddSingleton<BoolToFontAttributesConverter>();
-            builder.Services.AddSingleton<IsPositiveConverter>();
-            builder.Services.AddSingleton<RussianListToStringConverter>();
 
             // Регистрация ViewModels
             builder.Services.AddTransient<HabitListViewModel>();
@@ -59,7 +56,6 @@ namespace QuestDay
             builder.Services.AddTransient<AddPage>();
             builder.Services.AddTransient<SettingPage>();
             builder.Services.AddTransient<userPage>();
-            builder.Services.AddTransient<BeautyPopup>();
 
             return builder.Build();
         }

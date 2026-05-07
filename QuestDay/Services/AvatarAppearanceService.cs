@@ -88,8 +88,8 @@ public sealed class AvatarAppearanceService : INotifyPropertyChanged
             if (SetProperty(ref _hatImage, value))
             {
                 WritePreference(HatPreferenceKey, value);
-                OnPropertyChanged(nameof(CurrentRabbitImage));
                 OnPropertyChanged(nameof(HasHatImage));
+                OnPropertyChanged(nameof(CurrentRabbitImage));
             }
         }
     }

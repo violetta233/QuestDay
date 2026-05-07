@@ -14,13 +14,12 @@ namespace QuestDay.Views
             InitializeComponent();
             _viewModel = viewModel;
             BindingContext = _viewModel;
-            _viewModel.BeautyPopup = BeautyPopupView;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            Debug.WriteLine("ListPage OnAppearing - загрузка привычек");
+            Debug.WriteLine("ListPage OnAppearing - Р·Р°РіСЂСѓР·РєР° РїСЂРёРІС‹С‡РµРє");
             await _viewModel.InitializeAsync();
         }
 
@@ -33,7 +32,7 @@ namespace QuestDay.Views
 
                 if (habit != null)
                 {
-                    Debug.WriteLine($"Нажата кнопка истории для привычки: {habit.Name}, Id: {habit.Id}");
+                    Debug.WriteLine($"РћС‚РєСЂС‹С‚РёРµ РєР°Р»РµРЅРґР°СЂСЏ РґР»СЏ РїСЂРёРІС‹С‡РєРё: {habit.Name}, Id: {habit.Id}");
 
                     if (_viewModel is HabitListViewModel vm)
                     {
@@ -42,13 +41,13 @@ namespace QuestDay.Views
                 }
                 else
                 {
-                    Debug.WriteLine("Ошибка: привычка не найдена");
+                    Debug.WriteLine("РћС€РёР±РєР°: РїСЂРёРІС‹С‡РєР° РЅРµ РЅР°Р№РґРµРЅР°");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка при открытии календаря: {ex.Message}");
-                await DisplayAlert("Ошибка", $"Не удалось открыть календарь: {ex.Message}", "OK");
+                Debug.WriteLine($"РћС€РёР±РєР° РїСЂРё РѕС‚РєСЂС‹С‚РёРё РєР°Р»РµРЅРґР°СЂСЏ: {ex.Message}");
+                await DisplayAlert("РћС€РёР±РєР°", $"РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ РєР°Р»РµРЅРґР°СЂСЊ: {ex.Message}", "OK");
             }
         }
 
@@ -65,7 +64,7 @@ namespace QuestDay.Views
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось открыть страницу: {ex.Message}", "ОК");
+                await DisplayAlert("РћС€РёР±РєР°", $"РќРµ СѓРґР°Р»РѕСЃСЊ РІС‹РїРѕР»РЅРёС‚СЊ РЅР°РІРёРіР°С†РёСЋ: {ex.Message}", "РћРљ");
             }
         }
     }

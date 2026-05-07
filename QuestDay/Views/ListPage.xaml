@@ -7,7 +7,6 @@
     xmlns:models="clr-namespace:QuestDay.Models"       
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:converters="clr-namespace:QuestDay.Converters"
-    xmlns:views="clr-namespace:QuestDay.Views"
     BackgroundColor="#FFFBF6"
     ControlTemplate="{x:Null}">
 
@@ -32,10 +31,15 @@
             <Setter Property="TextColor" Value="Gray" />
             <Setter Property="TextDecorations" Value="Strikethrough" />
         </Style>
+
+        <Style TargetType="SwipeItem">
+            <Setter Property="BackgroundColor" Value="#FF5252" />
+        </Style>
     </ContentPage.Resources>
 
     <Grid>
         <Grid RowDefinitions="Auto, Auto, *, Auto">
+            <!-- Заголовок -->
             <HorizontalStackLayout Grid.Row="0" Margin="30, 20, 0, 0" Spacing="10">
                 <Label Text="Список привычек"
                        HorizontalOptions="Start"
@@ -48,6 +52,7 @@
                                    VerticalOptions="Center" />
             </HorizontalStackLayout>
             
+            <!-- Фильтр -->
             <Grid Grid.Row="1"
                   Margin="25, 10, 25, 10"
                   ColumnDefinitions="Auto, *">
@@ -87,16 +92,10 @@
                                    VerticalOptions="Center" />
                         </HorizontalStackLayout>
                     </Border>
-
-                    <!--<Picker ItemsSource="{Binding FilterOptions}"
-                SelectedItem="{Binding SelectedFilter}"
-                Opacity="0.01"
-                BackgroundColor="Transparent"
-                VerticalOptions="Fill"
-                HorizontalOptions="Fill" />-->
                 </Grid>
             </Grid>
 
+            <!-- Список привычек -->
             <ScrollView Grid.Row="2">
                 <VerticalStackLayout Spacing="10">
                     <CollectionView ItemsSource="{Binding Habits}"
@@ -181,6 +180,7 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
 
+                    <!-- Пустое состояние -->
                     <StackLayout IsVisible="{Binding Habits.Count, Converter={StaticResource InverseBoolConverter}}"
                                  Spacing="20"
                                  Padding="20">
@@ -211,6 +211,7 @@
                 </VerticalStackLayout>
             </ScrollView>
 
+            <!-- Нижняя навигация -->
             <Grid Grid.Row="3" IgnoreSafeArea="True" VerticalOptions="End">
                 <Border 
                     Margin="10,0,10,25"
@@ -302,6 +303,7 @@
             </Grid>
         </Grid>
 
+        <!-- Календарь -->
         <Grid IsVisible="{Binding IsCalendarVisible}"
               BackgroundColor="#CC000000"
               HorizontalOptions="Fill"
@@ -448,7 +450,5 @@
                 </Grid>
             </Frame>
         </Grid>
-
-        <views:BeautyPopup x:Name="BeautyPopupView" IsVisible="False"/>
     </Grid>
 </ContentPage>
