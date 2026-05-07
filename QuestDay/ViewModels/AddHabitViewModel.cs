@@ -14,7 +14,7 @@ using QuestDay.Models;
 using QuestDay.Services;
 using QuestDay.Extensions;
 using QuestDay.Views;
-
+using Plugin.LocalNotification.AndroidOption;
 namespace QuestDay.ViewModels
 {
     public partial class AddHabitViewModel : ObservableObject
@@ -162,7 +162,6 @@ namespace QuestDay.ViewModels
                     Debug.WriteLine($"Отправка сообщения об обновлении привычки: {habit.Name}, Id: {habit.Id}");
                     WeakReferenceMessenger.Default.Send(new HabitUpdatedMessage(habit));
 
-                    await SuccessPopup.Show($"Привычка '{habit.Name}' обновлена!", navigateToList: true);
                     await Shell.Current.GoToAsync("//ListPage");
                 }
                 else
@@ -246,51 +245,62 @@ namespace QuestDay.ViewModels
 
         private async Task ScheduleHabitNotification(Habit habit)
         {
-            // Проверим, что напоминания включены в настройках, если нет - выходим
+            
+            Preferences.Default.Set("ReminderEnabled", true);
+
             bool remindersEnabled = Preferences.Default.Get("ReminderEnabled", true);
             if (!remindersEnabled) return;
-            
+
             if (await LocalNotificationCenter.Current.AreNotificationsEnabled() == false)
             {
                 await LocalNotificationCenter.Current.RequestNotificationPermission();
             }
 
-            // Получим имя пользователя из настроек приложения
             string userName = Preferences.Default.Get("UserName", "QuestDay");
-
-            // Получим время уведомления из настроек приложения, если не указано - используем 18:00
+            string reminderText = Preferences.Default.Get("ReminderText", "Время для вашей привычки!");
             string reminderTimeStr = Preferences.Default.Get("ReminderTime", "18:00");
+
             if (!TimeSpan.TryParse(reminderTimeStr, out TimeSpan reminderTime))
             {
                 reminderTime = new TimeSpan(18, 0, 0);
             }
 
-            // Получаем текст напоминания из настроек приложения, если не указано - используем стандартный текст
-            string reminderText = Preferences.Default.Get("ReminderText", "Время для вашей привычки!");
-            
+            DateTime now = DateTime.Now;
+
             foreach (var day in habit.SelectedDays)
-            {   
-                DateTime notifyTime = GetNextOccurrence(day, reminderTime.Hours, reminderTime.Minutes);
-            
+            {
+                
+                DateTime notifyTime = DateTime.Today.Add(reminderTime);
+
+                
+                if (notifyTime <= now)
+                {
+                    notifyTime = notifyTime.AddDays(1);
+                }
+
+                
+                if (notifyTime.DayOfWeek != day)
+                {
+                    int daysToAdd = ((int)day - (int)notifyTime.DayOfWeek + 7) % 7;
+                    notifyTime = notifyTime.AddDays(daysToAdd);
+                }
+
                 var request = new NotificationRequest
                 {
                     NotificationId = habit.GetNotificationId(day),
                     Title = $"{userName}, {reminderText}",
                     Subtitle = habit.Name,
                     BadgeNumber = 1,
-                    
+
                     Schedule = new NotificationRequestSchedule
                     {
                         NotifyTime = notifyTime,
-                        NotifyRepeatInterval = TimeSpan.FromDays(7) 
+                        NotifyRepeatInterval = TimeSpan.FromDays(7)
                     },
 
-                    Image = new NotificationImage
-                    {
-                        ResourceName = "appicon.png" 
-                    },
-
-                    ReturningData = "page_to_open=Details&id=" + habit.Id
+                    Image = new NotificationImage { ResourceName = "appicon.png" },
+                    ReturningData = "page_to_open=Details&id=" + habit.Id,
+                    Android = new AndroidOptions { ChannelId = "questday_channel" }
                 };
 
                 await LocalNotificationCenter.Current.Show(request);
@@ -299,14 +309,24 @@ namespace QuestDay.ViewModels
 
         private DateTime GetNextOccurrence(DayOfWeek day, int hour, int minute)
         {
-            DateTime start = DateTime.Now.Date.AddHours(hour).AddMinutes(minute);
-            if (DateTime.Now >= start) start = start.AddDays(1);
+            DateTime now = DateTime.Now;
+            DateTime target = now.Date.AddHours(hour).AddMinutes(minute);
 
-            while (start.DayOfWeek != day)
+            
+            if (now >= target)
             {
-                start = start.AddDays(1);
+                target = target.AddDays(1);
             }
-            return start;
+
+            
+            int daysAdded = 0;
+            while (target.DayOfWeek != day && daysAdded < 7)
+            {
+                target = target.AddDays(1);
+                daysAdded++;
+            }
+
+            return target;
         }
     }
 }

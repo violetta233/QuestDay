@@ -1,8 +1,10 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.App;
 using Microsoft.Maui.Controls.Platform;
 using Microsoft.Maui.Platform;
 
@@ -32,5 +34,23 @@ public class MainActivity : MauiAppCompatActivity
                 editText.SetPadding(0, 0, 0, 0);
             }
         });
+
+        CreateNotificationChannel();
+    }
+
+    private void CreateNotificationChannel()
+    {
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+        {
+            var channelId = "questday_channel";
+            var channelName = "QuestDay Уведомления";
+            var channelDescription = "Уведомления о выполнении привычек";
+
+            var channel = new NotificationChannel(channelId, channelName, NotificationImportance.High);
+            channel.Description = channelDescription;
+
+            var notificationManager = (NotificationManager)GetSystemService(NotificationService);
+            notificationManager.CreateNotificationChannel(channel);
+        }
     }
 }

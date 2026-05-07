@@ -106,7 +106,7 @@
                                 <SwipeView>
                                     <SwipeView.LeftItems>
                                         <SwipeItems Mode="Reveal">
-                                            <SwipeItem Text="✏️ Изменить"
+                                            <SwipeItem Text="Изменить"
                                                        BackgroundColor="#4CAF50"
                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=EditHabitCommand}"
                                                        CommandParameter="{Binding .}" />
@@ -115,7 +115,7 @@
 
                                     <SwipeView.RightItems>
                                         <SwipeItems Mode="Reveal">
-                                            <SwipeItem Text="🗑️ Удалить"
+                                            <SwipeItem Text="Удалить"
                                                        BackgroundColor="#FF5252"
                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=DeleteHabitCommand}"
                                                        CommandParameter="{Binding .}" />
@@ -164,7 +164,7 @@
                                                    FontSize="12"
                                                    TextColor="#888888" />
 
-                                            <Button Text="📅 История выполнения"
+                                            <Button Text="История выполнения"
                                                    Clicked="OnHistoryClicked"
                                                    CommandParameter="{Binding .}"
                                                    BackgroundColor="#F68063"
