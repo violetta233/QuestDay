@@ -51,7 +51,7 @@
                                    Color="#A7DFAF"
                                    VerticalOptions="Center" />
             </HorizontalStackLayout>
-            
+
             <!-- Фильтр -->
             <Grid Grid.Row="1"
                   Margin="25, 10, 25, 10"
@@ -121,7 +121,7 @@
                                                        CommandParameter="{Binding .}" />
                                         </SwipeItems>
                                     </SwipeView.RightItems>
-                                    
+
                                     <Border Margin="5" 
                                             Padding="15" 
                                             StrokeThickness="1"
@@ -327,7 +327,7 @@
                                HorizontalOptions="Center"
                                FontFamily="Montserrat-SemiBold"/>
 
-                        <Grid ColumnDefinitions="*, Auto, *">
+                        <Grid ColumnDefinitions="*, Auto, *" HorizontalOptions="Fill">
                             <Button Grid.Column="0"
                                     Text="◀"
                                     BackgroundColor="Transparent"
@@ -350,16 +350,17 @@
                                     HorizontalOptions="End"/>
                         </Grid>
 
+                        <!-- Дни недели -->
                         <Grid ColumnDefinitions="1*,1*,1*,1*,1*,1*,1*" 
                               Margin="0,5,0,5"
                               HorizontalOptions="Fill">
-                            <Label Grid.Column="0" Text="ПН" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                            <Label Grid.Column="1" Text="ВТ" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                            <Label Grid.Column="2" Text="СР" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                            <Label Grid.Column="3" Text="ЧТ" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                            <Label Grid.Column="4" Text="ПТ" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                            <Label Grid.Column="5" Text="СБ" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                            <Label Grid.Column="6" Text="ВС" TextColor="#F68063" FontSize="12" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="0" Text="ПН" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="ВТ" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="2" Text="СР" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="3" Text="ЧТ" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="4" Text="ПТ" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="5" Text="СБ" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="6" Text="ВС" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                         </Grid>
 
                         <Label Text="👆 Нажмите на день, чтобы отметить выполнение"
@@ -369,53 +370,12 @@
                                HorizontalOptions="Center"
                                Margin="0,-5,0,0"/>
 
-                        <CollectionView ItemsSource="{Binding CalendarDays}" 
-                                        HorizontalOptions="Fill">
-                            <CollectionView.ItemsLayout>
-                                <GridItemsLayout Orientation="Horizontal"
-                                                  HorizontalItemSpacing="4"
-                                                  VerticalItemSpacing="5"
-                                                  Span="7"/>
-                            </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:CalendarDay">
-                                    <Grid WidthRequest="44">
-                                        <Border IsVisible="{Binding IsEmpty, Converter={StaticResource InverseBoolConverter}}"
-                                                BackgroundColor="{Binding IsCompleted, Converter={StaticResource DaySelectedToColorConverter}}"
-                                                StrokeThickness="0"
-                                                StrokeShape="RoundRectangle 22"
-                                                HeightRequest="42"
-                                                WidthRequest="42"
-                                                HorizontalOptions="Center"
-                                                VerticalOptions="Center">
-
-                                            <Border.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=ToggleDayCompletionCommand}"
-                                                                      CommandParameter="{Binding .}"/>
-                                            </Border.GestureRecognizers>
-
-                                            <Label Text="{Binding DayNumber}"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center"
-                                                   HorizontalTextAlignment="Center"
-                                                   IsVisible="{Binding DayNumber, Converter={StaticResource IsPositiveConverter}}"
-                                                   TextColor="{Binding IsCompleted, Converter={StaticResource DaySelectedToTextColorConverter}}"
-                                                   FontAttributes="{Binding IsToday, Converter={StaticResource BoolToFontAttributesConverter}}"
-                                                   FontSize="14"
-                                                   FontFamily="Montserrat-SemiBold"/>
-                                        </Border>
-
-                                        <Border IsVisible="{Binding IsEmpty}"
-                                                BackgroundColor="Transparent"
-                                                StrokeThickness="0"
-                                                HeightRequest="42"
-                                                WidthRequest="42"
-                                                HorizontalOptions="Center"
-                                                VerticalOptions="Center"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                        <FlexLayout x:Name="CalendarFlexLayout"
+                                    Wrap="Wrap"
+                                    JustifyContent="Center"
+                                    AlignItems="Center"
+                                    Margin="0">
+                        </FlexLayout>
 
                         <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
                             <Label Text="✅ Выполнено:"

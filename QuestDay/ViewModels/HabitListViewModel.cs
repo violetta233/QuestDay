@@ -98,6 +98,8 @@ namespace QuestDay.ViewModels
         [ObservableProperty]
         private ObservableCollection<CalendarDay> calendarDays = new();
 
+        public event Action CalendarDaysUpdated;
+
         public HabitListViewModel(IHabitService habitService, IHouseStateService houseStateService)
         {
             _habitService = habitService;
@@ -347,17 +349,16 @@ namespace QuestDay.ViewModels
                     newState
                 );
 
+                // Обновляем конкретную привычку в коллекции
                 var existingHabit = Habits.FirstOrDefault(h => h.Id == habitToToggleCompletion.Id);
                 if (existingHabit != null)
                 {
                     existingHabit.IsCompletedForToday = newState;
-
                     var index = Habits.IndexOf(existingHabit);
                     if (index != -1)
                     {
                         Habits[index] = existingHabit;
                     }
-
                     OnPropertyChanged(nameof(Habits));
                 }
 
@@ -407,7 +408,6 @@ namespace QuestDay.ViewModels
 
             var sorted = Habits
                 .OrderBy(h => h.IsCompletedForToday)
-                .ThenByDescending(h => h.CreatedAt)
                 .ToList();
 
             for (int i = 0; i < sorted.Count; i++)
@@ -418,8 +418,6 @@ namespace QuestDay.ViewModels
                     Habits.Move(oldIndex, i);
                 }
             }
-
-            OnPropertyChanged(nameof(Habits));
         }
 
         [RelayCommand]
@@ -470,6 +468,8 @@ namespace QuestDay.ViewModels
 
                 OnPropertyChanged(nameof(CompletionsCountText));
                 UpdateCalendarDays();
+
+                CalendarDaysUpdated?.Invoke();
             }
             catch (Exception ex)
             {
@@ -481,14 +481,19 @@ namespace QuestDay.ViewModels
         private async Task NextMonth()
         {
             CurrentCalendarMonth = CurrentCalendarMonth.AddMonths(1);
+            Debug.WriteLine($"Переход на следующий месяц: {CurrentCalendarMonth:yyyy-MM}");
+
+            await LoadCompletionsForHabit(selectedHabitForCalendar.Id);
         }
 
         [RelayCommand]
         private async Task PreviousMonth()
         {
             CurrentCalendarMonth = CurrentCalendarMonth.AddMonths(-1);
-        }
+            Debug.WriteLine($"Переход на предыдущий месяц: {CurrentCalendarMonth:yyyy-MM}");
 
+            await LoadCompletionsForHabit(selectedHabitForCalendar.Id);
+        }
         [RelayCommand]
         private async Task ToggleDayCompletion(CalendarDay day)
         {
@@ -496,9 +501,7 @@ namespace QuestDay.ViewModels
             if (SelectedHabitForCalendar == null) return;
             if (day.Date.Date > DateTime.Today)
             {
-                await SuccessPopup.ShowInfoPopup(
-                    "Этот день еще не наступил");
-
+                await SuccessPopup.ShowInfoPopup("Этот день еще не наступил");
                 return;
             }
             try
@@ -597,48 +600,58 @@ namespace QuestDay.ViewModels
                 });
             }
 
+            int remainingCells = (7 - (days.Count % 7)) % 7;
+            for (int i = 0; i < remainingCells; i++)
+            {
+                days.Add(new CalendarDay { IsEmpty = true, DayNumber = -1 });
+            }
+
+            Debug.WriteLine($"Всего дней в календаре: {days.Count}, из них пустых: {startOffset + remainingCells}, остаток: {days.Count % 7}");
+
             CalendarDays = days;
             OnPropertyChanged(nameof(CalendarDays));
             OnPropertyChanged(nameof(CompletionsCountText));
-        }
-    }
 
-    public class CalendarDay : ObservableObject
-    {
-        private bool _isCompleted;
-        private bool _isToday;
-        private bool _isEmpty;
-        private int _dayNumber;
-        private DateTime _date;
-
-        public DateTime Date
-        {
-            get => _date;
-            set => SetProperty(ref _date, value);
+            CalendarDaysUpdated?.Invoke();
         }
 
-        public int DayNumber
+        public class CalendarDay : ObservableObject
         {
-            get => _dayNumber;
-            set => SetProperty(ref _dayNumber, value);
-        }
+            private bool _isCompleted;
+            private bool _isToday;
+            private bool _isEmpty;
+            private int _dayNumber;
+            private DateTime _date;
 
-        public bool IsCompleted
-        {
-            get => _isCompleted;
-            set => SetProperty(ref _isCompleted, value);
-        }
+            public DateTime Date
+            {
+                get => _date;
+                set => SetProperty(ref _date, value);
+            }
 
-        public bool IsToday
-        {
-            get => _isToday;
-            set => SetProperty(ref _isToday, value);
-        }
+            public int DayNumber
+            {
+                get => _dayNumber;
+                set => SetProperty(ref _dayNumber, value);
+            }
 
-        public bool IsEmpty
-        {
-            get => _isEmpty;
-            set => SetProperty(ref _isEmpty, value);
+            public bool IsCompleted
+            {
+                get => _isCompleted;
+                set => SetProperty(ref _isCompleted, value);
+            }
+
+            public bool IsToday
+            {
+                get => _isToday;
+                set => SetProperty(ref _isToday, value);
+            }
+
+            public bool IsEmpty
+            {
+                get => _isEmpty;
+                set => SetProperty(ref _isEmpty, value);
+            }
         }
     }
 }
