@@ -277,24 +277,15 @@ namespace QuestDay.ViewModels
         {
             if (habit == null) return;
 
-            var editHabit = new Habit
+            try
             {
-                Id = habit.Id,
-                Name = habit.Name,
-                Description = habit.Description,
-                SelectedDays = habit.SelectedDays.ToList(),
-                StartDate = habit.StartDate,
-                CreatedAt = habit.CreatedAt,
-                IsActive = habit.IsActive,
-                SelectedDaysJson = habit.SelectedDaysJson
-            };
-
-            var navigationParameter = new Dictionary<string, object>
+                await Shell.Current.GoToAsync($"{nameof(AddPage)}?HabitId={habit.Id}");
+            }
+            catch (Exception ex)
             {
-                { "HabitToEdit", editHabit }
-            };
-
-            await Shell.Current.GoToAsync(nameof(AddPage), navigationParameter);
+                Debug.WriteLine($"Ошибка при редактировании: {ex}");
+                await Shell.Current.DisplayAlert("Ошибка", $"Не удалось открыть редактирование: {ex.Message}", "OK");
+            }
         }
 
         [RelayCommand]
@@ -349,7 +340,6 @@ namespace QuestDay.ViewModels
                     newState
                 );
 
-                // Обновляем конкретную привычку в коллекции
                 var existingHabit = Habits.FirstOrDefault(h => h.Id == habitToToggleCompletion.Id);
                 if (existingHabit != null)
                 {
