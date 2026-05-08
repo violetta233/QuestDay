@@ -46,18 +46,18 @@ public partial class MainPage : ContentPage
                 int cleanliness = 100 - dirtyLevel;
                 string statusText = "";
 
-                if (cleanliness >= 70)
+                if (dirtyLevel < 30)      // чистота > 70%
                     statusText = "Чистый";
-                else if (cleanliness >= 30)
+                else if (dirtyLevel < 70)  // чистота 30-70%
                     statusText = "Грязный";
-                else
+                else                        // чистота < 30%
                     statusText = "Очень грязный!";
 
                 DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
 
-                if (cleanliness < 30)
+                if (dirtyLevel >= 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
-                else if (cleanliness < 70)
+                else if (dirtyLevel >= 30)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
                 else
                     DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
@@ -90,24 +90,23 @@ public partial class MainPage : ContentPage
                 int cleanliness = 100 - state.DirtyLevel;
                 string statusText = "";
 
-                if (cleanliness >= 70)
+                if (state.DirtyLevel < 30)
                     statusText = "Чистый";
-                else if (cleanliness >= 30)
+                else if (state.DirtyLevel < 70)
                     statusText = "Грязный";
                 else
                     statusText = "Очень грязный!";
 
                 DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
 
-                if (cleanliness < 30)
+                if (state.DirtyLevel >= 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
-                else if (cleanliness < 70)
+                else if (state.DirtyLevel >= 30)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
                 else
                     DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
             }
 
-            // 🆕 Принудительно обновляем состояние кролика при загрузке
             App.AvatarAppearance.IsDirty = state.IsRabbitDirty;
         });
     }

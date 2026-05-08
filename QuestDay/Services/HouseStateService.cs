@@ -11,16 +11,11 @@ namespace QuestDay.Services
     public class HouseStateService : IHouseStateService
     {
         private readonly IHabitService _habitService;
-        private System.Timers.Timer? _decayTimer;
         private System.Timers.Timer? _periodicTimer;
+        private DateTime? _incompletionStartTime;
 
         private const string DirtyLevelKey = "House_DirtyLevel";
         private const string IncompletionStartTimeKey = "House_IncompletionStartTime";
-
-        private const bool ResetPreferencesOnStartup = false;
-
-
-        private const double DecayTimerIntervalMilliseconds = 60000;
 
         public event EventHandler<string>? BackgroundChanged;
         public event EventHandler<string>? UserPageBackgroundChanged;
@@ -31,11 +26,11 @@ namespace QuestDay.Services
         {
             _habitService = habitService;
 
-            if (ResetPreferencesOnStartup)
+            // Загружаем сохранённое время начала невыполнения
+            var savedStartTimeBinary = Preferences.Default.Get(IncompletionStartTimeKey, 0L);
+            if (savedStartTimeBinary != 0)
             {
-                Preferences.Default.Remove(DirtyLevelKey);
-                Preferences.Default.Remove(IncompletionStartTimeKey);
-                Debug.WriteLine("HouseStateService: preferences reset.");
+                _incompletionStartTime = DateTime.FromBinary(savedStartTimeBinary);
             }
 
             StartPeriodicUpdate();
@@ -43,13 +38,13 @@ namespace QuestDay.Services
 
         private void StartPeriodicUpdate()
         {
-            _periodicTimer = new System.Timers.Timer(10000); // Каждые 10 секунд для теста
+            _periodicTimer = new System.Timers.Timer(60000); // Каждую минуту
             _periodicTimer.Elapsed += async (s, e) =>
             {
                 await UpdateStateAsync();
             };
             _periodicTimer.Start();
-            Debug.WriteLine("⏱️ Periodic update timer started (every 10 seconds)");
+            Debug.WriteLine("⏱️ Periodic update timer started (every 60 seconds)");
         }
 
         public async Task UpdateStateAsync()
@@ -67,45 +62,34 @@ namespace QuestDay.Services
                     return;
                 }
 
-                bool hasIncompleteHabits = false;
+                // Проверяем, все ли активные привычки выполнены
+                bool allCompleted = true;
                 foreach (var habit in activeHabits)
                 {
                     bool isCompleted = await _habitService.GetHabitCompletionStatusAsync(habit.Id, DateTime.Today);
                     if (!isCompleted)
                     {
-                        hasIncompleteHabits = true;
+                        allCompleted = false;
                         break;
                     }
                 }
 
                 var currentDirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
-                var now = DateTime.UtcNow;
 
-                Debug.WriteLine($"hasIncompleteHabits = {hasIncompleteHabits}, currentDirtyLevel = {currentDirtyLevel}%");
-
-                if (hasIncompleteHabits)
+                if (!allCompleted)
                 {
-                    var startTimeBinary = Preferences.Default.Get(IncompletionStartTimeKey, 0L);
-                    DateTime incompletionStartTime;
-
-                    if (startTimeBinary == 0 || currentDirtyLevel == 0)
+                    // Есть невыполненные привычки
+                    if (_incompletionStartTime == null)
                     {
-                        incompletionStartTime = now;
-                        Preferences.Default.Set(IncompletionStartTimeKey, now.ToBinary());
-                        Debug.WriteLine($"🔻 НАЧАЛО периода невыполнения: {incompletionStartTime}");
-                    }
-                    else
-                    {
-                        incompletionStartTime = DateTime.FromBinary(startTimeBinary);
+                        _incompletionStartTime = DateTime.UtcNow;
+                        Preferences.Default.Set(IncompletionStartTimeKey, _incompletionStartTime.Value.ToBinary());
+                        Debug.WriteLine($"🔻 НАЧАЛО периода невыполнения: {_incompletionStartTime}");
                     }
 
-                    var elapsedSeconds = (int)(now - incompletionStartTime).TotalSeconds;
-                    int newDirtyLevel = Math.Min(100, elapsedSeconds / 60); // Переводим секунды в минуты
+                    var elapsedMinutes = (int)(DateTime.UtcNow - _incompletionStartTime.Value).TotalMinutes;
+                    int newDirtyLevel = Math.Min(100, elapsedMinutes);
 
-                    // Для теста: 1% за 10 секунд
-                    // int newDirtyLevel = Math.Min(100, elapsedSeconds / 10);
-
-                    Debug.WriteLine($"⏱️ Прошло секунд: {elapsedSeconds}, минут: {elapsedSeconds / 60}, новый уровень грязи: {newDirtyLevel}%");
+                    Debug.WriteLine($"⏱️ Прошло минут: {elapsedMinutes}, уровень грязи: {newDirtyLevel}%");
 
                     if (newDirtyLevel != currentDirtyLevel)
                     {
@@ -113,19 +97,18 @@ namespace QuestDay.Services
                         NotifyStateChanged(newDirtyLevel);
                         Debug.WriteLine($"🧹 Уровень грязи: {currentDirtyLevel}% → {newDirtyLevel}%");
                     }
-
-                    ManageDecayTimer();
                 }
                 else
                 {
+                    // Все привычки выполнены - сбрасываем грязь
                     if (currentDirtyLevel != 0)
                     {
-                        Preferences.Default.Set(DirtyLevelKey, 0);
+                        _incompletionStartTime = null;
                         Preferences.Default.Remove(IncompletionStartTimeKey);
+                        Preferences.Default.Set(DirtyLevelKey, 0);
                         NotifyStateChanged(0);
                         Debug.WriteLine("✨ Все привычки выполнены — домик очищен!");
                     }
-                    StopDecayTimer();
                 }
             }
             catch (Exception ex)
@@ -136,81 +119,10 @@ namespace QuestDay.Services
 
         public async Task ResetIncompletionStartTime()
         {
-            var currentDirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
-            Preferences.Default.Set(IncompletionStartTimeKey, DateTime.UtcNow.ToBinary());
-            Debug.WriteLine($"🔄 Сброс времени начала невыполнения (текущий уровень грязи: {currentDirtyLevel}%)");
-
-            // Принудительно запускаем таймер
-            StopDecayTimer();
-            ManageDecayTimer();
-
+            _incompletionStartTime = DateTime.UtcNow;
+            Preferences.Default.Set(IncompletionStartTimeKey, _incompletionStartTime.Value.ToBinary());
+            Debug.WriteLine($"🔄 Сброс времени начала невыполнения");
             await UpdateStateAsync();
-        }
-
-        private void ManageDecayTimer()
-        {
-            var currentLevel = Preferences.Default.Get(DirtyLevelKey, 0);
-            if (currentLevel >= 100)
-            {
-                StopDecayTimer();
-                return;
-            }
-
-            if (_decayTimer is null)
-            {
-                Debug.WriteLine("🔄 ЗАПУСК decay timer...");
-                _decayTimer = new System.Timers.Timer(DecayTimerIntervalMilliseconds);
-                _decayTimer.AutoReset = true;
-                _decayTimer.Elapsed += async (s, e) =>
-                {
-                    try
-                    {
-                        Debug.WriteLine($"⏰ DECAY TIMER СРАБОТАЛ в {DateTime.Now}");
-
-                        var startTimeBinary = Preferences.Default.Get(IncompletionStartTimeKey, 0L);
-                        if (startTimeBinary == 0)
-                        {
-                            StopDecayTimer();
-                            return;
-                        }
-
-                        var incompletionStartTime = DateTime.FromBinary(startTimeBinary);
-                        var now = DateTime.UtcNow;
-                        var elapsedMinutes = (int)(now - incompletionStartTime).TotalMinutes;
-                        int newDirtyLevel = Math.Min(100, elapsedMinutes);
-
-                        var savedLevel = Preferences.Default.Get(DirtyLevelKey, 0);
-                        if (newDirtyLevel != savedLevel)
-                        {
-                            Preferences.Default.Set(DirtyLevelKey, newDirtyLevel);
-                            NotifyStateChanged(newDirtyLevel);
-                            Debug.WriteLine($"📈 Уровень грязи увеличен до {newDirtyLevel}%");
-                        }
-
-                        if (newDirtyLevel >= 100)
-                        {
-                            StopDecayTimer();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"⚠️ Ошибка в таймере: {ex.Message}");
-                    }
-                };
-                _decayTimer.Start();
-                Debug.WriteLine($"⏱️ Decay timer started: интервал {DecayTimerIntervalMilliseconds}ms");
-            }
-        }
-
-        private void StopDecayTimer()
-        {
-            if (_decayTimer is not null)
-            {
-                _decayTimer.Stop();
-                _decayTimer.Dispose();
-                _decayTimer = null;
-                Debug.WriteLine("🛑 Decay timer stopped");
-            }
         }
 
         private void NotifyStateChanged(int dirtyLevel)
@@ -227,8 +139,7 @@ namespace QuestDay.Services
                 DirtLevelChanged?.Invoke(this, dirtyLevel);
                 RabbitDirtyStateChanged?.Invoke(this, isRabbitDirty);
 
-                int cleanliness = 100 - dirtyLevel;
-                Debug.WriteLine($"📊 NOTIFY: грязь={dirtyLevel}%, чистота={cleanliness}%, isRabbitDirty={isRabbitDirty}");
+                Debug.WriteLine($"📊 NOTIFY: грязь={dirtyLevel}%, isRabbitDirty={isRabbitDirty}");
             });
         }
 
@@ -241,9 +152,9 @@ namespace QuestDay.Services
 
         public async Task CleanHouseAsync()
         {
-            Preferences.Default.Set(DirtyLevelKey, 0);
+            _incompletionStartTime = null;
             Preferences.Default.Remove(IncompletionStartTimeKey);
-            StopDecayTimer();
+            Preferences.Default.Set(DirtyLevelKey, 0);
             NotifyStateChanged(0);
             Debug.WriteLine("🧽 Домик очищен через CleanHouseAsync!");
             await Task.CompletedTask;
@@ -253,6 +164,8 @@ namespace QuestDay.Services
         {
             var currentDirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
             var newDirtyLevel = Math.Min(100, currentDirtyLevel + amount);
+            _incompletionStartTime = DateTime.UtcNow;
+            Preferences.Default.Set(IncompletionStartTimeKey, _incompletionStartTime.Value.ToBinary());
             Preferences.Default.Set(DirtyLevelKey, newDirtyLevel);
             NotifyStateChanged(newDirtyLevel);
             Debug.WriteLine($"➕ AddDirtAsync: {currentDirtyLevel} → {newDirtyLevel} (+{amount})");
