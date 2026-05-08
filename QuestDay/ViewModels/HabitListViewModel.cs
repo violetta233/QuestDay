@@ -480,7 +480,13 @@ namespace QuestDay.ViewModels
         {
             if (day == null || day.IsEmpty || day.DayNumber <= 0) return;
             if (SelectedHabitForCalendar == null) return;
+            if (day.Date.Date > DateTime.Today)
+            {
+                await SuccessPopup.ShowInfoPopup(
+                    "Этот день еще не наступил");
 
+                return;
+            }
             try
             {
                 var date = day.Date;

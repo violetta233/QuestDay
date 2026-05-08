@@ -459,5 +459,78 @@ namespace QuestDay.Views
             await Application.Current.MainPage.Navigation.PushModalAsync(popup);
             return await tcs.Task;
         }
+        public static async Task ShowInfoPopup(string message)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            var grid = new Grid
+            {
+                BackgroundColor = Color.FromArgb("#CC000000"),
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Fill
+            };
+
+            var frame = new Frame
+            {
+                BackgroundColor = Colors.White,
+                CornerRadius = 30,
+                Padding = 20,
+                WidthRequest = 260,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                HasShadow = true
+            };
+
+            var layout = new VerticalStackLayout
+            {
+                Spacing = 12
+            };
+
+            layout.Add(new Label
+            {
+                Text = "⏳",
+                FontSize = 40,
+                HorizontalOptions = LayoutOptions.Center
+            });
+
+            layout.Add(new Label
+            {
+                Text = message,
+                FontSize = 16,
+                FontFamily = "Montserrat-SemiBold",
+                TextColor = Color.FromArgb("#4C382F"),
+                HorizontalOptions = LayoutOptions.Center,
+                HorizontalTextAlignment = TextAlignment.Center
+            });
+
+            var okBtn = new Button
+            {
+                Text = "ОК",
+                BackgroundColor = Color.FromArgb("#A7DFAF"),
+                TextColor = Colors.White,
+                CornerRadius = 20,
+                HeightRequest = 44,
+                FontFamily = "Montserrat-SemiBold"
+            };
+
+            var popup = new ContentPage();
+            popup.BackgroundColor = Colors.Transparent;
+
+            okBtn.Clicked += async (s, e) =>
+            {
+                await popup.Navigation.PopModalAsync();
+                tcs.SetResult(true);
+            };
+
+            layout.Add(okBtn);
+
+            frame.Content = layout;
+            grid.Children.Add(frame);
+            popup.Content = grid;
+
+            await Application.Current.MainPage.Navigation.PushModalAsync(popup);
+
+            await tcs.Task;
+        }
     }
 }
