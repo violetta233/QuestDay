@@ -329,13 +329,11 @@ namespace QuestDay.ViewModels
         {
             if (habitToToggleCompletion == null) return;
 
-            bool previousState = habitToToggleCompletion.IsCompletedForToday;
-            bool newState = !previousState;
-            habitToToggleCompletion.IsCompletedForToday = newState;
+            bool newState = !habitToToggleCompletion.IsCompletedForToday;
 
             var confirm = await SuccessPopup.ShowConfirmation(
                 "Подтверждение",
-                $"Отметить \"{habitToToggleCompletion.Name}\" как {newState}?",
+                $"Отметить \"{habitToToggleCompletion.Name}\" как {(newState ? "выполненную" : "невыполненную")}?",
                 "Да",
                 "Нет");
 
@@ -349,7 +347,21 @@ namespace QuestDay.ViewModels
                     newState
                 );
 
-                ApplyFilterAndSort();
+                var existingHabit = Habits.FirstOrDefault(h => h.Id == habitToToggleCompletion.Id);
+                if (existingHabit != null)
+                {
+                    existingHabit.IsCompletedForToday = newState;
+
+                    var index = Habits.IndexOf(existingHabit);
+                    if (index != -1)
+                    {
+                        Habits[index] = existingHabit;
+                    }
+
+                    OnPropertyChanged(nameof(Habits));
+                }
+
+                SortHabits();
 
                 var allHabits = await _habitService.GetHabitsAsync();
                 var activeHabits = allHabits.Where(h => h.IsActive).ToList();
@@ -379,9 +391,8 @@ namespace QuestDay.ViewModels
             }
             catch (Exception ex)
             {
-                habitToToggleCompletion.IsCompletedForToday = previousState;
                 Debug.WriteLine($"Ошибка обновления выполнения: {ex}");
-                await Shell.Current.DisplayAlert("Ошибка", $"Не удалось обновить статус выполнения привычки: {ex.Message}", "ОК");
+                await Shell.Current.DisplayAlert("Ошибка", $"Не удалось обновить статус: {ex.Message}", "OK");
             }
         }
 
@@ -396,6 +407,7 @@ namespace QuestDay.ViewModels
 
             var sorted = Habits
                 .OrderBy(h => h.IsCompletedForToday)
+                .ThenByDescending(h => h.CreatedAt)
                 .ToList();
 
             for (int i = 0; i < sorted.Count; i++)
@@ -406,6 +418,8 @@ namespace QuestDay.ViewModels
                     Habits.Move(oldIndex, i);
                 }
             }
+
+            OnPropertyChanged(nameof(Habits));
         }
 
         [RelayCommand]

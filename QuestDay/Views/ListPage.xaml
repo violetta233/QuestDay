@@ -138,7 +138,7 @@
                                                        TextColor="Black"
                                                        Style="{Binding IsActive, Converter={StaticResource HabitIsActiveToTextStyleConverter}}" />
                                                 <CheckBox Grid.Column="1"
-                                                          IsChecked="{Binding IsCompletedForToday}"
+                                                          IsChecked="{Binding IsCompletedForToday, Mode=TwoWay}"
                                                           VerticalOptions="Center"
                                                           HorizontalOptions="End"
                                                           Color="#A7DFAF">

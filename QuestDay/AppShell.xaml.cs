@@ -25,11 +25,11 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
 
-        Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
-        Routing.RegisterRoute(nameof(ListPage), typeof(ListPage));
-        Routing.RegisterRoute(nameof(AddPage), typeof(AddPage));
-        Routing.RegisterRoute(nameof(SettingPage), typeof(SettingPage));
-        Routing.RegisterRoute(nameof(userPage), typeof(userPage));
+        // Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
+        // Routing.RegisterRoute(nameof(ListPage), typeof(ListPage));
+        // Routing.RegisterRoute(nameof(AddPage), typeof(AddPage));
+        // Routing.RegisterRoute(nameof(SettingPage), typeof(SettingPage));
+        // Routing.RegisterRoute(nameof(userPage), typeof(userPage));
 
         Navigated += OnShellNavigated;
         UpdateCurrentRoute(CurrentState?.Location?.OriginalString);
