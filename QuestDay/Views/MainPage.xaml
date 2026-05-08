@@ -17,13 +17,7 @@
               HeightRequest="400"
               InputTransparent="True">
 
-            <Image Source="rabbit_warm.png"
-                   VerticalOptions="Center"
-                   HorizontalOptions="Center"
-                   Aspect="AspectFit"
-                   WidthRequest="400"
-                   HeightRequest="400" />
-
+            <!-- Только динамический кролик (уже включает все элементы одежды, включая шляпу) -->
             <Image x:Name="MainRabbitImage"
                    Source="{Binding Source={x:Static app:App.AvatarAppearance}, Path=CurrentRabbitImage}"
                    VerticalOptions="Center"
@@ -31,6 +25,7 @@
                    Aspect="AspectFit"
                    WidthRequest="400"
                    HeightRequest="400" />
+
         </Grid>
 
         <views:QuoteView 

@@ -14,6 +14,11 @@
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
         <converters:HabitIsActiveToBackgroundColorConverter x:Key="HabitIsActiveToBackgroundColorConverter" />
         <converters:HabitIsActiveToTextStyleConverter x:Key="HabitIsActiveToTextStyleConverter" />
+        <converters:DaySelectedToColorConverter x:Key="DaySelectedToColorConverter" />
+        <converters:IsPositiveConverter x:Key="IsPositiveConverter" />
+        <converters:DaySelectedToTextColorConverter x:Key="DaySelectedToTextColorConverter" />
+        <converters:BoolToFontAttributesConverter x:Key="BoolToFontAttributesConverter" />
+        <converters:RussianListToStringConverter x:Key="RussianListToStringConverter" />
         <toolkit:ListToStringConverter x:Key="ListToStringConverter" />
         <toolkit:IsStringNotNullOrEmptyConverter x:Key="IsStringNotNullOrEmptyConverter" />
         <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmptyConverter" />
@@ -32,202 +37,378 @@
         </Style>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto, *, Auto">
-        <HorizontalStackLayout Grid.Row="0" Margin="30, 20, 0, 0" Spacing="10">
-            <Label Text="Список привычек"
-                   HorizontalOptions="Start"
-                   FontFamily="Montserrat-SemiBold"
-                   FontSize="22"
-                   TextColor="Black" />
-            <ActivityIndicator IsRunning="{Binding IsBusy}" 
-                               IsVisible="{Binding IsBusy}" 
-                               Color="#A7DFAF"
-                               VerticalOptions="Center" />
-        </HorizontalStackLayout>
+    <Grid>
+        <Grid RowDefinitions="Auto, Auto, *, Auto">
+            <!-- Заголовок -->
+            <HorizontalStackLayout Grid.Row="0" Margin="30, 20, 0, 0" Spacing="10">
+                <Label Text="Список привычек"
+                       HorizontalOptions="Start"
+                       FontFamily="Montserrat-SemiBold"
+                       FontSize="22"
+                       TextColor="Black" />
+                <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                   IsVisible="{Binding IsBusy}" 
+                                   Color="#A7DFAF"
+                                   VerticalOptions="Center" />
+            </HorizontalStackLayout>
 
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Spacing="10">
-                <CollectionView ItemsSource="{Binding Habits}"
-                                SelectionMode="None"
-                                Margin="10">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Habit">
-                            <SwipeView>
-                                <SwipeView.RightItems>
-                                    <SwipeItems Mode="Reveal">
-                                        <SwipeItem Text="Удалить"
-                                                   BackgroundColor="#FF5252"
-                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=DeleteHabitCommand}"
-                                                   CommandParameter="{Binding .}" />
-                                    </SwipeItems>
-                                </SwipeView.RightItems>
+            <!-- Фильтр -->
+            <Grid Grid.Row="1"
+                  Margin="25, 10, 25, 10"
+                  ColumnDefinitions="Auto, *">
 
-                                <Border Margin="5" 
-                                        Padding="15" 
-                                        StrokeThickness="1"
-                                        Stroke="#E0E0E0"
-                                        BackgroundColor="White"
-                                        StrokeShape="RoundRectangle 10">
-                                    <VerticalStackLayout Spacing="8">
+                <Label Grid.Column="0"
+                       Text="Фильтр:"
+                       VerticalOptions="Center"
+                       TextColor="#888888"
+                       FontFamily="Montserrat-SemiBold"
+                       FontSize="14"
+                       Margin="0,0,10,0"/>
 
-                                        <Grid ColumnDefinitions="*, Auto">
-                                            <Label Grid.Column="0"
-                                                   Text="{Binding Name}"
-                                                   FontSize="18"
-                                                   FontAttributes="Bold"
-                                                   VerticalOptions="Center"
-                                                   TextColor="Black"
-                                                   Style="{Binding IsActive, Converter={StaticResource HabitIsActiveToTextStyleConverter}}" />
-                                            <CheckBox Grid.Column="1"
-                                                      IsChecked="{Binding IsCompletedForToday}"
-                                                      VerticalOptions="Center"
-                                                      HorizontalOptions="End"
-                                                      Color="#A7DFAF">
-                                                <CheckBox.GestureRecognizers>
-                                                    <TapGestureRecognizer 
-                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=ToggleHabitCompletionCommand}"
-                                                        CommandParameter="{Binding .}" />
-                                                </CheckBox.GestureRecognizers>
-                                            </CheckBox>
-                                        </Grid>
+                <Grid Grid.Column="1"
+                      HorizontalOptions="End"
+                      VerticalOptions="Center">
 
-                                        <Label Text="{Binding Description}"
-                                               FontSize="14"
-                                               TextColor="#666666"
-                                               IsVisible="{Binding Description, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
+                    <Border BackgroundColor="#F2FAF3"
+                            Stroke="#A7DFAF"
+                            StrokeThickness="2"
+                            Padding="18, 8"
+                            StrokeShape="RoundRectangle 15">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenFilterCommand}"/>
+                        </Border.GestureRecognizers>
 
-                                        <Label Text="{Binding SelectedDays, Converter={toolkit:ListToStringConverter}, ConverterParameter=', '}"
-                                               FontSize="12"
-                                               TextColor="#888888"
-                                               IsVisible="{Binding SelectedDays, Converter={toolkit:IsListNotNullOrEmptyConverter}}" />
+                        <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                            <Label Text="{Binding SelectedFilter}"
+                                   TextColor="Black"
+                                   FontFamily="Montserrat-SemiBold"
+                                   FontSize="13"
+                                   VerticalOptions="Center"
+                                   Margin="0,0,5,0"/>
 
-                                        <Label Text="{Binding StartDate, StringFormat='Начало: {0:dd.MM.yyyy}'}"
-                                               FontSize="12"
-                                               TextColor="#888888" />
-                                    </VerticalStackLayout>
-                                </Border>
-                            </SwipeView>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <StackLayout IsVisible="{Binding Habits.Count, Converter={StaticResource InverseBoolConverter}}"
-                             Spacing="20"
-                             Padding="20">
-                    <Label Text="📝"
-                           FontSize="60"
-                           HorizontalOptions="Center"
-                           TextColor="#CCCCCC" />
-                    <Label Text="Нет привычек"
-                           HorizontalOptions="Center"
-                           FontFamily="Montserrat-SemiBold"
-                           FontSize="18"
-                           TextColor="#666666" />
-                    <Label Text="Добавьте свою первую привычку!"
-                           HorizontalOptions="Center"
-                           FontFamily="Montserrat-SemiBold"
-                           FontSize="14"
-                           TextColor="#999999" />
-                    <Button Text="+ Добавить привычку"
-                            Command="{Binding NavigateToAddHabitCommand}"
-                            BackgroundColor="#A7DFAF"
-                            TextColor="White"
-                            FontFamily="Montserrat-SemiBold"
-                            CornerRadius="10"
-                            WidthRequest="200"
-                            HorizontalOptions="Center"
-                            Margin="0,10,0,0" />
-                </StackLayout>
-            </VerticalStackLayout>
-        </ScrollView>
-        <Grid Grid.Row="2" IgnoreSafeArea="True" VerticalOptions="End">
-            <Border 
-                Margin="10,0,10,25"
-                HeightRequest="65"
-                HorizontalOptions="Fill"
-                BackgroundColor="White"
-                Stroke="#FFCD72" 
-                StrokeThickness="2">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="18" />
-                </Border.StrokeShape>
-                <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
-                    <Border Padding="10"
-                            BackgroundColor="Transparent"
-                            StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <ImageButton Source="home.png" 
-                                     BackgroundColor="Transparent"
-                                     Clicked="OnNavClicked" 
-                                     CommandParameter="MainPage"
-                                     HeightRequest="30"
-                                     Opacity="0.55" 
-                                     WidthRequest="30"/>
+                            <Label Text="▼"
+                                   TextColor="Black"
+                                   FontSize="10"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
                     </Border>
+                </Grid>
+            </Grid>
 
-                    <Border Padding="10"
-                            BackgroundColor="#FFF3DC"
-                            StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <ImageButton Source="file.png" 
-                                     BackgroundColor="Transparent"
-                                     Clicked="OnNavClicked" 
-                                     CommandParameter="ListPage"
-                                     HeightRequest="30"
-                                     Opacity="1" 
-                                     WidthRequest="30"/>
-                    </Border>
+            <!-- Список привычек -->
+            <ScrollView Grid.Row="2">
+                <VerticalStackLayout Spacing="10">
+                    <CollectionView ItemsSource="{Binding Habits}"
+                                    SelectionMode="None"
+                                    Margin="10">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Habit">
+                                <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems Mode="Reveal">
+                                            <SwipeItem Text="Изменить"
+                                                       BackgroundColor="#4CAF50"
+                                                       Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=EditHabitCommand}"
+                                                       CommandParameter="{Binding .}" />
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
 
-                    <Border Padding="10"
-                            BackgroundColor="Transparent"
-                            StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <ImageButton Source="plus.png" 
-                                     BackgroundColor="Transparent"
-                                     Clicked="OnNavClicked" 
-                                     CommandParameter="AddPage"
-                                     HeightRequest="30"
-                                     Opacity="0.55" 
-                                     WidthRequest="30"/>
-                    </Border>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems Mode="Reveal">
+                                            <SwipeItem Text="Удалить"
+                                                       BackgroundColor="#FF5252"
+                                                       Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=DeleteHabitCommand}"
+                                                       CommandParameter="{Binding .}" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
 
-                    <Border Padding="10"
-                            BackgroundColor="Transparent"
-                            StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <ImageButton Source="setting.png" 
-                                     BackgroundColor="Transparent"
-                                     Clicked="OnNavClicked" 
-                                     CommandParameter="SettingPage"
-                                     HeightRequest="30"
-                                     Opacity="0.55" 
-                                     WidthRequest="30"/>
-                    </Border>
+                                    <Border Margin="5" 
+                                            Padding="15" 
+                                            StrokeThickness="1"
+                                            Stroke="#E0E0E0"
+                                            BackgroundColor="White"
+                                            StrokeShape="RoundRectangle 10">
+                                        <VerticalStackLayout Spacing="8">
+                                            <Grid ColumnDefinitions="*, Auto">
+                                                <Label Grid.Column="0"
+                                                       Text="{Binding Name}"
+                                                       FontSize="18"
+                                                       FontAttributes="Bold"
+                                                       VerticalOptions="Center"
+                                                       TextColor="Black"
+                                                       Style="{Binding IsActive, Converter={StaticResource HabitIsActiveToTextStyleConverter}}" />
+                                                <CheckBox Grid.Column="1"
+                                                          IsChecked="{Binding IsCompletedForToday, Mode=TwoWay}"
+                                                          VerticalOptions="Center"
+                                                          HorizontalOptions="End"
+                                                          Color="#A7DFAF">
+                                                    <CheckBox.GestureRecognizers>
+                                                        <TapGestureRecognizer 
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:HabitListViewModel}}, Path=ToggleHabitCompletionCommand}"
+                                                            CommandParameter="{Binding .}" />
+                                                    </CheckBox.GestureRecognizers>
+                                                </CheckBox>
+                                            </Grid>
 
-                    <Border Padding="10"
-                            BackgroundColor="Transparent"
-                            StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <ImageButton Source="profile.png" 
-                                     BackgroundColor="Transparent"
-                                     Clicked="OnNavClicked" 
-                                     CommandParameter="userPage"
-                                     HeightRequest="30"
-                                     Opacity="0.55" 
-                                     WidthRequest="30"/>
-                    </Border>
-                </FlexLayout>
-            </Border>
+                                            <Label Text="{Binding Description}"
+                                                   FontSize="14"
+                                                   TextColor="#666666"
+                                                   IsVisible="{Binding Description, Converter={toolkit:IsStringNotNullOrEmptyConverter}}" />
+
+                                            <Label Text="{Binding SelectedDays, Converter={StaticResource RussianListToStringConverter}, ConverterParameter=', '}"
+                                                   FontSize="12"
+                                                   TextColor="#888888"
+                                                   IsVisible="{Binding SelectedDays, Converter={toolkit:IsListNotNullOrEmptyConverter}}" />
+
+                                            <Label Text="{Binding StartDate, StringFormat='Начало: {0:dd.MM.yyyy}'}"
+                                                   FontSize="12"
+                                                   TextColor="#888888" />
+
+                                            <Button Text="История выполнения"
+                                                   Clicked="OnHistoryClicked"
+                                                   CommandParameter="{Binding .}"
+                                                   BackgroundColor="#F68063"
+                                                   TextColor="White"
+                                                   CornerRadius="10"
+                                                   HeightRequest="35"
+                                                   FontSize="12"
+                                                   Margin="0,5,0,0"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <!-- Пустое состояние -->
+                    <StackLayout IsVisible="{Binding Habits.Count, Converter={StaticResource InverseBoolConverter}}"
+                                 Spacing="20"
+                                 Padding="20">
+                        <Label Text="📝"
+                               FontSize="60"
+                               HorizontalOptions="Center"
+                               TextColor="#CCCCCC" />
+                        <Label Text="Нет привычек"
+                               HorizontalOptions="Center"
+                               FontFamily="Montserrat-SemiBold"
+                               FontSize="18"
+                               TextColor="#666666" />
+                        <Label Text="Добавьте свою первую привычку!"
+                               HorizontalOptions="Center"
+                               FontFamily="Montserrat-SemiBold"
+                               FontSize="14"
+                               TextColor="#999999" />
+                        <Button Text="+ Добавить привычку"
+                                Command="{Binding NavigateToAddHabitCommand}"
+                                BackgroundColor="#A7DFAF"
+                                TextColor="White"
+                                FontFamily="Montserrat-SemiBold"
+                                CornerRadius="10"
+                                WidthRequest="200"
+                                HorizontalOptions="Center"
+                                Margin="0,10,0,0" />
+                    </StackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- Нижняя навигация -->
+            <Grid Grid.Row="3" IgnoreSafeArea="True" VerticalOptions="End">
+                <Border 
+                    Margin="10,0,10,25"
+                    HeightRequest="65"
+                    HorizontalOptions="Fill"
+                    BackgroundColor="White"
+                    Stroke="#FFCD72" 
+                    StrokeThickness="2">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="18" />
+                    </Border.StrokeShape>
+                    <FlexLayout JustifyContent="SpaceAround" AlignItems="Center">
+                        <Border Padding="10"
+                                BackgroundColor="Transparent"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <ImageButton Source="home.png" 
+                                         BackgroundColor="Transparent"
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="MainPage"
+                                         HeightRequest="30"
+                                         Opacity="0.55" 
+                                         WidthRequest="30"/>
+                        </Border>
+
+                        <Border Padding="10"
+                                BackgroundColor="#FFF3DC"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <ImageButton Source="file.png" 
+                                         BackgroundColor="Transparent"
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="ListPage"
+                                         HeightRequest="30"
+                                         Opacity="1" 
+                                         WidthRequest="30"/>
+                        </Border>
+
+                        <Border Padding="10"
+                                BackgroundColor="Transparent"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <ImageButton Source="plus.png" 
+                                         BackgroundColor="Transparent"
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="AddPage"
+                                         HeightRequest="30"
+                                         Opacity="0.55" 
+                                         WidthRequest="30"/>
+                        </Border>
+
+                        <Border Padding="10"
+                                BackgroundColor="Transparent"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <ImageButton Source="setting.png" 
+                                         BackgroundColor="Transparent"
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="SettingPage"
+                                         HeightRequest="30"
+                                         Opacity="0.55" 
+                                         WidthRequest="30"/>
+                        </Border>
+
+                        <Border Padding="10"
+                                BackgroundColor="Transparent"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16" />
+                            </Border.StrokeShape>
+                            <ImageButton Source="profile.png" 
+                                         BackgroundColor="Transparent"
+                                         Clicked="OnNavClicked" 
+                                         CommandParameter="userPage"
+                                         HeightRequest="30"
+                                         Opacity="0.55" 
+                                         WidthRequest="30"/>
+                        </Border>
+                    </FlexLayout>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Календарь -->
+        <Grid IsVisible="{Binding IsCalendarVisible}"
+              BackgroundColor="#CC000000"
+              HorizontalOptions="Fill"
+              VerticalOptions="Fill"
+              InputTransparent="False">
+
+            <Frame BackgroundColor="White"
+                   CornerRadius="20"
+                   Padding="15"
+                   Margin="20"
+                   VerticalOptions="Center"
+                   HasShadow="True">
+
+                <Grid>
+                    <VerticalStackLayout Spacing="15">
+
+                        <Label Text="{Binding SelectedHabitForCalendar.Name, StringFormat='📅 История: {0}'}"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#F68063"
+                               HorizontalOptions="Center"
+                               FontFamily="Montserrat-SemiBold"/>
+
+                        <Grid ColumnDefinitions="*, Auto, *" HorizontalOptions="Fill">
+                            <Button Grid.Column="0"
+                                    Text="◀"
+                                    BackgroundColor="Transparent"
+                                    TextColor="#F68063"
+                                    Command="{Binding PreviousMonthCommand}"
+                                    HorizontalOptions="Start"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding CurrentCalendarMonthRussian}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   FontFamily="Montserrat-SemiBold"
+                                   TextColor="#F68063"/>
+                            <Button Grid.Column="2"
+                                    Text="▶"
+                                    BackgroundColor="Transparent"
+                                    TextColor="#F68063"
+                                    Command="{Binding NextMonthCommand}"
+                                    HorizontalOptions="End"/>
+                        </Grid>
+
+                        <!-- Дни недели -->
+                        <Grid ColumnDefinitions="1*,1*,1*,1*,1*,1*,1*" 
+                              Margin="0,5,0,5"
+                              HorizontalOptions="Fill">
+                            <Label Grid.Column="0" Text="ПН" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="ВТ" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="2" Text="СР" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="3" Text="ЧТ" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="4" Text="ПТ" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="5" Text="СБ" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            <Label Grid.Column="6" Text="ВС" TextColor="#F68063" FontSize="11" FontFamily="OpenSansRegular" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Grid>
+
+                        <Label Text="👆 Нажмите на день, чтобы отметить выполнение"
+                               FontSize="10"
+                               TextColor="#999999"
+                               FontFamily="Montserrat-SemiBold"
+                               HorizontalOptions="Center"
+                               Margin="0,-5,0,0"/>
+
+                        <FlexLayout x:Name="CalendarFlexLayout"
+                                    Wrap="Wrap"
+                                    JustifyContent="Center"
+                                    AlignItems="Center"
+                                    Margin="0">
+                        </FlexLayout>
+
+                        <Grid ColumnDefinitions="*,*" Margin="0,10,0,0">
+                            <Label Text="✅ Выполнено:"
+                                   FontSize="12"
+                                   TextColor="#666"
+                                   FontFamily="Montserrat-SemiBold"
+                                   HorizontalOptions="Start"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding CompletionsCountText}"
+                                   FontSize="12"
+                                   TextColor="#F68063"
+                                   FontAttributes="Bold"
+                                   FontFamily="Montserrat-SemiBold"
+                                   HorizontalOptions="End"/>
+                        </Grid>
+
+                        <Button Text="Закрыть"
+                                Command="{Binding CloseCalendarCommand}"
+                                BackgroundColor="#F68063"
+                                TextColor="White"
+                                CornerRadius="10"
+                                FontFamily="Montserrat-SemiBold"/>
+                    </VerticalStackLayout>
+
+                    <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                       IsVisible="{Binding IsBusy}" 
+                                       Color="#F68063"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       HeightRequest="50"
+                                       WidthRequest="50"/>
+                </Grid>
+            </Frame>
         </Grid>
     </Grid>
 </ContentPage>

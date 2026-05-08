@@ -10,6 +10,8 @@ namespace QuestDay
     {
         private readonly IHabitService _habitService;
         private readonly IHouseStateService _houseStateService;
+        private static bool _isFirstStart = true;
+        private static bool _isFromNotification = false;
 
         public static AvatarAppearanceService AvatarAppearance { get; } = new AvatarAppearanceService();
         public static IAudioPlayer? BackgroundMusic { get; private set; }
@@ -53,12 +55,7 @@ namespace QuestDay
                             BackgroundMusic.Loop = true;
                             BackgroundMusic.Volume = 0.5;
 
-                            bool isSoundEnabled = Preferences.Default.Get(SoundEnabledKey, true);
-                            if (isSoundEnabled)
-                            {
-                                BackgroundMusic.Play();
-                            }
-
+                            // Не запускаем музыку здесь, только загружаем
                             System.Diagnostics.Debug.WriteLine($"Музыка загружена! Путь: {path}");
                             return;
                         }
@@ -90,40 +87,59 @@ namespace QuestDay
                 if (isSoundEnabled && BackgroundMusic != null && !BackgroundMusic.IsPlaying)
                 {
                     BackgroundMusic.Play();
-                    System.Diagnostics.Debug.WriteLine("Музыка запущена");
+                    System.Diagnostics.Debug.WriteLine("OnStart: Музыка запущена (реальный запуск)");
                 }
+
+                _isFirstStart = false;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка инициализации: {ex.Message}");
             }
         }
+
         protected override void OnSleep()
         {
-            base.OnSleep();
             if (BackgroundMusic?.IsPlaying == true)
             {
                 BackgroundMusic.Pause();
-                System.Diagnostics.Debug.WriteLine("Музыка на паузе");
+                System.Diagnostics.Debug.WriteLine("OnSleep: Музыка на паузе");
             }
+
+            base.OnSleep();
         }
 
         protected override void OnResume()
         {
             base.OnResume();
+
+            if (_isFirstStart)
+            {
+                System.Diagnostics.Debug.WriteLine("OnResume: Игнорируем (приложение не запущено)");
+                return;
+            }
+
+            if (_isFromNotification)
+            {
+                System.Diagnostics.Debug.WriteLine("OnResume: Игнорируем (вызов из уведомления)");
+                _isFromNotification = false;
+                return;
+            }
+
             bool isSoundEnabled = Preferences.Default.Get(SoundEnabledKey, true);
             if (isSoundEnabled && BackgroundMusic != null && !BackgroundMusic.IsPlaying)
             {
                 BackgroundMusic.Play();
-                System.Diagnostics.Debug.WriteLine("Музыка возобновлена");
+                System.Diagnostics.Debug.WriteLine("OnResume: Музыка возобновлена");
             }
-
-            Task.Run(async () => await _houseStateService.UpdateStateAsync());
         }
 
         private void OnNotificationTapped(NotificationActionEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"Уведомление нажато: {e.Request.NotificationId}");
+            _isFromNotification = true;
+
+            Task.Delay(1000).ContinueWith(_ => _isFromNotification = false);
         }
     }
 }

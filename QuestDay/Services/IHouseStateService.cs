@@ -6,12 +6,15 @@ namespace QuestDay.Services
 {
     public interface IHouseStateService
     {
-        Task<HouseState> GetCurrentStateAsync();
+        event EventHandler<string>? BackgroundChanged;
+        event EventHandler<string>? UserPageBackgroundChanged;
+        event EventHandler<int>? DirtLevelChanged;
+        event EventHandler<bool>? RabbitDirtyStateChanged;
+
         Task UpdateStateAsync();
+        Task<HouseState> GetCurrentStateAsync();
         Task CleanHouseAsync();
         Task AddDirtAsync(int amount);
-
-        event EventHandler<string>? BackgroundChanged;
-        event EventHandler<int>? DirtLevelChanged;
+        Task ResetIncompletionStartTime();
     }
 }

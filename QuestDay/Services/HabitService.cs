@@ -160,5 +160,14 @@ namespace QuestDay.Services
                 _initializationLock.Release();
             }
         }
+
+        public async Task<List<HabitCompletion>> GetCompletionsByHabitIdAsync(int habitId)
+        {
+            var database = await EnsureInitializedAsync();
+            return await database.Table<HabitCompletion>()
+                                  .Where(c => c.HabitId == habitId)
+                                  .OrderByDescending(c => c.CompletionDate)
+                                  .ToListAsync();
+        }
     }
 }

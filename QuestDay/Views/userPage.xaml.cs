@@ -9,11 +9,11 @@ public partial class userPage : ContentPage
 {
     private const string DefaultRabbitBaseImage = "rabbit_warm.png";
     private const int PlaceholderSlotsPerCategory = 6;
-    private const string HatsTitle = "\u0413\u043E\u043B\u043E\u0432\u043D\u044B\u0435 \u0443\u0431\u043E\u0440\u044B";
-    private const string TopsTitle = "\u041E\u0434\u0435\u0436\u0434\u0430";
-    private const string PaletteTitle = "\u041E\u043A\u0440\u0430\u0441\u043A\u0430";
-    private const string WearText = "\u041D\u0430\u0434\u0435\u0442\u044C";
-    private const string RemoveText = "\u0421\u043D\u044F\u0442\u044C";
+    private const string HatsTitle = "Головные уборы";
+    private const string TopsTitle = "Одежда";
+    private const string PaletteTitle = "Окраска";
+    private const string WearText = "Надеть";
+    private const string RemoveText = "Снять";
     private const string Hat1ImageName = "hat_one.png";
     private const string Hat2ImageName = "hat_two.png";
     private const string OverallsImageName = "overalls_skin1_blue.png";
@@ -34,6 +34,7 @@ public partial class userPage : ContentPage
     private string? _activeHatImage;
     private string _activeCategoryTitle = HatsTitle;
     private bool _isSelectionPanelOpen;
+    private bool _isPaletteEnabled = true;
 
     public ObservableCollection<WardrobeSlot> ActiveSlots { get; } = [];
 
@@ -91,20 +92,24 @@ public partial class userPage : ContentPage
 
     public bool IsAlternateRabbitVisible => !string.IsNullOrWhiteSpace(ActiveRabbitVariantImage);
 
+    /// <summary>
+    /// Доступны ли кнопки окраски (активны только когда чистота > 29%)
+    /// </summary>
+    public bool IsPaletteEnabled
+    {
+        get => _isPaletteEnabled;
+        set => SetProperty(ref _isPaletteEnabled, value);
+    }
+
     public string OverallsActionText => GetActionText(OverallsImageName, WardrobeCategory.Top);
-
     public string TShirtActionText => GetActionText(TShirtImageName, WardrobeCategory.Top);
-
     public string OverallsAndBeltActionText => GetActionText(OverallsAndBeltImageName, WardrobeCategory.Top);
-
     public string Hat1ActionText => GetActionText(Hat1ImageName, WardrobeCategory.Hat);
-
     public string Hat2ActionText => GetActionText(Hat2ImageName, WardrobeCategory.Hat);
-
     public string PaletteActionText => GetActionText(DefaultPaletteImageName, WardrobeCategory.Palette);
-
     public string WhitePaletteActionText => GetActionText(WhitePaletteImageName, WardrobeCategory.Palette);
 
+    // Цвета для карточек одежды
     public Color OverallsCardBackgroundColor => GetCardBackgroundColor(OverallsImageName, WardrobeCategory.Top);
     public Color OverallsCardBorderColor => GetCardBorderColor(OverallsImageName, WardrobeCategory.Top);
     public double OverallsCardBorderWidth => GetCardBorderWidth(OverallsImageName, WardrobeCategory.Top);
@@ -132,6 +137,7 @@ public partial class userPage : ContentPage
     public Color OverallsAndBeltButtonBorderColor => GetButtonBorderColor(OverallsAndBeltImageName, WardrobeCategory.Top);
     public Color OverallsAndBeltButtonTextColor => GetButtonTextColor(OverallsAndBeltImageName, WardrobeCategory.Top);
 
+    // Цвета для карточек шляп
     public Color Hat1CardBackgroundColor => GetCardBackgroundColor(Hat1ImageName, WardrobeCategory.Hat);
     public Color Hat1CardBorderColor => GetCardBorderColor(Hat1ImageName, WardrobeCategory.Hat);
     public double Hat1CardBorderWidth => GetCardBorderWidth(Hat1ImageName, WardrobeCategory.Hat);
@@ -150,6 +156,7 @@ public partial class userPage : ContentPage
     public Color Hat2ButtonBorderColor => GetButtonBorderColor(Hat2ImageName, WardrobeCategory.Hat);
     public Color Hat2ButtonTextColor => GetButtonTextColor(Hat2ImageName, WardrobeCategory.Hat);
 
+    // Цвета для карточек палитры
     public Color PaletteCardBackgroundColor => GetCardBackgroundColor(DefaultPaletteImageName, WardrobeCategory.Palette);
     public Color PaletteCardBorderColor => GetCardBorderColor(DefaultPaletteImageName, WardrobeCategory.Palette);
     public double PaletteCardBorderWidth => GetCardBorderWidth(DefaultPaletteImageName, WardrobeCategory.Palette);
@@ -175,78 +182,110 @@ public partial class userPage : ContentPage
 
         _houseStateService = houseStateService;
 
-        _houseStateService.BackgroundChanged += OnBackgroundChanged;
+        _houseStateService.UserPageBackgroundChanged += OnUserPageBackgroundChanged;
+        _houseStateService.DirtLevelChanged += OnDirtLevelChanged;
+        _houseStateService.RabbitDirtyStateChanged += OnRabbitDirtyStateChanged;
 
         _avatarAppearance = App.AvatarAppearance;
         _avatarAppearance.PropertyChanged += OnAvatarAppearanceChanged;
         _itemsByCategory = CreateWardrobeItems();
         InitializeWardrobeState();
     }
-    private void OnBackgroundChanged(object sender, string imageName)
-    {
-        MainThread.BeginInvokeOnMainThread(async () =>
-        {
-            var state = await _houseStateService.GetCurrentStateAsync();
-            string userPageBackground = GetUserPageBackground(state.DirtyLevel);
 
-            if (HouseBackgroundImage != null)
-            {
-                HouseBackgroundImage.Source = userPageBackground;
-            }
+    private async void UpdatePaletteButtonsState()
+    {
+        var state = await _houseStateService.GetCurrentStateAsync();
+        int cleanliness = 100 - state.DirtyLevel;
+        bool shouldBeEnabled = cleanliness > 29;
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            IsPaletteEnabled = shouldBeEnabled;
         });
     }
-    private void OnDirtLevelChanged(object sender, int dirtyLevel)
+
+    private async void ForceUpdateRabbitCleanState()
+    {
+        var state = await _houseStateService.GetCurrentStateAsync();
+        bool shouldBeDirty = state.IsRabbitDirty;
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            _avatarAppearance.IsDirty = shouldBeDirty;
+        });
+    }
+
+    private void OnUserPageBackgroundChanged(object sender, string imageName)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            
-            string userPageBackground = GetUserPageBackground(dirtyLevel);
             if (HouseBackgroundImage != null)
             {
-                HouseBackgroundImage.Source = userPageBackground;
+                HouseBackgroundImage.Source = imageName;
             }
+        });
+    }
 
-            
+    private async void OnDirtLevelChanged(object sender, int dirtyLevel)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
             if (DirtyLevelLabel != null)
             {
                 int cleanliness = 100 - dirtyLevel;
                 string statusText = "";
 
-                if (dirtyLevel <= 30)
-                    statusText = "������";
-                else if (dirtyLevel <= 70)
-                    statusText = "�������";
+                if (cleanliness >= 70)
+                    statusText = "Чистый";
+                else if (cleanliness >= 30)
+                    statusText = "Грязный";
                 else
-                    statusText = "����� �������!";
+                    statusText = "Очень грязный!";
 
-                DirtyLevelLabel.Text = $"{statusText}\n�������: {cleanliness}%";
+                DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
 
-                if (dirtyLevel > 70)
+                if (cleanliness < 30)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
-                else if (dirtyLevel > 30)
+                else if (cleanliness < 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
                 else
                     DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
             }
         });
+
+        // Обновляем фон и состояние кролика асинхронно
+        var state = await _houseStateService.GetCurrentStateAsync();
+        var background = state.GetUserPageBackground();
+        bool isRabbitDirty = state.IsRabbitDirty;
+        bool shouldPaletteBeEnabled = (100 - state.DirtyLevel) > 29;
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (HouseBackgroundImage != null)
+            {
+                HouseBackgroundImage.Source = background;
+            }
+            _avatarAppearance.IsDirty = isRabbitDirty;
+            IsPaletteEnabled = shouldPaletteBeEnabled;
+        });
     }
-    private string GetUserPageBackground(int dirtyLevel)
+
+    private void OnRabbitDirtyStateChanged(object sender, bool isDirty)
     {
-        if (dirtyLevel <= 30)
-            return "background_normal.png";  
-        else if (dirtyLevel <= 70)
-            return "background_bad.png"; 
-        else
-            return "background_very_bad.png";
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            _avatarAppearance.IsDirty = isDirty;
+        });
     }
+
     private async void LoadHouseState()
     {
         var state = await _houseStateService.GetCurrentStateAsync();
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
-           
-            string userPageBackground = GetUserPageBackground(state.DirtyLevel);
+            // Устанавливаем фон
+            string userPageBackground = state.GetUserPageBackground();
             if (HouseBackgroundImage != null)
             {
                 HouseBackgroundImage.Source = userPageBackground;
@@ -257,24 +296,28 @@ public partial class userPage : ContentPage
                 int cleanliness = 100 - state.DirtyLevel;
                 string statusText = "";
 
-                if (state.DirtyLevel <= 30)
-                    statusText = "������";
-                else if (state.DirtyLevel <= 70)
-                    statusText = "�������";
+                if (cleanliness >= 70)
+                    statusText = "Чистый";
+                else if (cleanliness >= 30)
+                    statusText = "Грязный";
                 else
-                    statusText = "����� �������!";
+                    statusText = "Очень грязный!";
 
-                DirtyLevelLabel.Text = $"{statusText}\n�������: {cleanliness}%";
+                DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
 
-                if (state.DirtyLevel > 70)
+                if (cleanliness < 30)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
-                else if (state.DirtyLevel > 30)
+                else if (cleanliness < 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
                 else
                     DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
             }
+
+            // Устанавливаем состояние кнопок окраски
+            IsPaletteEnabled = (100 - state.DirtyLevel) > 29;
         });
     }
+
     protected override void OnSizeAllocated(double width, double height)
     {
         base.OnSizeAllocated(width, height);
@@ -298,16 +341,20 @@ public partial class userPage : ContentPage
         base.OnAppearing();
         await _houseStateService.UpdateStateAsync();
         LoadHouseState();
+        ForceUpdateRabbitCleanState();
         SyncAvatarStateFromService();
-        //EnsurePaletteIsEquipped();
         RefreshSlots();
         NotifyItemStateChanged();
     }
+
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
 
-        _houseStateService.BackgroundChanged -= OnBackgroundChanged;
+        _houseStateService.UserPageBackgroundChanged -= OnUserPageBackgroundChanged;
+        _houseStateService.DirtLevelChanged -= OnDirtLevelChanged;
+        _houseStateService.RabbitDirtyStateChanged -= OnRabbitDirtyStateChanged;
+        _avatarAppearance.PropertyChanged -= OnAvatarAppearanceChanged;
     }
 
     private Dictionary<WardrobeCategory, List<WardrobeItem>> CreateWardrobeItems()
@@ -321,14 +368,14 @@ public partial class userPage : ContentPage
             ],
             [WardrobeCategory.Top] =
             [
-                new WardrobeItem(WardrobeCategory.Top, "\u041A\u043E\u043C\u0431\u0438\u043D\u0435\u0437\u043E\u043D", OverallsImageName, OverallsImageName),
-                new WardrobeItem(WardrobeCategory.Top, "\u0424\u0443\u0442\u0431\u043E\u043B\u043A\u0430", TShirtImageName, TShirtImageName),
-                new WardrobeItem(WardrobeCategory.Top, "\u041A\u043E\u043C\u0431\u0438\u043D\u0435\u0437\u043E\u043D \u0441 \u0440\u0435\u043C\u043D\u0451\u043C", OverallsAndBeltImageName, OverallsAndBeltImageName)
+                new WardrobeItem(WardrobeCategory.Top, "Комбинезон", OverallsImageName, OverallsImageName),
+                new WardrobeItem(WardrobeCategory.Top, "Футболка", TShirtImageName, TShirtImageName),
+                new WardrobeItem(WardrobeCategory.Top, "Комбинезон с ремнём", OverallsAndBeltImageName, OverallsAndBeltImageName)
             ],
             [WardrobeCategory.Palette] =
             [
-                new WardrobeItem(WardrobeCategory.Palette, "\u0421\u0432\u0435\u0442\u043B\u044B\u0439", DefaultPaletteImageName, DefaultPaletteImageName),
-                new WardrobeItem(WardrobeCategory.Palette, "\u0411\u0435\u043B\u044B\u0439", WhitePaletteImageName, WhitePaletteImageName)
+                new WardrobeItem(WardrobeCategory.Palette, "Светлый", DefaultPaletteImageName, DefaultPaletteImageName),
+                new WardrobeItem(WardrobeCategory.Palette, "Белый", WhitePaletteImageName, WhitePaletteImageName)
             ]
         };
     }
@@ -430,18 +477,22 @@ public partial class userPage : ContentPage
     }
 
     private void OnOverallsClicked(object? sender, EventArgs e) => ToggleItem(OverallsImageName, WardrobeCategory.Top);
-
     private void OnTShirtClicked(object? sender, EventArgs e) => ToggleItem(TShirtImageName, WardrobeCategory.Top);
-
     private void OnOverallsAndBeltClicked(object? sender, EventArgs e) => ToggleItem(OverallsAndBeltImageName, WardrobeCategory.Top);
-
     private void OnHat1Clicked(object? sender, EventArgs e) => ToggleItem(Hat1ImageName, WardrobeCategory.Hat);
-
     private void OnHat2Clicked(object? sender, EventArgs e) => ToggleItem(Hat2ImageName, WardrobeCategory.Hat);
 
-    private void OnPaletteVariantClicked(object? sender, EventArgs e) => ToggleItem(DefaultPaletteImageName, WardrobeCategory.Palette);
+    private async void OnPaletteVariantClicked(object? sender, EventArgs e)
+    {
+        if (!IsPaletteEnabled) return;
+        ToggleItem(DefaultPaletteImageName, WardrobeCategory.Palette);
+    }
 
-    private void OnWhitePaletteVariantClicked(object? sender, EventArgs e) => ToggleItem(WhitePaletteImageName, WardrobeCategory.Palette);
+    private async void OnWhitePaletteVariantClicked(object? sender, EventArgs e)
+    {
+        if (!IsPaletteEnabled) return;
+        ToggleItem(WhitePaletteImageName, WardrobeCategory.Palette);
+    }
 
     private void OnPanelButtonPointerEntered(object? sender, PointerEventArgs e)
     {
@@ -529,7 +580,6 @@ public partial class userPage : ContentPage
     private void InitializeWardrobeState()
     {
         SyncAvatarStateFromService();
-        EnsurePaletteIsEquipped();
 
         _activeCategory = WardrobeCategory.Hat;
         ActiveCategoryTitle = GetCategoryTitle(_activeCategory);
@@ -589,6 +639,12 @@ public partial class userPage : ContentPage
     private void ApplySlotSelection(WardrobeSlot slot)
     {
         if (slot.Kind != WardrobeSlotKind.Item || slot.Item is null)
+        {
+            return;
+        }
+
+        // Блокируем смену окраски если кнопки заблокированы
+        if (slot.Item.Category == WardrobeCategory.Palette && !IsPaletteEnabled)
         {
             return;
         }
@@ -725,6 +781,19 @@ public partial class userPage : ContentPage
         }
 
         NotifyItemStateChanged();
+    }
+
+    private void EquipAlternatePalette(WardrobeItem currentItem)
+    {
+        var alternatePalette = _itemsByCategory[WardrobeCategory.Palette]
+            .FirstOrDefault(item => !string.Equals(item.PreviewImage, currentItem.PreviewImage, StringComparison.OrdinalIgnoreCase));
+
+        if (alternatePalette is null)
+        {
+            return;
+        }
+
+        EquipItem(alternatePalette);
     }
 
     private string GetActionText(string previewImage, WardrobeCategory category)
@@ -870,57 +939,16 @@ public partial class userPage : ContentPage
 
     private void UpdateActionButtons()
     {
-        ApplyActionButtonState(
-            Hat1ActionButton,
-            Hat1ActionText,
-            Hat1ButtonBackgroundColor,
-            Hat1ButtonBorderColor,
-            Hat1ButtonTextColor);
-
-        ApplyActionButtonState(
-            Hat2ActionButton,
-            Hat2ActionText,
-            Hat2ButtonBackgroundColor,
-            Hat2ButtonBorderColor,
-            Hat2ButtonTextColor);
-
-        ApplyActionButtonState(
-            OverallsActionButton,
-            OverallsActionText,
-            OverallsButtonBackgroundColor,
-            OverallsButtonBorderColor,
-            OverallsButtonTextColor);
-
-        ApplyActionButtonState(
-            TShirtActionButton,
-            TShirtActionText,
-            TShirtButtonBackgroundColor,
-            TShirtButtonBorderColor,
-            TShirtButtonTextColor);
-
-        ApplyActionButtonState(
-            OverallsAndBeltActionButton,
-            OverallsAndBeltActionText,
-            OverallsAndBeltButtonBackgroundColor,
-            OverallsAndBeltButtonBorderColor,
-            OverallsAndBeltButtonTextColor);
-
-        ApplyActionButtonState(
-            PaletteActionButton,
-            PaletteActionText,
-            PaletteButtonBackgroundColor,
-            PaletteButtonBorderColor,
-            PaletteButtonTextColor);
-
-        ApplyActionButtonState(
-            WhitePaletteActionButton,
-            WhitePaletteActionText,
-            WhitePaletteButtonBackgroundColor,
-            WhitePaletteButtonBorderColor,
-            WhitePaletteButtonTextColor);
+        ApplyActionButtonState(Hat1ActionButton, Hat1ActionText, Hat1ButtonBackgroundColor, Hat1ButtonBorderColor, Hat1ButtonTextColor, true);
+        ApplyActionButtonState(Hat2ActionButton, Hat2ActionText, Hat2ButtonBackgroundColor, Hat2ButtonBorderColor, Hat2ButtonTextColor, true);
+        ApplyActionButtonState(OverallsActionButton, OverallsActionText, OverallsButtonBackgroundColor, OverallsButtonBorderColor, OverallsButtonTextColor, true);
+        ApplyActionButtonState(TShirtActionButton, TShirtActionText, TShirtButtonBackgroundColor, TShirtButtonBorderColor, TShirtButtonTextColor, true);
+        ApplyActionButtonState(OverallsAndBeltActionButton, OverallsAndBeltActionText, OverallsAndBeltButtonBackgroundColor, OverallsAndBeltButtonBorderColor, OverallsAndBeltButtonTextColor, true);
+        ApplyActionButtonState(PaletteActionButton, PaletteActionText, PaletteButtonBackgroundColor, PaletteButtonBorderColor, PaletteButtonTextColor, IsPaletteEnabled);
+        ApplyActionButtonState(WhitePaletteActionButton, WhitePaletteActionText, WhitePaletteButtonBackgroundColor, WhitePaletteButtonBorderColor, WhitePaletteButtonTextColor, IsPaletteEnabled);
     }
 
-    private static void ApplyActionButtonState(Button? button, string text, Color backgroundColor, Color borderColor, Color textColor)
+    private static void ApplyActionButtonState(Button? button, string text, Color backgroundColor, Color borderColor, Color textColor, bool isEnabled)
     {
         if (button is null)
         {
@@ -928,9 +956,21 @@ public partial class userPage : ContentPage
         }
 
         button.Text = text;
-        button.BackgroundColor = backgroundColor;
-        button.BorderColor = borderColor;
-        button.TextColor = textColor;
+        button.IsEnabled = isEnabled;
+
+        if (isEnabled)
+        {
+            button.BackgroundColor = backgroundColor;
+            button.BorderColor = borderColor;
+            button.TextColor = textColor;
+        }
+        else
+        {
+            // Серый цвет для заблокированных кнопок
+            button.BackgroundColor = Color.FromArgb("#CCCCCC");
+            button.BorderColor = Color.FromArgb("#AAAAAA");
+            button.TextColor = Color.FromArgb("#888888");
+        }
     }
 
     private void UpdateCategorySections()
@@ -938,35 +978,6 @@ public partial class userPage : ContentPage
         HatCardsSection.IsVisible = _activeCategory == WardrobeCategory.Hat;
         TopCardsSection.IsVisible = _activeCategory == WardrobeCategory.Top;
         PaletteCardsSection.IsVisible = _activeCategory == WardrobeCategory.Palette;
-    }
-
-    private void EnsurePaletteIsEquipped()
-    {
-        if (_equippedItems.TryGetValue(WardrobeCategory.Palette, out var equippedPalette) && equippedPalette is not null)
-        {
-            return;
-        }
-
-        var defaultPalette = _itemsByCategory[WardrobeCategory.Palette]
-            .FirstOrDefault(item => item.PreviewImage == DefaultPaletteImageName);
-
-        if (defaultPalette is not null)
-        {
-            EquipItem(defaultPalette);
-        }
-    }
-
-    private void EquipAlternatePalette(WardrobeItem currentItem)
-    {
-        var alternatePalette = _itemsByCategory[WardrobeCategory.Palette]
-            .FirstOrDefault(item => !string.Equals(item.PreviewImage, currentItem.PreviewImage, StringComparison.OrdinalIgnoreCase));
-
-        if (alternatePalette is null)
-        {
-            return;
-        }
-
-        EquipItem(alternatePalette);
     }
 
     private void UpdateRabbitImages()
@@ -994,11 +1005,8 @@ public sealed class WardrobeItem
     }
 
     public WardrobeCategory Category { get; }
-
     public string Title { get; }
-
     public string PreviewImage { get; }
-
     public string? AppliedImage { get; }
 }
 
@@ -1016,17 +1024,11 @@ public sealed class WardrobeSlot : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public WardrobeSlotKind Kind { get; }
-
     public WardrobeCategory Category { get; }
-
     public WardrobeItem? Item { get; }
-
     public string? ImageSource => Item?.PreviewImage;
-
     public bool HasImage => !string.IsNullOrWhiteSpace(ImageSource);
-
     public bool IsActionVisible => Kind == WardrobeSlotKind.Item;
-
     public bool IsPlaceholderVisible => Kind == WardrobeSlotKind.Placeholder;
 
     public bool IsEquipped
@@ -1034,11 +1036,7 @@ public sealed class WardrobeSlot : INotifyPropertyChanged
         get => _isEquipped;
         set
         {
-            if (_isEquipped == value)
-            {
-                return;
-            }
-
+            if (_isEquipped == value) return;
             _isEquipped = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(ActionText));
@@ -1054,7 +1052,7 @@ public sealed class WardrobeSlot : INotifyPropertyChanged
         }
     }
 
-    public string ActionText => IsEquipped ? "\u0421\u043D\u044F\u0442\u044C" : "\u041D\u0430\u0434\u0435\u0442\u044C";
+    public string ActionText => IsEquipped ? "Снять" : "Надеть";
 
     public Color CardBackgroundColor => Kind switch
     {
@@ -1108,7 +1106,6 @@ public sealed class WardrobeSlot : INotifyPropertyChanged
     };
 
     public static WardrobeSlot CreateItemSlot(WardrobeItem item) => new(WardrobeSlotKind.Item, item.Category, item);
-
     public static WardrobeSlot CreatePlaceholder(WardrobeCategory category) => new(WardrobeSlotKind.Placeholder, category, null);
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

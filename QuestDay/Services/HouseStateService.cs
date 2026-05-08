@@ -4,26 +4,53 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace QuestDay.Services
 {
     public class HouseStateService : IHouseStateService
     {
         private readonly IHabitService _habitService;
+        private System.Timers.Timer? _periodicTimer;
+        private DateTime? _incompletionStartTime;
 
         private const string DirtyLevelKey = "House_DirtyLevel";
-        private const string LastCompletionDateKey = "House_LastCompletionDate";
+        private const string IncompletionStartTimeKey = "House_IncompletionStartTime";
 
         public event EventHandler<string>? BackgroundChanged;
+        public event EventHandler<string>? UserPageBackgroundChanged;
         public event EventHandler<int>? DirtLevelChanged;
+        public event EventHandler<bool>? RabbitDirtyStateChanged;
 
         public HouseStateService(IHabitService habitService)
         {
             _habitService = habitService;
+
+            // Загружаем сохранённое время начала невыполнения
+            var savedStartTimeBinary = Preferences.Default.Get(IncompletionStartTimeKey, 0L);
+            if (savedStartTimeBinary != 0)
+            {
+                _incompletionStartTime = DateTime.FromBinary(savedStartTimeBinary);
+            }
+
+            StartPeriodicUpdate();
+        }
+
+        private void StartPeriodicUpdate()
+        {
+            _periodicTimer = new System.Timers.Timer(60000); // Каждую минуту
+            _periodicTimer.Elapsed += async (s, e) =>
+            {
+                await UpdateStateAsync();
+            };
+            _periodicTimer.Start();
+            Debug.WriteLine("⏱️ Periodic update timer started (every 60 seconds)");
         }
 
         public async Task UpdateStateAsync()
         {
+            Debug.WriteLine($"UpdateStateAsync called at {DateTime.Now}");
+
             try
             {
                 var habits = await _habitService.GetHabitsAsync();
@@ -31,132 +58,117 @@ namespace QuestDay.Services
 
                 if (activeHabits.Count == 0)
                 {
-                    await CleanHouseAsync();
+                    Debug.WriteLine("UpdateStateAsync: no active habits — skipping.");
                     return;
                 }
 
-                bool hasIncompleteHabits = false;
+                // Проверяем, все ли активные привычки выполнены
+                bool allCompleted = true;
                 foreach (var habit in activeHabits)
                 {
                     bool isCompleted = await _habitService.GetHabitCompletionStatusAsync(habit.Id, DateTime.Today);
                     if (!isCompleted)
                     {
-                        hasIncompleteHabits = true;
+                        allCompleted = false;
                         break;
                     }
                 }
 
-                var lastCompletionDate = Preferences.Default.Get(LastCompletionDateKey, DateTime.MinValue);
-                var today = DateTime.Today;
                 var currentDirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
 
-                if (hasIncompleteHabits)
+                if (!allCompleted)
                 {
-                    if (lastCompletionDate == DateTime.MinValue)
+                    // Есть невыполненные привычки
+                    if (_incompletionStartTime == null)
                     {
-                        Preferences.Default.Set(LastCompletionDateKey, today);
-                        Debug.WriteLine($"Начало невыполнения привычек: {today}");
+                        _incompletionStartTime = DateTime.UtcNow;
+                        Preferences.Default.Set(IncompletionStartTimeKey, _incompletionStartTime.Value.ToBinary());
+                        Debug.WriteLine($"🔻 НАЧАЛО периода невыполнения: {_incompletionStartTime}");
                     }
 
-                    var daysWithoutCompletion = (today - lastCompletionDate).Days;
+                    var elapsedMinutes = (int)(DateTime.UtcNow - _incompletionStartTime.Value).TotalMinutes;
+                    int newDirtyLevel = Math.Min(100, elapsedMinutes);
 
-                    int newDirtyLevel = 0;
-
-                    if (daysWithoutCompletion >= 2)
-                    {
-                        newDirtyLevel = 85;
-                        Debug.WriteLine($"{daysWithoutCompletion} дня невыполнения - очень грязный уровень");
-                    }
-                    else if (daysWithoutCompletion >= 1)
-                    {
-                        newDirtyLevel = 50;
-                        Debug.WriteLine($"{daysWithoutCompletion} день невыполнения - грязный уровень");
-                    }
-                    else
-                    {
-                        newDirtyLevel = 0;
-                    }
+                    Debug.WriteLine($"⏱️ Прошло минут: {elapsedMinutes}, уровень грязи: {newDirtyLevel}%");
 
                     if (newDirtyLevel != currentDirtyLevel)
                     {
                         Preferences.Default.Set(DirtyLevelKey, newDirtyLevel);
-
-                        var state = new HouseState { DirtyLevel = newDirtyLevel };
-                        var backgroundImage = state.GetBackgroundByDirtyLevel();
-
-                        MainThread.BeginInvokeOnMainThread(() =>
-                        {
-                            BackgroundChanged?.Invoke(this, backgroundImage);
-                            DirtLevelChanged?.Invoke(this, newDirtyLevel);
-                        });
-
-                        Debug.WriteLine($"Уровень грязи обновлен: {currentDirtyLevel}% -> {newDirtyLevel}%");
+                        NotifyStateChanged(newDirtyLevel);
+                        Debug.WriteLine($"🧹 Уровень грязи: {currentDirtyLevel}% → {newDirtyLevel}%");
                     }
                 }
                 else
                 {
-                    if (lastCompletionDate != DateTime.MinValue)
-                    {
-                        Preferences.Default.Set(LastCompletionDateKey, DateTime.MinValue);
-                        Debug.WriteLine("Привычки выполнены, счетчик невыполнения сброшен");
-                    }
-
+                    // Все привычки выполнены - сбрасываем грязь
                     if (currentDirtyLevel != 0)
                     {
-                        await CleanHouseAsync();
+                        _incompletionStartTime = null;
+                        Preferences.Default.Remove(IncompletionStartTimeKey);
+                        Preferences.Default.Set(DirtyLevelKey, 0);
+                        NotifyStateChanged(0);
+                        Debug.WriteLine("✨ Все привычки выполнены — домик очищен!");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Ошибка проверки состояния домика: {ex.Message}");
+                Debug.WriteLine($"❌ Ошибка в UpdateStateAsync: {ex.Message}");
             }
+        }
+
+        public async Task ResetIncompletionStartTime()
+        {
+            _incompletionStartTime = DateTime.UtcNow;
+            Preferences.Default.Set(IncompletionStartTimeKey, _incompletionStartTime.Value.ToBinary());
+            Debug.WriteLine($"🔄 Сброс времени начала невыполнения");
+            await UpdateStateAsync();
+        }
+
+        private void NotifyStateChanged(int dirtyLevel)
+        {
+            var state = new HouseState { DirtyLevel = dirtyLevel };
+            var mainPageBackground = state.GetMainPageBackground();
+            var userPageBackground = state.GetUserPageBackground();
+            bool isRabbitDirty = state.IsRabbitDirty;
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                BackgroundChanged?.Invoke(this, mainPageBackground);
+                UserPageBackgroundChanged?.Invoke(this, userPageBackground);
+                DirtLevelChanged?.Invoke(this, dirtyLevel);
+                RabbitDirtyStateChanged?.Invoke(this, isRabbitDirty);
+
+                Debug.WriteLine($"📊 NOTIFY: грязь={dirtyLevel}%, isRabbitDirty={isRabbitDirty}");
+            });
         }
 
         public async Task<HouseState> GetCurrentStateAsync()
         {
-            var state = new HouseState
-            {
-                DirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0)
-            };
-            state.CurrentBackgroundImage = state.GetBackgroundByDirtyLevel();
+            var dirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
+            var state = new HouseState { DirtyLevel = dirtyLevel };
             return await Task.FromResult(state);
         }
 
         public async Task CleanHouseAsync()
         {
+            _incompletionStartTime = null;
+            Preferences.Default.Remove(IncompletionStartTimeKey);
             Preferences.Default.Set(DirtyLevelKey, 0);
-            Preferences.Default.Set(LastCompletionDateKey, DateTime.MinValue);
-
-            var state = new HouseState { DirtyLevel = 0 };
-            var backgroundImage = state.GetBackgroundByDirtyLevel();
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                BackgroundChanged?.Invoke(this, backgroundImage);
-                DirtLevelChanged?.Invoke(this, 0);
-            });
-
+            NotifyStateChanged(0);
+            Debug.WriteLine("🧽 Домик очищен через CleanHouseAsync!");
             await Task.CompletedTask;
-            Debug.WriteLine("Домик очищен!");
         }
 
         public async Task AddDirtAsync(int amount)
         {
             var currentDirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
             var newDirtyLevel = Math.Min(100, currentDirtyLevel + amount);
-
+            _incompletionStartTime = DateTime.UtcNow;
+            Preferences.Default.Set(IncompletionStartTimeKey, _incompletionStartTime.Value.ToBinary());
             Preferences.Default.Set(DirtyLevelKey, newDirtyLevel);
-
-            var state = new HouseState { DirtyLevel = newDirtyLevel };
-            var backgroundImage = state.GetBackgroundByDirtyLevel();
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                BackgroundChanged?.Invoke(this, backgroundImage);
-                DirtLevelChanged?.Invoke(this, newDirtyLevel);
-            });
-
+            NotifyStateChanged(newDirtyLevel);
+            Debug.WriteLine($"➕ AddDirtAsync: {currentDirtyLevel} → {newDirtyLevel} (+{amount})");
             await Task.CompletedTask;
         }
     }

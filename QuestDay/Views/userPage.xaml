@@ -88,22 +88,22 @@
     <Grid>
         <Image x:Name="HouseBackgroundImage" 
                Aspect="AspectFill" />
+        
         <Frame BackgroundColor="#FFFFFFCC"
-           CornerRadius="20"
-           Padding="12,8"
-           Margin="20,20,20,0"
-           VerticalOptions="Start"
-           HorizontalOptions="End"
-           HasShadow="False">
+               CornerRadius="20"
+               Padding="12,8"
+               Margin="20,20,20,0"
+               VerticalOptions="Start"
+               HorizontalOptions="End"
+               HasShadow="False">
             <VerticalStackLayout Spacing="4">
                 <Label x:Name="DirtyLevelLabel"
-                   FontSize="12"
-                   FontFamily="Montserrat-SemiBold"
-                   TextColor="#666666"
-                   HorizontalTextAlignment="Center" />
+                       FontSize="12"
+                       FontFamily="Montserrat-SemiBold"
+                       TextColor="#666666"
+                       HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
         </Frame>
-
 
         <Grid Padding="16,22,16,108"
               ColumnDefinitions="148,*"
@@ -113,6 +113,7 @@
                                  Spacing="14"
                                  VerticalOptions="Center"
                                  ZIndex="2">
+                <!-- Шляпы -->
                 <Border x:Name="HatCategoryButton"
                         Stroke="#D9BFAE"
                         StrokeThickness="2"
@@ -153,6 +154,7 @@
                     </Grid>
                 </Border>
 
+                <!-- Одежда -->
                 <Border x:Name="TopCategoryButton"
                         Stroke="#D9BFAE"
                         StrokeThickness="2"
@@ -191,6 +193,7 @@
                     </Grid>
                 </Border>
 
+                <!-- Окраска -->
                 <Border x:Name="PaletteCategoryButton"
                         Stroke="#D9BFAE"
                         StrokeThickness="2"
@@ -251,6 +254,14 @@
                            HorizontalOptions="Center"
                            VerticalOptions="End" />
 
+                    <Image Source="{Binding ActiveHatImage}"
+                           Aspect="AspectFit"
+                           WidthRequest="228"
+                           HeightRequest="228"
+                           Margin="0,40,0,0"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Start"
+                           IsVisible="{Binding HasHatImage}" />
                 </Grid>
 
                 <Border x:Name="SelectionPanel"
@@ -319,13 +330,21 @@
                                    HorizontalOptions="Center"
                                    VerticalOptions="End" />
 
+                            <Image Source="{Binding ActiveHatImage}"
+                                   Aspect="AspectFit"
+                                   WidthRequest="106"
+                                   HeightRequest="106"
+                                   Margin="0,18,0,0"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Start"
+                                   IsVisible="{Binding HasHatImage}" />
                         </Grid>
 
                         <ScrollView Grid.Row="2"
                                     Margin="0,6,0,0"
                                     VerticalScrollBarVisibility="Never">
                             <VerticalStackLayout Spacing="16">
-                                <Grid  x:Name="HatCardsSection"
+                                <Grid x:Name="HatCardsSection"
                                       ColumnDefinitions="*,*"
                                       ColumnSpacing="12"
                                       RowSpacing="12">
@@ -407,6 +426,7 @@
                                       RowDefinitions="Auto,Auto"
                                       ColumnSpacing="12"
                                       RowSpacing="12">
+                                    <!-- Комбинезон с ремнём -->
                                     <Border BackgroundColor="#E8CCB8"
                                             Stroke="{Binding OverallsAndBeltCardBorderColor}"
                                             StrokeThickness="{Binding OverallsAndBeltCardBorderWidth}"
@@ -443,6 +463,7 @@
                                         </Grid>
                                     </Border>
 
+                                    <!-- Футболка -->
                                     <Border Grid.Column="1"
                                             BackgroundColor="#E8CCB8"
                                             Stroke="{Binding TShirtCardBorderColor}"
@@ -480,6 +501,7 @@
                                         </Grid>
                                     </Border>
 
+                                    <!-- Комбинезон -->
                                     <Border Grid.Row="1"
                                             Grid.Column="0"
                                             BackgroundColor="#E8CCB8"
@@ -517,9 +539,9 @@
                                                     Clicked="OnOverallsClicked" />
                                         </Grid>
                                     </Border>
-
                                 </Grid>
 
+                                <!-- Окраски -->
                                 <Grid x:Name="PaletteCardsSection"
                                       ColumnDefinitions="*,*"
                                       ColumnSpacing="12"
@@ -547,16 +569,17 @@
                                                        WidthRequest="112" />
                                             </Border>
                                             <Button x:Name="PaletteActionButton"
-                                                    Grid.Row="1"
-                                                    Text="Надеть"
-                                                    FontSize="11"
-                                                    HeightRequest="42"
-                                                    Padding="6,4"
-                                                    CornerRadius="18"
-                                                    BorderWidth="2"
-                                                    FontFamily="Montserrat-SemiBold"
-                                                    TextTransform="None"
-                                                    Clicked="OnPaletteVariantClicked" />
+                                                Grid.Row="1"
+                                                Text="Надеть"
+                                                FontSize="11"
+                                                HeightRequest="42"
+                                                Padding="6,4"
+                                                CornerRadius="18"
+                                                BorderWidth="2"
+                                                FontFamily="Montserrat-SemiBold"
+                                                TextTransform="None"
+                                                IsEnabled="{Binding IsPaletteEnabled}"
+                                                Clicked="OnPaletteVariantClicked" />        
                                         </Grid>
                                     </Border>
                                     <Border Grid.Column="1"
@@ -583,16 +606,17 @@
                                                        WidthRequest="112" />
                                             </Border>
                                             <Button x:Name="WhitePaletteActionButton"
-                                                    Grid.Row="1"
-                                                    Text="Надеть"
-                                                    FontSize="11"
-                                                    HeightRequest="42"
-                                                    Padding="6,4"
-                                                    CornerRadius="18"
-                                                    BorderWidth="2"
-                                                    FontFamily="Montserrat-SemiBold"
-                                                    TextTransform="None"
-                                                    Clicked="OnWhitePaletteVariantClicked" />
+                                                Grid.Row="1"
+                                                Text="Надеть"
+                                                FontSize="11"
+                                                HeightRequest="42"
+                                                Padding="6,4"
+                                                CornerRadius="18"
+                                                BorderWidth="2"
+                                                FontFamily="Montserrat-SemiBold"
+                                                TextTransform="None"
+                                                IsEnabled="{Binding IsPaletteEnabled}"
+                                                Clicked="OnWhitePaletteVariantClicked" />   
                                         </Grid>
                                     </Border>
                                 </Grid>

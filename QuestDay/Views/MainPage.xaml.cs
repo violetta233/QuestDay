@@ -17,12 +17,13 @@ public partial class MainPage : ContentPage
 
         _houseStateService.BackgroundChanged += OnBackgroundChanged;
         _houseStateService.DirtLevelChanged += OnDirtLevelChanged;
+        _houseStateService.RabbitDirtyStateChanged += OnRabbitDirtyStateChanged;
         App.AvatarAppearance.PropertyChanged += OnAvatarAppearanceChanged;
 
         UpdateRabbitImage();
         LoadHouseState();
 
-        Debug.WriteLine("MainPage ËÌËˆË‡ÎËÁËÓ‚‡Ì‡");
+        Debug.WriteLine("MainPage –∏–Ω–∏—Ü–∏–∞–ª–∏–∑–∏—Ä–æ–≤–∞–Ω–∞");
     }
 
     private void OnBackgroundChanged(object sender, string imageName)
@@ -45,22 +46,31 @@ public partial class MainPage : ContentPage
                 int cleanliness = 100 - dirtyLevel;
                 string statusText = "";
 
-                if (dirtyLevel <= 30)
-                    statusText = "◊ËÒÚ˚È";
-                else if (dirtyLevel <= 70)
-                    statusText = "√ˇÁÌ˚È";
-                else
-                    statusText = "Œ˜ÂÌ¸ „ˇÁÌ˚È!";
+                if (dirtyLevel < 30)      // —á–∏—Å—Ç–æ—Ç–∞ > 70%
+                    statusText = "–ß–∏—Å—Ç—ã–π";
+                else if (dirtyLevel < 70)  // —á–∏—Å—Ç–æ—Ç–∞ 30-70%
+                    statusText = "–ì—Ä—è–∑–Ω—ã–π";
+                else                        // —á–∏—Å—Ç–æ—Ç–∞ < 30%
+                    statusText = "–û—á–µ–Ω—å –≥—Ä—è–∑–Ω—ã–π!";
 
-                DirtyLevelLabel.Text = $"{statusText}\n◊ËÒÚÓÚ‡: {cleanliness}%";
+                DirtyLevelLabel.Text = $"{statusText}\n–ß–∏—Å—Ç–æ—Ç–∞: {cleanliness}%";
 
-                if (dirtyLevel > 70)
+                if (dirtyLevel >= 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
-                else if (dirtyLevel > 30)
+                else if (dirtyLevel >= 30)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
                 else
                     DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
             }
+        });
+    }
+
+    private void OnRabbitDirtyStateChanged(object sender, bool isDirty)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            Debug.WriteLine($"MainPage: RabbitDirtyStateChanged = {isDirty}");
+            App.AvatarAppearance.IsDirty = isDirty;
         });
     }
 
@@ -72,7 +82,7 @@ public partial class MainPage : ContentPage
         {
             if (HouseBackgroundImage != null)
             {
-                HouseBackgroundImage.Source = state.CurrentBackgroundImage;
+                HouseBackgroundImage.Source = state.GetMainPageBackground();
             }
 
             if (DirtyLevelLabel != null)
@@ -80,22 +90,24 @@ public partial class MainPage : ContentPage
                 int cleanliness = 100 - state.DirtyLevel;
                 string statusText = "";
 
-                if (state.DirtyLevel <= 30)
-                    statusText = "◊ËÒÚ˚È";
-                else if (state.DirtyLevel <= 70)
-                    statusText = "√ˇÁÌ˚È";
+                if (state.DirtyLevel < 30)
+                    statusText = "–ß–∏—Å—Ç—ã–π";
+                else if (state.DirtyLevel < 70)
+                    statusText = "–ì—Ä—è–∑–Ω—ã–π";
                 else
-                    statusText = "Œ˜ÂÌ¸ „ˇÁÌ˚È!";
+                    statusText = "–û—á–µ–Ω—å –≥—Ä—è–∑–Ω—ã–π!";
 
-                DirtyLevelLabel.Text = $"{statusText}\n◊ËÒÚÓÚ‡: {cleanliness}%";
+                DirtyLevelLabel.Text = $"{statusText}\n–ß–∏—Å—Ç–æ—Ç–∞: {cleanliness}%";
 
-                if (state.DirtyLevel > 70)
+                if (state.DirtyLevel >= 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
-                else if (state.DirtyLevel > 30)
+                else if (state.DirtyLevel >= 30)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
                 else
                     DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
             }
+
+            App.AvatarAppearance.IsDirty = state.IsRabbitDirty;
         });
     }
 
@@ -119,6 +131,8 @@ public partial class MainPage : ContentPage
     {
         base.OnAppearing();
         await _houseStateService.UpdateStateAsync();
+        var state = await _houseStateService.GetCurrentStateAsync();
+        App.AvatarAppearance.IsDirty = state.IsRabbitDirty;
     }
 
     protected override void OnDisappearing()
@@ -126,6 +140,7 @@ public partial class MainPage : ContentPage
         base.OnDisappearing();
         _houseStateService.BackgroundChanged -= OnBackgroundChanged;
         _houseStateService.DirtLevelChanged -= OnDirtLevelChanged;
+        _houseStateService.RabbitDirtyStateChanged -= OnRabbitDirtyStateChanged;
         App.AvatarAppearance.PropertyChanged -= OnAvatarAppearanceChanged;
     }
 }
