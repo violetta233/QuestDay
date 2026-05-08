@@ -335,7 +335,7 @@ namespace QuestDay.ViewModels
 
             var confirm = await SuccessPopup.ShowConfirmation(
                 "Подтверждение",
-                $"Отметить \"{habitToToggleCompletion.Name}\" как {newState}?",
+                $"Отметить \"{habitToToggleCompletion.Name}\" как {(newState ? "выполненную" : "невыполненную")}?",
                 "Да",
                 "Нет");
 
@@ -367,12 +367,14 @@ namespace QuestDay.ViewModels
 
                 if (allCompleted && activeHabits.Count > 0 && newState == true)
                 {
+                    
                     await _houseStateService.CleanHouseAsync();
                     await SuccessPopup.ShowAllHabitsCompleted("Отлично! 🧹\n\nВсе привычки выполнены! Домик стал чище.");
                 }
                 else
                 {
-                    await _houseStateService.UpdateStateAsync();
+
+                    await _houseStateService.ResetIncompletionStartTime();
                 }
 
                 Debug.WriteLine($"Статус выполнения привычки '{habitToToggleCompletion.Name}' изменен на: {newState}");

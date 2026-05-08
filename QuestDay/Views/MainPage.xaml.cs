@@ -17,6 +17,7 @@ public partial class MainPage : ContentPage
 
         _houseStateService.BackgroundChanged += OnBackgroundChanged;
         _houseStateService.DirtLevelChanged += OnDirtLevelChanged;
+        _houseStateService.RabbitDirtyStateChanged += OnRabbitDirtyStateChanged;
         App.AvatarAppearance.PropertyChanged += OnAvatarAppearanceChanged;
 
         UpdateRabbitImage();
@@ -45,22 +46,31 @@ public partial class MainPage : ContentPage
                 int cleanliness = 100 - dirtyLevel;
                 string statusText = "";
 
-                if (dirtyLevel <= 30)
+                if (cleanliness >= 70)
                     statusText = "Чистый";
-                else if (dirtyLevel <= 70)
+                else if (cleanliness >= 30)
                     statusText = "Грязный";
                 else
                     statusText = "Очень грязный!";
 
                 DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
 
-                if (dirtyLevel > 70)
+                if (cleanliness < 30)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
-                else if (dirtyLevel > 30)
+                else if (cleanliness < 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
                 else
                     DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
             }
+        });
+    }
+
+    private void OnRabbitDirtyStateChanged(object sender, bool isDirty)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            Debug.WriteLine($"MainPage: RabbitDirtyStateChanged = {isDirty}");
+            App.AvatarAppearance.IsDirty = isDirty;
         });
     }
 
@@ -72,7 +82,7 @@ public partial class MainPage : ContentPage
         {
             if (HouseBackgroundImage != null)
             {
-                HouseBackgroundImage.Source = state.CurrentBackgroundImage;
+                HouseBackgroundImage.Source = state.GetMainPageBackground();
             }
 
             if (DirtyLevelLabel != null)
@@ -80,22 +90,25 @@ public partial class MainPage : ContentPage
                 int cleanliness = 100 - state.DirtyLevel;
                 string statusText = "";
 
-                if (state.DirtyLevel <= 30)
+                if (cleanliness >= 70)
                     statusText = "Чистый";
-                else if (state.DirtyLevel <= 70)
+                else if (cleanliness >= 30)
                     statusText = "Грязный";
                 else
                     statusText = "Очень грязный!";
 
                 DirtyLevelLabel.Text = $"{statusText}\nЧистота: {cleanliness}%";
 
-                if (state.DirtyLevel > 70)
+                if (cleanliness < 30)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF5252");
-                else if (state.DirtyLevel > 30)
+                else if (cleanliness < 70)
                     DirtyLevelLabel.TextColor = Color.FromArgb("#FF9800");
                 else
                     DirtyLevelLabel.TextColor = Color.FromArgb("#4CAF50");
             }
+
+            // 🆕 Принудительно обновляем состояние кролика при загрузке
+            App.AvatarAppearance.IsDirty = state.IsRabbitDirty;
         });
     }
 
@@ -119,6 +132,8 @@ public partial class MainPage : ContentPage
     {
         base.OnAppearing();
         await _houseStateService.UpdateStateAsync();
+        var state = await _houseStateService.GetCurrentStateAsync();
+        App.AvatarAppearance.IsDirty = state.IsRabbitDirty;
     }
 
     protected override void OnDisappearing()
@@ -126,6 +141,7 @@ public partial class MainPage : ContentPage
         base.OnDisappearing();
         _houseStateService.BackgroundChanged -= OnBackgroundChanged;
         _houseStateService.DirtLevelChanged -= OnDirtLevelChanged;
+        _houseStateService.RabbitDirtyStateChanged -= OnRabbitDirtyStateChanged;
         App.AvatarAppearance.PropertyChanged -= OnAvatarAppearanceChanged;
     }
 }

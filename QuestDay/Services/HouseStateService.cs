@@ -12,15 +12,20 @@ namespace QuestDay.Services
     {
         private readonly IHabitService _habitService;
         private System.Timers.Timer? _decayTimer;
+        private System.Timers.Timer? _periodicTimer;
 
         private const string DirtyLevelKey = "House_DirtyLevel";
         private const string IncompletionStartTimeKey = "House_IncompletionStartTime";
 
-        // ⚙️ Для отладки: сброс настроек при запуске (в продакшене поставьте false)
         private const bool ResetPreferencesOnStartup = false;
 
+
+        private const double DecayTimerIntervalMilliseconds = 60000;
+
         public event EventHandler<string>? BackgroundChanged;
+        public event EventHandler<string>? UserPageBackgroundChanged;
         public event EventHandler<int>? DirtLevelChanged;
+        public event EventHandler<bool>? RabbitDirtyStateChanged;
 
         public HouseStateService(IHabitService habitService)
         {
@@ -32,6 +37,19 @@ namespace QuestDay.Services
                 Preferences.Default.Remove(IncompletionStartTimeKey);
                 Debug.WriteLine("HouseStateService: preferences reset.");
             }
+
+            StartPeriodicUpdate();
+        }
+
+        private void StartPeriodicUpdate()
+        {
+            _periodicTimer = new System.Timers.Timer(10000); // Каждые 10 секунд для теста
+            _periodicTimer.Elapsed += async (s, e) =>
+            {
+                await UpdateStateAsync();
+            };
+            _periodicTimer.Start();
+            Debug.WriteLine("⏱️ Periodic update timer started (every 10 seconds)");
         }
 
         public async Task UpdateStateAsync()
@@ -49,7 +67,6 @@ namespace QuestDay.Services
                     return;
                 }
 
-                // 🔍 Проверяем, есть ли хоть одна невыполненная привычка
                 bool hasIncompleteHabits = false;
                 foreach (var habit in activeHabits)
                 {
@@ -64,29 +81,32 @@ namespace QuestDay.Services
                 var currentDirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
                 var now = DateTime.UtcNow;
 
+                Debug.WriteLine($"hasIncompleteHabits = {hasIncompleteHabits}, currentDirtyLevel = {currentDirtyLevel}%");
+
                 if (hasIncompleteHabits)
                 {
-                    // 📅 Получаем или устанавливаем время начала периода невыполнения
                     var startTimeBinary = Preferences.Default.Get(IncompletionStartTimeKey, 0L);
                     DateTime incompletionStartTime;
 
                     if (startTimeBinary == 0 || currentDirtyLevel == 0)
                     {
-                        // Первый раз обнаружили невыполнение или только что очистили дом — начинаем отсчёт
                         incompletionStartTime = now;
                         Preferences.Default.Set(IncompletionStartTimeKey, now.ToBinary());
-                        Debug.WriteLine($"🔻 Начало периода невыполнения: {incompletionStartTime}");
+                        Debug.WriteLine($"🔻 НАЧАЛО периода невыполнения: {incompletionStartTime}");
                     }
                     else
                     {
                         incompletionStartTime = DateTime.FromBinary(startTimeBinary);
                     }
 
-                    // ⏱️ Считаем прошедшие минуты и уровень грязи
-                    var elapsedMinutes = (int)(now - incompletionStartTime).TotalMinutes;
-                    int newDirtyLevel = Math.Min(100, elapsedMinutes);
+                    var elapsedSeconds = (int)(now - incompletionStartTime).TotalSeconds;
+                    int newDirtyLevel = Math.Min(100, elapsedSeconds / 60); // Переводим секунды в минуты
 
-                    // 🔄 Обновляем состояние, если изменилось
+                    // Для теста: 1% за 10 секунд
+                    // int newDirtyLevel = Math.Min(100, elapsedSeconds / 10);
+
+                    Debug.WriteLine($"⏱️ Прошло секунд: {elapsedSeconds}, минут: {elapsedSeconds / 60}, новый уровень грязи: {newDirtyLevel}%");
+
                     if (newDirtyLevel != currentDirtyLevel)
                     {
                         Preferences.Default.Set(DirtyLevelKey, newDirtyLevel);
@@ -94,12 +114,10 @@ namespace QuestDay.Services
                         Debug.WriteLine($"🧹 Уровень грязи: {currentDirtyLevel}% → {newDirtyLevel}%");
                     }
 
-                    // ▶️ Запускаем таймер для обновления в реальном времени
                     ManageDecayTimer();
                 }
                 else
                 {
-                    // ✅ Все привычки выполнены — мгновенно 100% чистоты
                     if (currentDirtyLevel != 0)
                     {
                         Preferences.Default.Set(DirtyLevelKey, 0);
@@ -107,7 +125,6 @@ namespace QuestDay.Services
                         NotifyStateChanged(0);
                         Debug.WriteLine("✨ Все привычки выполнены — домик очищен!");
                     }
-
                     StopDecayTimer();
                 }
             }
@@ -117,9 +134,21 @@ namespace QuestDay.Services
             }
         }
 
+        public async Task ResetIncompletionStartTime()
+        {
+            var currentDirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
+            Preferences.Default.Set(IncompletionStartTimeKey, DateTime.UtcNow.ToBinary());
+            Debug.WriteLine($"🔄 Сброс времени начала невыполнения (текущий уровень грязи: {currentDirtyLevel}%)");
+
+            // Принудительно запускаем таймер
+            StopDecayTimer();
+            ManageDecayTimer();
+
+            await UpdateStateAsync();
+        }
+
         private void ManageDecayTimer()
         {
-            // Не запускаем таймер, если уже максимум грязи
             var currentLevel = Preferences.Default.Get(DirtyLevelKey, 0);
             if (currentLevel >= 100)
             {
@@ -129,13 +158,15 @@ namespace QuestDay.Services
 
             if (_decayTimer is null)
             {
-                _decayTimer = new System.Timers.Timer(60000); // 60 секунд
+                Debug.WriteLine("🔄 ЗАПУСК decay timer...");
+                _decayTimer = new System.Timers.Timer(DecayTimerIntervalMilliseconds);
                 _decayTimer.AutoReset = true;
                 _decayTimer.Elapsed += async (s, e) =>
                 {
                     try
                     {
-                        // 🔄 Пересчитываем на основе сохранённого времени начала
+                        Debug.WriteLine($"⏰ DECAY TIMER СРАБОТАЛ в {DateTime.Now}");
+
                         var startTimeBinary = Preferences.Default.Get(IncompletionStartTimeKey, 0L);
                         if (startTimeBinary == 0)
                         {
@@ -153,6 +184,7 @@ namespace QuestDay.Services
                         {
                             Preferences.Default.Set(DirtyLevelKey, newDirtyLevel);
                             NotifyStateChanged(newDirtyLevel);
+                            Debug.WriteLine($"📈 Уровень грязи увеличен до {newDirtyLevel}%");
                         }
 
                         if (newDirtyLevel >= 100)
@@ -166,7 +198,7 @@ namespace QuestDay.Services
                     }
                 };
                 _decayTimer.Start();
-                Debug.WriteLine("⏱️ Decay timer started: -1% cleanliness per minute");
+                Debug.WriteLine($"⏱️ Decay timer started: интервал {DecayTimerIntervalMilliseconds}ms");
             }
         }
 
@@ -184,12 +216,19 @@ namespace QuestDay.Services
         private void NotifyStateChanged(int dirtyLevel)
         {
             var state = new HouseState { DirtyLevel = dirtyLevel };
-            var backgroundImage = state.GetBackgroundByDirtyLevel();
+            var mainPageBackground = state.GetMainPageBackground();
+            var userPageBackground = state.GetUserPageBackground();
+            bool isRabbitDirty = state.IsRabbitDirty;
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                BackgroundChanged?.Invoke(this, backgroundImage);
+                BackgroundChanged?.Invoke(this, mainPageBackground);
+                UserPageBackgroundChanged?.Invoke(this, userPageBackground);
                 DirtLevelChanged?.Invoke(this, dirtyLevel);
+                RabbitDirtyStateChanged?.Invoke(this, isRabbitDirty);
+
+                int cleanliness = 100 - dirtyLevel;
+                Debug.WriteLine($"📊 NOTIFY: грязь={dirtyLevel}%, чистота={cleanliness}%, isRabbitDirty={isRabbitDirty}");
             });
         }
 
@@ -197,7 +236,6 @@ namespace QuestDay.Services
         {
             var dirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
             var state = new HouseState { DirtyLevel = dirtyLevel };
-            state.CurrentBackgroundImage = state.GetBackgroundByDirtyLevel();
             return await Task.FromResult(state);
         }
 
@@ -205,10 +243,8 @@ namespace QuestDay.Services
         {
             Preferences.Default.Set(DirtyLevelKey, 0);
             Preferences.Default.Remove(IncompletionStartTimeKey);
-
             StopDecayTimer();
             NotifyStateChanged(0);
-
             Debug.WriteLine("🧽 Домик очищен через CleanHouseAsync!");
             await Task.CompletedTask;
         }
@@ -217,10 +253,8 @@ namespace QuestDay.Services
         {
             var currentDirtyLevel = Preferences.Default.Get(DirtyLevelKey, 0);
             var newDirtyLevel = Math.Min(100, currentDirtyLevel + amount);
-
             Preferences.Default.Set(DirtyLevelKey, newDirtyLevel);
             NotifyStateChanged(newDirtyLevel);
-
             Debug.WriteLine($"➕ AddDirtAsync: {currentDirtyLevel} → {newDirtyLevel} (+{amount})");
             await Task.CompletedTask;
         }

@@ -569,16 +569,17 @@
                                                        WidthRequest="112" />
                                             </Border>
                                             <Button x:Name="PaletteActionButton"
-                                                    Grid.Row="1"
-                                                    Text="Надеть"
-                                                    FontSize="11"
-                                                    HeightRequest="42"
-                                                    Padding="6,4"
-                                                    CornerRadius="18"
-                                                    BorderWidth="2"
-                                                    FontFamily="Montserrat-SemiBold"
-                                                    TextTransform="None"
-                                                    Clicked="OnPaletteVariantClicked" />
+                                                Grid.Row="1"
+                                                Text="Надеть"
+                                                FontSize="11"
+                                                HeightRequest="42"
+                                                Padding="6,4"
+                                                CornerRadius="18"
+                                                BorderWidth="2"
+                                                FontFamily="Montserrat-SemiBold"
+                                                TextTransform="None"
+                                                IsEnabled="{Binding IsPaletteEnabled}"
+                                                Clicked="OnPaletteVariantClicked" />        
                                         </Grid>
                                     </Border>
                                     <Border Grid.Column="1"
@@ -605,16 +606,17 @@
                                                        WidthRequest="112" />
                                             </Border>
                                             <Button x:Name="WhitePaletteActionButton"
-                                                    Grid.Row="1"
-                                                    Text="Надеть"
-                                                    FontSize="11"
-                                                    HeightRequest="42"
-                                                    Padding="6,4"
-                                                    CornerRadius="18"
-                                                    BorderWidth="2"
-                                                    FontFamily="Montserrat-SemiBold"
-                                                    TextTransform="None"
-                                                    Clicked="OnWhitePaletteVariantClicked" />
+                                                Grid.Row="1"
+                                                Text="Надеть"
+                                                FontSize="11"
+                                                HeightRequest="42"
+                                                Padding="6,4"
+                                                CornerRadius="18"
+                                                BorderWidth="2"
+                                                FontFamily="Montserrat-SemiBold"
+                                                TextTransform="None"
+                                                IsEnabled="{Binding IsPaletteEnabled}"
+                                                Clicked="OnWhitePaletteVariantClicked" />   
                                         </Grid>
                                     </Border>
                                 </Grid>

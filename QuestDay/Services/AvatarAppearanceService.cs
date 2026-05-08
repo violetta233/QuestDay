@@ -8,11 +8,18 @@ public sealed class AvatarAppearanceService : INotifyPropertyChanged
 {
     private const string WarmPaletteImage = "rabbit_1_warm_bg_skintone.png";
     private const string WhitePaletteImage = "rabbit_3_white_bg_skintone.png";
+
+    // Грязные варианты кролика (rabbit_2)
+    private const string WarmDirtyPaletteImage = "rabbit_2_dark_skintone.png";
+    private const string WhiteDirtyPaletteImage = "rabbit_2_dark_skintone.png"; // Временно используем тот же, пока нет белого грязного
+
     private const string OverallsImage = "overalls_skin1_blue.png";
     private const string TShirtImage = "t_shirt_mechmat.png";
     private const string OverallsAndBeltImage = "overalls_and_balt.png";
     private const string HatOneImage = "hat_one.png";
     private const string HatTwoImage = "hat_two.png";
+
+    // Чистые комбинации (тёплый кролик - rabbit_1)
     private const string WarmOverallsRabbitImage = "rabbit_1_overalls.png";
     private const string WarmTShirtRabbitImage = "rabbit_1_t_shirt_mechm.png";
     private const string WarmOverallsAndBeltRabbitImage = "rabbit_1_overalls_belt.png";
@@ -24,6 +31,21 @@ public sealed class AvatarAppearanceService : INotifyPropertyChanged
     private const string WarmTShirtHatTwoRabbitImage = "rabbit_1_t_shirt_hat_two.png";
     private const string WarmOverallsAndBeltHatOneRabbitImage = "rabbit_1_overalls_belt_hat_one.png";
     private const string WarmOverallsAndBeltHatTwoRabbitImage = "rabbit_1_overalls_belt_hat_two.png";
+
+    // Грязные комбинации (тёплый кролик - rabbit_2)
+    private const string WarmDirtyOverallsRabbitImage = "rabbit_2_overalls.png";
+    private const string WarmDirtyTShirtRabbitImage = "rabbit_2_t_shirt_mechm.png";
+    private const string WarmDirtyOverallsAndBeltRabbitImage = "rabbit_2_overalls_belt.png";
+    private const string WarmDirtyHatOneRabbitImage = "rabbit_2_hat_one.png";
+    private const string WarmDirtyHatTwoRabbitImage = "rabbit_2_hat_two.png";
+    private const string WarmDirtyOverallsHatOneRabbitImage = "rabbit_2_overalls_hat_one.png";
+    private const string WarmDirtyOverallsHatTwoRabbitImage = "rabbit_2_overalls_hat_two.png";
+    private const string WarmDirtyTShirtHatOneRabbitImage = "rabbit_2_t_shirt_hat_one.png";
+    private const string WarmDirtyTShirtHatTwoRabbitImage = "rabbit_2_t_shirt_hat_two.png";
+    private const string WarmDirtyOverallsAndBeltHatOneRabbitImage = "rabbit_2_overalls_belt_hat_one.png";
+    private const string WarmDirtyOverallsAndBeltHatTwoRabbitImage = "rabbit_2_overalls_belt_hat_two.png";
+
+    // Чистые комбинации (белый кролик - rabbit_3)
     private const string WhiteOverallsRabbitImage = "rabbit_3_overalls.png";
     private const string WhiteTShirtRabbitImage = "rabbit_3_t_shirt_mechm.png";
     private const string WhiteOverallsAndBeltRabbitImage = "rabbit_3_overalls_belt.png";
@@ -35,6 +57,21 @@ public sealed class AvatarAppearanceService : INotifyPropertyChanged
     private const string WhiteTShirtHatTwoRabbitImage = "rabbit_3_t_shirt_hat_two.png";
     private const string WhiteOverallsAndBeltHatOneRabbitImage = "rabbit_3_overalls_belt_hat_one.png";
     private const string WhiteOverallsAndBeltHatTwoRabbitImage = "rabbit_3_overalls_belt_hat_two.png";
+
+    // Грязные комбинации (белый кролик - пока нет, используем rabbit_2 как заглушку)
+    // TODO: Заменить на rabbit_3_dirty_* когда появятся
+    private const string WhiteDirtyOverallsRabbitImage = "rabbit_2_overalls.png";
+    private const string WhiteDirtyTShirtRabbitImage = "rabbit_2_t_shirt_mechm.png";
+    private const string WhiteDirtyOverallsAndBeltRabbitImage = "rabbit_2_overalls_belt.png";
+    private const string WhiteDirtyHatOneRabbitImage = "rabbit_2_hat_one.png";
+    private const string WhiteDirtyHatTwoRabbitImage = "rabbit_2_hat_two.png";
+    private const string WhiteDirtyOverallsHatOneRabbitImage = "rabbit_2_overalls_hat_one.png";
+    private const string WhiteDirtyOverallsHatTwoRabbitImage = "rabbit_2_overalls_hat_two.png";
+    private const string WhiteDirtyTShirtHatOneRabbitImage = "rabbit_2_t_shirt_hat_one.png";
+    private const string WhiteDirtyTShirtHatTwoRabbitImage = "rabbit_2_t_shirt_hat_two.png";
+    private const string WhiteDirtyOverallsAndBeltHatOneRabbitImage = "rabbit_2_overalls_belt_hat_one.png";
+    private const string WhiteDirtyOverallsAndBeltHatTwoRabbitImage = "rabbit_2_overalls_belt_hat_two.png";
+
     private const string RabbitVariantPreferenceKey = "avatar.rabbitVariantImage";
     private const string TopPreferenceKey = "avatar.topImage";
     private const string HatPreferenceKey = "avatar.hatImage";
@@ -42,6 +79,7 @@ public sealed class AvatarAppearanceService : INotifyPropertyChanged
     private string? _rabbitVariantImage;
     private string? _topImage;
     private string? _hatImage;
+    private bool _isDirty;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -94,6 +132,18 @@ public sealed class AvatarAppearanceService : INotifyPropertyChanged
         }
     }
 
+    public bool IsDirty
+    {
+        get => _isDirty;
+        set
+        {
+            if (SetProperty(ref _isDirty, value))
+            {
+                OnPropertyChanged(nameof(CurrentRabbitImage));
+            }
+        }
+    }
+
     public bool HasTopImage => !string.IsNullOrWhiteSpace(TopImage);
 
     public bool HasHatImage => !string.IsNullOrWhiteSpace(HatImage);
@@ -141,6 +191,16 @@ public sealed class AvatarAppearanceService : INotifyPropertyChanged
         var isWhitePalette = string.Equals(RabbitVariantImage, WhitePaletteImage, StringComparison.OrdinalIgnoreCase);
         var hatVariant = ResolveHatVariant(HatImage);
 
+        if (IsDirty)
+        {
+            return ResolveDirtyRabbitImage(isWhitePalette, hatVariant);
+        }
+
+        return ResolveCleanRabbitImage(isWhitePalette, hatVariant);
+    }
+
+    private string ResolveCleanRabbitImage(bool isWhitePalette, HatVariant hatVariant)
+    {
         return (TopImage, hatVariant, isWhitePalette) switch
         {
             (OverallsImage, HatVariant.HatOne, true) => WhiteOverallsHatOneRabbitImage,
@@ -167,6 +227,46 @@ public sealed class AvatarAppearanceService : INotifyPropertyChanged
             (_, HatVariant.HatTwo, false) => WarmHatTwoRabbitImage,
             (_, _, true) => WhitePaletteImage,
             _ => WarmPaletteImage
+        };
+    }
+
+    private string ResolveDirtyRabbitImage(bool isWhitePalette, HatVariant hatVariant)
+    {
+        if (isWhitePalette)
+        {
+            // Белый кролик (грязные варианты - заглушки, пока нет rabbit_3_dirty)
+            return (TopImage, hatVariant) switch
+            {
+                (OverallsImage, HatVariant.HatOne) => WhiteDirtyOverallsHatOneRabbitImage,
+                (OverallsImage, HatVariant.HatTwo) => WhiteDirtyOverallsHatTwoRabbitImage,
+                (OverallsImage, _) => WhiteDirtyOverallsRabbitImage,
+                (TShirtImage, HatVariant.HatOne) => WhiteDirtyTShirtHatOneRabbitImage,
+                (TShirtImage, HatVariant.HatTwo) => WhiteDirtyTShirtHatTwoRabbitImage,
+                (TShirtImage, _) => WhiteDirtyTShirtRabbitImage,
+                (OverallsAndBeltImage, HatVariant.HatOne) => WhiteDirtyOverallsAndBeltHatOneRabbitImage,
+                (OverallsAndBeltImage, HatVariant.HatTwo) => WhiteDirtyOverallsAndBeltHatTwoRabbitImage,
+                (OverallsAndBeltImage, _) => WhiteDirtyOverallsAndBeltRabbitImage,
+                (_, HatVariant.HatOne) => WhiteDirtyHatOneRabbitImage,
+                (_, HatVariant.HatTwo) => WhiteDirtyHatTwoRabbitImage,
+                _ => WhiteDirtyPaletteImage
+            };
+        }
+
+        // Тёплый кролик (rabbit_2)
+        return (TopImage, hatVariant) switch
+        {
+            (OverallsImage, HatVariant.HatOne) => WarmDirtyOverallsHatOneRabbitImage,
+            (OverallsImage, HatVariant.HatTwo) => WarmDirtyOverallsHatTwoRabbitImage,
+            (OverallsImage, _) => WarmDirtyOverallsRabbitImage,
+            (TShirtImage, HatVariant.HatOne) => WarmDirtyTShirtHatOneRabbitImage,
+            (TShirtImage, HatVariant.HatTwo) => WarmDirtyTShirtHatTwoRabbitImage,
+            (TShirtImage, _) => WarmDirtyTShirtRabbitImage,
+            (OverallsAndBeltImage, HatVariant.HatOne) => WarmDirtyOverallsAndBeltHatOneRabbitImage,
+            (OverallsAndBeltImage, HatVariant.HatTwo) => WarmDirtyOverallsAndBeltHatTwoRabbitImage,
+            (OverallsAndBeltImage, _) => WarmDirtyOverallsAndBeltRabbitImage,
+            (_, HatVariant.HatOne) => WarmDirtyHatOneRabbitImage,
+            (_, HatVariant.HatTwo) => WarmDirtyHatTwoRabbitImage,
+            _ => WarmDirtyPaletteImage
         };
     }
 
